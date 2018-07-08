@@ -51,7 +51,7 @@ const index = (req, res) => {
                 return res.end();
             }
 
-            res.render('index.html', null);
+            res.render('index.html', authINFO);
         });    
 }
 

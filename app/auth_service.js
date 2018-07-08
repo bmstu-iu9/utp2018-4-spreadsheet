@@ -26,7 +26,7 @@ const checkSession = (body, response) => {
         if (error || res === null) {
             logs.log('Check \x1b[31mFAILED\x1b[0m: sessionID:' + body.session);
             response.writeHead(200, { 'Content-Type' : 'application/json' });
-            return response.end(JSON.stringify({user : null, error : CHECK_SESSION_ERROR}));
+            return response.end(JSON.stringify({email : null, error : CHECK_SESSION_ERROR}));
         }
 
         logs.log(`Check \x1b[32mSUCCESS\x1b[0m: sessionID: ${body.session}, user: ${res}`);
