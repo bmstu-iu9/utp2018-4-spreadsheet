@@ -37,11 +37,9 @@ const publicResource = (req, res) => {
 
     stream.on('error', error => {
         if (error.code === 'ENOENT') {
-            res.writeHead(404, {'Content-Type' : 'text/html'});
-            res.end('<h1>404 Not Found<h1>');
+            res.render('error.html', {"code" : 404, "message" : '404 Not Found!'});
         } else {
-            res.writeHead(500, {'Content-Type' : 'text/html'});
-            res.end(error.message);
+            res.render('error.html', {"code" : 500, "message" : 'Internal server error!'});
         }
     });
 }
