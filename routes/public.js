@@ -1,10 +1,10 @@
+'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const logs = require('../app/logs')
 
-const public = (req, res) => {
-    logs.log('\x1b[34mPUBLIC\x1b[0m Method: ' + req.method);
-
+const publicResource = (req, res) => {
     const extension = path.extname(req.url);
     let contentType = '';
 
@@ -30,8 +30,9 @@ const public = (req, res) => {
     }
 
     res.writeHead(200, {'Content-Type' : contentType});
-    console.log(path.resolve('public', req.url.slice(1)));
-    const stream = fs.createReadStream(path.resolve('public', req.url.slice(1)));
+    const p = path.resolve('public', req.url.slice(1));
+    logs.log('\x1b[34mRESOURCE\x1b[0m: ' + p);
+    const stream = fs.createReadStream(p);
     stream.pipe(res);
 
     stream.on('error', error => {
@@ -45,4 +46,4 @@ const public = (req, res) => {
     });
 }
 
-module.exports.public = public;
+module.exports.publicResource = publicResource;

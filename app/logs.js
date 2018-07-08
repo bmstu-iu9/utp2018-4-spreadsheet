@@ -1,3 +1,4 @@
+'use strict';
 //Заготовка под нормальные логи
 const log = (msg) => {
     console.log(msg);
