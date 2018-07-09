@@ -1,6 +1,7 @@
 'use strict';
 
 const redis = require('redis');
+const sqlite3 = require('sqlite3').verbose();
 const http = require('http');
 const url = require('url');
 const qs = require('querystring');
@@ -11,11 +12,18 @@ const CHECK_SESSION_ERROR = 1;
 const NO_USER_ERROR = 2;
 const REDIS_ERROR = 3;
 
-const users = { "gaaveer@gmail.com" : "qwerty1234" };
+const usersClient = new sqlite3.Database(CONFIG.dbAdress, sqlite3.OPEN_READWRITE, (err) => {
+    if (err) {
+        console.error('something went wrong: ' + err.message); //сделать нормально;
+    }
+
+    logs.log('\x1b[35msqlite3\x1b[0m client connected \x1b[32msuccessfully\x1b[0m');
+});
+
 const redisClient = redis.createClient(CONFIG.redisPort, CONFIG.redisHost);
 redisClient.on('connect', () => {logs.log('\x1b[35mRedis\x1b[0m client connected \x1b[32msuccessfully\x1b[0m')});
 redisClient.on('error', (err) => {
-    console.error('something went wrong' + err); //сделать нормально;
+    console.error('something went wrong: ' + err); //сделать нормально;
 });
 
 const ID = () => '_' + Math.random().toString(36).substr(2, 9);
@@ -38,28 +46,35 @@ const checkSession = (body, response) => {
 
 const loginHandle = (body, response) => {
     const emailData = body.email;
-    if (!(emailData in users)) {
-        logs.log('Login \x1b[31mFAILED\x1b[0m: user:' + emailData);
-        response.writeHead(200, { 'Content-Type' : 'application/json' });
-        return response.end(JSON.stringify({session_id : null, error : NO_USER_ERROR}));
-    } //нужны ли здесь мьютексы(нода же однопоточная)
+    const sqlQuery = `SELECT Email email,
+                             Pass pass
+                        FROM login_data
+                        WHERE Email = ?`;
+    usersClient.get(sqlQuery, [emailData], (err, row) => {
+            if (err || !row || row.pass != body.password) {
+                logs.log('Login \x1b[31mFAILED\x1b[0m: user:' + emailData);
+                response.writeHead(200, { 'Content-Type' : 'application/json' });
+                return response.end(JSON.stringify({session_id : null, error : NO_USER_ERROR}));
+            }//нужны ли здесь мьютексы(нода же однопоточная)
 
-    const sessionID = ID();
-    const data = JSON.stringify({email : emailData});
-    const mkey = "session: " + sessionID;
-    redisClient.set(mkey, data, (error, res) => {
-        if (error) {
-            logs.log('set sessionID \x1b[31mFAILED\x1b[0m:' + sessionID);
+
+            const sessionID = ID();
+            const data = JSON.stringify({email : emailData});
+            const mkey = "session: " + sessionID;
+            redisClient.set(mkey, data, (error, res) => {
+                if (error) {
+                    logs.log('set sessionID \x1b[31mFAILED\x1b[0m: ' + sessionID);
+                    response.writeHead(200, { 'Content-Type' : 'application/json' });
+                    return response.end(JSON.stringify({session_id : null, error : REDIS_ERROR})); 
+                }
+            
+                logs.log('\x1b[35mRedis\x1b[0m result: ' + res);
+            });
+        
+            logs.log(`Login \x1b[32mSUCCESS\x1b[0m: user: ${emailData}, sessionID: ${sessionID}`);
             response.writeHead(200, { 'Content-Type' : 'application/json' });
-            return response.end(JSON.stringify({session_id : null, error : REDIS_ERROR})); 
-        }
-
-        logs.log('\x1b[35mRedis\x1b[0m result: ' + res);
+            response.end(JSON.stringify({session_id : sessionID, error : null})); 
     });
-
-    logs.log(`Login \x1b[32mSUCCESS\x1b[0m: user: ${emailData}, sessionID: ${sessionID}`);
-    response.writeHead(200, { 'Content-Type' : 'application/json' });
-    response.end(JSON.stringify({session_id : sessionID, error : null})); 
 }
 
 http.createServer((req, res) => {
@@ -83,5 +98,17 @@ http.createServer((req, res) => {
     }
 
 }).listen(CONFIG.port,() => 
-     console.log('\x1b[35m%s\x1b[0m successfully \x1b[32mstarted\x1b[0m at %d','Auth service',
-                CONFIG.port));
+        console.log('\x1b[35m%s\x1b[0m successfully \x1b[32mstarted\x1b[0m at %d','Auth service',
+                CONFIG.port))
+    .on('close', () => {
+        usersClient.close((err) => {
+            if (err) {
+                console.error('something went wrong' + err.message); //сделать нормально;
+            }
+
+            logs.log('\x1b[35msqlite3\x1b[0m client connection closed \x1b[32msuccessfully\x1b[0m');
+        })
+
+        console.log('\x1b[35m%s\x1b[0m successfully \x1b[32mstoped\x1b[0m at %d','Auth service',
+                CONFIG.port);
+    });
