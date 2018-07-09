@@ -1,11 +1,11 @@
-//'use strict'
+'use strict'
 const tableDiv = document.getElementById('table-div');
 
 let DEFAULT_ROWS = 50, DEFAULT_COLS = 26;
 let ROWS = 0, COLS = 0;
 
 const addCells = function(rows, cols){
-  for (let i = ROWS; i <= ROWS + rows; i++) { //'<=' так как +1 строка для индексов
+  for (let i = ROWS; i < ROWS + rows; i++) {
       const row = document.getElementById('table').insertRow(-1);
       for (let j = 0; j <= COLS + cols; j++) {
           const letter = String.fromCharCode("A".charCodeAt(0) + j - 1);
@@ -26,9 +26,6 @@ tableDiv.onscroll = function() {
   if(percentY > 80){
     addCells(5, 0);
   }
-  /*
-  if(percentX > 95){
-    addCells(0, 1);
-  }
-  */
+
+  //TODO: мердж с Владом (Бесконечность вправо)
 }
