@@ -1,4 +1,5 @@
 //'use strict'
+const tableDiv = document.getElementById('table-div');
 
 let DEFAULT_ROWS = 50, DEFAULT_COLS = 26;
 let ROWS = 0, COLS = 0;
@@ -17,9 +18,11 @@ const addCells = function(rows, cols){
 
 addCells(DEFAULT_ROWS, DEFAULT_COLS);
 
-window.onscroll = function() {
-  const moreCellsOnY = document.body.scrollHeight - innerHeight, moreCellsOnX = document.body.scrollWidth - innerWidth;
-  const percentY = (pageYOffset / moreCellsOnY) * 100, percentX = (pageXOffset / moreCellsOnY) * 100;
+tableDiv.onscroll = function() {
+  const moreCellsOnY = tableDiv.scrollHeight - tableDiv.clientHeight;
+  const moreCellsOnX = tableDiv.scrollWidth - tableDiv.clientWidth;
+  const percentY = (tableDiv.scrollTop / moreCellsOnY) * 100;
+  const percentX = (tableDiv.scrollLeft / moreCellsOnX) * 100;
   if(percentY > 80){
     addCells(5, 0);
   }
