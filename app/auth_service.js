@@ -1,6 +1,5 @@
 'use strict';
 
-const redis = require('redis');
 const sqlite3 = require('sqlite3').verbose();
 const http = require('http');
 const url = require('url');
@@ -10,7 +9,7 @@ const CONFIG = require('../config/auth_config.json');
 
 const CHECK_SESSION_ERROR = 1;
 const NO_USER_ERROR = 2;
-const REDIS_ERROR = 3;
+const SQLITE3_ERROR = 3;
 
 const usersClient = new sqlite3.Database(CONFIG.dbAdress, sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
@@ -20,27 +19,24 @@ const usersClient = new sqlite3.Database(CONFIG.dbAdress, sqlite3.OPEN_READWRITE
     logs.log('\x1b[35msqlite3\x1b[0m client connected \x1b[32msuccessfully\x1b[0m');
 });
 
-const redisClient = redis.createClient(CONFIG.redisPort, CONFIG.redisHost);
-redisClient.on('connect', () => {logs.log('\x1b[35mRedis\x1b[0m client connected \x1b[32msuccessfully\x1b[0m')});
-redisClient.on('error', (err) => {
-    console.error('something went wrong: ' + err); //сделать нормально;
-});
-
 const ID = () => '_' + Math.random().toString(36).substr(2, 9);
 
 const checkSession = (body, response) => {
-    const mkey = "session: " + body.session;
-    redisClient.get(mkey, (error, res) => {
-        if (error || res === null) {
+    const sqlQuery = `SELECT SessionJSON sessionJSON
+                        FROM sessions
+                        WHERE Token = ?`;
+
+    usersClient.get(sqlQuery, [body.session], (err, row) => {
+        if (err || !row) {
             logs.log('Check \x1b[31mFAILED\x1b[0m: sessionID:' + body.session);
             response.writeHead(200, { 'Content-Type' : 'application/json' });
             return response.end(JSON.stringify({email : null, error : CHECK_SESSION_ERROR}));
         }
 
-        logs.log(`Check \x1b[32mSUCCESS\x1b[0m: sessionID: ${body.session}, user: ${res}`);
+        logs.log(`Check \x1b[32mSUCCESS\x1b[0m: sessionID: ${body.session}, user: ${row.sessionJSON}`);
 
         response.writeHead(200, { 'Content-Type' : 'application/json' });
-        return response.end(res);
+        return response.end(row.sessionJSON);
     });
 }
 
@@ -55,20 +51,18 @@ const loginHandle = (body, response) => {
                 logs.log('Login \x1b[31mFAILED\x1b[0m: user:' + emailData);
                 response.writeHead(200, { 'Content-Type' : 'application/json' });
                 return response.end(JSON.stringify({session_id : null, error : NO_USER_ERROR}));
-            }//нужны ли здесь мьютексы(нода же однопоточная)
-
+            } //нужны ли здесь мьютексы(нода же однопоточная)
 
             const sessionID = ID();
             const data = JSON.stringify({email : emailData});
-            const mkey = "session: " + sessionID;
-            redisClient.set(mkey, data, (error, res) => {
-                if (error) {
+
+            const insertQuery = `INSERT INTO sessions(Token, SessionJSON) VALUES(?, ?)`;
+            usersClient.run(insertQuery, [sessionID, data], (err) => {
+                if (err) {
                     logs.log('set sessionID \x1b[31mFAILED\x1b[0m: ' + sessionID);
                     response.writeHead(200, { 'Content-Type' : 'application/json' });
-                    return response.end(JSON.stringify({session_id : null, error : REDIS_ERROR})); 
+                    return response.end(JSON.stringify({session_id : null, error : SQLITE3_ERROR})); 
                 }
-            
-                logs.log('\x1b[35mRedis\x1b[0m result: ' + res);
             });
         
             logs.log(`Login \x1b[32mSUCCESS\x1b[0m: user: ${emailData}, sessionID: ${sessionID}`);
