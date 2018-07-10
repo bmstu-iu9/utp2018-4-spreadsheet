@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+  <title>Register in Data!</title>
+</head>
+<body>
+  <div class="container">
+    <h2>Register</h2>
+    <form action="/register" method="POST">
+        <label>
+            First Name:
+            <input type="text" name="first_name" required>
+        </label>
+        <label>
+            Last Name:
+            <input type="text" name="last_name" required>
+        </label>
+        <label>
+            Organization:
+            <input type="text" name="organization">
+        </label>
+        <label>
+            Email:
+        <input type="email" name="email" required>
+        </label>
+        <label>
+            Password:
+        <input type="password" name="password" required>
+        </label>
+        <button type="submit">Register</button>
+    </form>
+  </div>
+</body>
+</html>

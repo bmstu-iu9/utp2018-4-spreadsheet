@@ -71,6 +71,24 @@ const loginHandle = (body, response) => {
     });
 }
 
+const registerHandle = (body, response) => {
+    const insertQuery = `INSERT INTO login_data(First_name, Last_name, Organization, Email, Pass)
+                         VALUES(?, ?, ?, ?, ?)`;
+    usersClient.run(insertQuery,
+         [body.first_name, body.last_name, body.organization, body.email, body.password],
+        (err) => {
+        if (err) {
+            logs.log('register \x1b[31mFAILED\x1b[0m: ' + body.email);
+            response.writeHead(200, { 'Content-Type' : 'application/json' });
+            return response.end(JSON.stringify({error : SQLITE3_ERROR})); 
+        }
+    });
+
+    logs.log(`Register \x1b[32mSUCCESS\x1b[0m: user: ${body.email}`);
+    response.writeHead(200, { 'Content-Type' : 'application/json' });
+    response.end(JSON.stringify({error : null}));
+}
+
 http.createServer((req, res) => {
     const path = url.parse(req.url, true)
     if (req.method === 'POST') {
@@ -84,6 +102,8 @@ http.createServer((req, res) => {
                 checkSession(qs.parse(body), res);
             } else if (path.path === '/login') {
                 loginHandle(qs.parse(body), res);
+            } else if (path.path === '/register') {
+                registerHandle(qs.parse(body), res);
             }
         }); 
     } else {
