@@ -4,8 +4,8 @@ const sqlite3 = require('sqlite3').verbose();
 const http = require('http');
 const url = require('url');
 const qs = require('querystring');
-const logs = require('./logs');
-const CONFIG = require('../config/auth_config.json');
+const logs = require('../app/logs');
+const CONFIG = require('./config.json');
 
 const ERRORS = {
     CHECK_SESSION_ERROR : 1,
@@ -83,6 +83,26 @@ const loginHandle = (body, response) => {
 }
 
 /**
+ * Delets user's token
+ * @param {Object} body 
+ * @param {http.ServerResponse} response 
+ */
+const logoutHandle = (body, response) => {
+    usersClient.run(`DELETE FROM sessions WHERE Token=?`,
+                    [body.session],(err) => {
+        if (err) {
+            logs.log(`Logout \x1b[31mFAILED\x1b[0m: ${body.session}`);
+            response.writeHead(200, { 'Content-Type' : 'application/json' });
+            return response.end(JSON.stringify({error : ERRORS.SQLITE3_ERROR})); 
+        }
+    });
+
+    logs.log(`Logout \x1b[32mSUCCESS\x1b[0m: user: ${body.session}`);
+    response.writeHead(200, { 'Content-Type' : 'application/json' });
+    response.end(JSON.stringify({error : null}));
+} 
+
+/**
  * Inserts new user data in database
  * @param {Object} body 
  * @param {http.ServerResponse} response 
@@ -120,6 +140,8 @@ http.createServer((req, res) => {
                 loginHandle(qs.parse(body), res);
             } else if (path.path === '/register') {
                 registerHandle(qs.parse(body), res);
+            } else if (path.path === '/logout') {
+                logoutHandle(qs.parse(body), res);
             }
         }); 
     } else {

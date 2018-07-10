@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * Simple cookie parser
+ * @param {String} reqCookies
+ * @returns {Object} Parsed key-value cookie pairs
+ */
 const parseCookies = (reqCookies) => {
     const cookies = {};
     

@@ -3,6 +3,7 @@
 const http = require('http');
 const index = require('./routes/index').index;
 const login = require('./routes/login').login;
+const logout = require('./routes/logout').logout;
 const register = require('./routes/register').register;
 const publicResource = require('./routes/public').publicResource;
 const render = require('./app/render').render;
@@ -18,6 +19,8 @@ http.createServer((req, res) => {
         login(req, res);
     } else if (req.url === '/register') {
         register(req, res);
+    } else if (req.url === '/logout') {
+        logout(req, res);
     } else if (req.url.match(/\.(html|css|js|png|jpg)$/)){
         publicResource(req, res);  
     } else {

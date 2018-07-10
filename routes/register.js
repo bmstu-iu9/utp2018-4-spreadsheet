@@ -1,41 +1,9 @@
 'use strict';
 
-const http = require('http');
-const qs = require('querystring');
+const sendAuthRequest = require('../app/auth_request').sendAuthRequest;
 const logs = require('../app/logs');
-const AUTH_CONGIG = require('../config/auth_config.json');
 const CONFIG = require('../config/main_config.json');
 
-const registerUser = (postData) => {
-    return new Promise((resolve, reject) => {
-        const postRequest = http.request({ //Ждём проверку токена
-            hostname :  AUTH_CONGIG.host,
-            port : AUTH_CONGIG.port,
-            path : '/register',
-            method : 'POST',
-            headers : {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Content-Length': Buffer.byteLength(postData)
-            }}, (res) => {
-            let data = "";
-            res.on('data', (chunk) => {
-                data += chunk;
-            });
-        
-            res.on('end', () => {
-                resolve(JSON.parse(data));
-            });
-        });
-    
-        postRequest.on('error', (error) => {
-            console.log('RegisterUser request error:', error.message);
-            reject(new Error('RegisterUser request error: ' + error.message));
-        });
-    
-        postRequest.write(postData);
-        postRequest.end();
-    });
-}
 
 const register = (req, res) => {
     console.log(req.url, req.method);
@@ -48,7 +16,7 @@ const register = (req, res) => {
             body += data;
         });
 
-        req.on('end', () => registerUser(body).then(
+        req.on('end', () => sendAuthRequest('/register', body).then(
             registerResult => {
                 if (registerResult.error) {
                     logs.log('Register \x1b[31mFAILED\x1b[0m user: ' + body);
