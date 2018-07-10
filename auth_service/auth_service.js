@@ -65,20 +65,29 @@ const loginHandle = (body, response) => {
             return response.end(JSON.stringify({session_id : null, error : ERRORS.NO_USER_ERROR}));
         }
 
+
         //Insert session token for this user
         const sessionID = ID();
-        usersClient.run(`INSERT INTO sessions(Token, SessionJSON) VALUES(?, ?)`,
+        new Promise((resolve, reject) => {
+            usersClient.run(`INSERT INTO sessions(Token, SessionJSON) VALUES(?, ?)`,
                         [sessionID, JSON.stringify({email : body.email})], (err) => {
-            if (err) {
-                logs.log(`Set sessionID \x1b[31mFAILED\x1b[0m: ${sessionID}`);
+                if (err) {
+                    reject(err);
+                }
+
+                resolve();
+            });
+        }).then(
+            () => {
+                logs.log(`Login \x1b[32mSUCCESS\x1b[0m: user: ${body.email}, sessionID: ${sessionID}`);
                 response.writeHead(200, { 'Content-Type' : 'application/json' });
-                return response.end(JSON.stringify({session_id : null, error : ERRORS.SQLITE3_ERROR})); 
-            }
+                response.end(JSON.stringify({session_id : sessionID, error : null})); 
+        },
+            (err) => {
+                logs.log(`Set sessionID \x1b[31mFAILED\x1b[0m: ${sessionID}\n${err}`);
+                response.writeHead(200, { 'Content-Type' : 'application/json' });
+                return response.end(JSON.stringify({session_id : null, error : ERRORS.SQLITE3_ERROR}));
         });
-    
-        logs.log(`Login \x1b[32mSUCCESS\x1b[0m: user: ${body.email}, sessionID: ${sessionID}`);
-        response.writeHead(200, { 'Content-Type' : 'application/json' });
-        response.end(JSON.stringify({session_id : sessionID, error : null})); 
     });
 }
 
@@ -88,18 +97,26 @@ const loginHandle = (body, response) => {
  * @param {http.ServerResponse} response 
  */
 const logoutHandle = (body, response) => {
-    usersClient.run(`DELETE FROM sessions WHERE Token=?`,
+    new Promise((resolve, reject) => {
+        usersClient.run(`DELETE FROM sessions WHERE Token=?`,
                     [body.session],(err) => {
-        if (err) {
-            logs.log(`Logout \x1b[31mFAILED\x1b[0m: ${body.session}`);
-            response.writeHead(200, { 'Content-Type' : 'application/json' });
-            return response.end(JSON.stringify({error : ERRORS.SQLITE3_ERROR})); 
-        }
-    });
+            if (err) {
+                reject(err);
+            }
 
-    logs.log(`Logout \x1b[32mSUCCESS\x1b[0m: user: ${body.session}`);
-    response.writeHead(200, { 'Content-Type' : 'application/json' });
-    response.end(JSON.stringify({error : null}));
+            resolve();
+        });
+    }).then(
+        () => {
+            logs.log(`Logout \x1b[32mSUCCESS\x1b[0m: user: ${body.session}`);
+            response.writeHead(200, { 'Content-Type' : 'application/json' });
+            response.end(JSON.stringify({error : null}));
+    },
+        (err) => {
+            logs.log(`Logout \x1b[31mFAILED\x1b[0m: ${body.session}\n${err}`);
+            response.writeHead(200, { 'Content-Type' : 'application/json' });
+            return response.end(JSON.stringify({error : ERRORS.SQLITE3_ERROR}));
+    });
 } 
 
 /**
@@ -108,20 +125,28 @@ const logoutHandle = (body, response) => {
  * @param {http.ServerResponse} response 
  */
 const registerHandle = (body, response) => {
-    usersClient.run(`INSERT INTO login_data(First_name, Last_name, Organization, Email, Pass)
+    new Promise((resolve, reject) => {
+        usersClient.run(`INSERT INTO login_data(First_name, Last_name, Organization, Email, Pass)
                     VALUES(?, ?, ?, ?, ?)`,
                     [body.first_name, body.last_name, body.organization, body.email, body.password],
                     (err) => {
-        if (err) {
-            logs.log(`Register \x1b[31mFAILED\x1b[0m: ${body.email}`);
+            if (err) {
+                reject(err);
+            }
+
+            resolve();
+        });
+    }).then(
+        () => {
+            logs.log(`Register \x1b[32mSUCCESS\x1b[0m: user: ${body.email}`);
+            response.writeHead(200, { 'Content-Type' : 'application/json' });
+            response.end(JSON.stringify({error : null}));
+    },
+        (err) => {
+            logs.log(`Register \x1b[31mFAILED\x1b[0m: ${body.email}\n${err}`);
             response.writeHead(200, { 'Content-Type' : 'application/json' });
             return response.end(JSON.stringify({error : ERRORS.SQLITE3_ERROR})); 
-        }
     });
-
-    logs.log(`Register \x1b[32mSUCCESS\x1b[0m: user: ${body.email}`);
-    response.writeHead(200, { 'Content-Type' : 'application/json' });
-    response.end(JSON.stringify({error : null}));
 }
 
 //Starts server, which works only with POST requests

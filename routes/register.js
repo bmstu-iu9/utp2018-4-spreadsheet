@@ -6,7 +6,6 @@ const CONFIG = require('../config/main_config.json');
 
 
 const register = (req, res) => {
-    console.log(req.url, req.method);
     if (req.method === 'GET') {
         logs.log('\x1b[34mREGISTER\x1b[0m Method: ' + req.method);
         res.render('register.html', null);
