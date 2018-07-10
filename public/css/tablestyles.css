@@ -6,6 +6,7 @@
 
 input {
     border: none;
+    background-color: #fff;
     width: 100px;
     font-size: 14px;
     padding: 2px;
@@ -24,6 +25,7 @@ table {
 }
 
 td {
+    background-color: #fff;
     border: 1px solid #555;
     padding: 0;
 }
