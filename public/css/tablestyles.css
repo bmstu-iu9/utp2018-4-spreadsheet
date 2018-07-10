@@ -1,0 +1,36 @@
+.scroll-table {
+  width: 100%;
+  overflow: auto;
+  height: 90vh;
+}
+
+input {
+    border: none;
+    width: 100px;
+    font-size: 14px;
+    padding: 2px;
+}
+
+input:focus {
+    outline: 2px solid #000;
+}
+
+input:not(:focus) {
+    text-align: right;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td {
+    border: 1px solid #555;
+    padding: 0;
+}
+
+tr:first-child td, td:first-child {
+    background-color: #eee;
+    padding: 1px 3px;
+    font-weight: bold;
+    text-align: center;
+}
