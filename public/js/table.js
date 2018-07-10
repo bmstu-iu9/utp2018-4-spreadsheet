@@ -44,13 +44,13 @@ const addCells = function(rows, cols){
         updateLetters(letters.length - 1);
         const letter = currentLet[currentLet.length - 1];
 
-        for (let j = 0; j <= ROWS; j++) {
+        for (let j = 0; j < ROWS; j++) {
             table.rows[j].insertCell(-1).innerHTML = i && j ? "<input id = '"+ letter + j +"'/>" : `<div align = "center"> ${letter} </div>`;
         }
 
     }
   } else {
-    for (let i = ROWS; i <= ROWS + rows; i++) { //'<=' так как +1 строка для индексов
+    for (let i = ROWS; i < ROWS + rows; i++) { //'<=' так как +1 строка для индексов
 
         const row = document.getElementById('table').insertRow(-1);
 
@@ -79,7 +79,7 @@ tableDiv.onscroll = function() {
   if(percentY > 80){
     addCells(5, 0);
   }
-  if (percentX > 95){
-    addCells(0, 1);
+  if (percentX > 80){
+    addCells(0, 5);
   }
 }
