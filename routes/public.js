@@ -4,30 +4,18 @@ const fs = require('fs');
 const path = require('path');
 const logs = require('../app/logs')
 
+const contentTypes = {
+    '.html' : 'text/html',
+    '.css' : 'text/css',
+    '.js' : 'text/javascript',
+    '.png' : 'image/png',
+    '.jpg' : 'image/jpg',
+}
+
+
 const publicResource = (req, res) => {
     const extension = path.extname(req.url);
-    let contentType = '';
-
-    switch (extension) {
-        case '.html':
-            contentType = 'text/html';
-            break;
-        case '.css':
-            contentType = 'text/css';
-            break;
-        case '.js':
-            contentType = 'text/javascript';
-            break;
-        case '.png':
-            contentType = 'image/png';
-            break;
-        case '.jpg':
-            contentType = 'image/jpg';
-            break;
-        default:
-            contentType = 'text/plain';
-            break;
-    }
+    const contentType = extension in contentTypes ? contentTypes[extension] : 'text/plain';
 
     res.writeHead(200, {'Content-Type' : contentType});
     const p = path.resolve('public', req.url.slice(1));
