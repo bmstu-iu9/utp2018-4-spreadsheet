@@ -9,8 +9,9 @@ const CONFIG = require('./config.json');
 
 const ERRORS = {
     CHECK_SESSION_ERROR : 1,
-    NO_USER_ERROR : 2,
-    SQLITE3_ERROR : 3,
+    SQLITE3_ERROR_NO_USER : 2,
+    SQLITE3_ERROR_UNIQUE : 3,
+    SQLITE3_ERROR_UNKNOWN : 4,
 };
 
 //Connection with database (users info)
@@ -60,9 +61,10 @@ const loginHandle = (body, response) => {
                     WHERE Email = ?`,
                     [body.email], (err, row) => {
         if (err || !row || row.pass != body.password) {
-            logs.log(`Login \x1b[31mFAILED\x1b[0m: user: ${body.email}`);
+            logs.log(`Login \x1b[31mFAILED\x1b[0m: user: ${body.email} ${err}`);
             response.writeHead(200, { 'Content-Type' : 'application/json' });
-            return response.end(JSON.stringify({session_id : null, error : ERRORS.NO_USER_ERROR}));
+            return response.end(JSON.stringify({session_id : null, error : (err) ?
+                 ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_NO_USER}));
         }
 
 
@@ -84,7 +86,7 @@ const loginHandle = (body, response) => {
                 response.end(JSON.stringify({session_id : sessionID, error : null})); 
         },
             (err) => {
-                logs.log(`Set sessionID \x1b[31mFAILED\x1b[0m: ${sessionID}\n${err}`);
+                logs.log(`Set sessionID \x1b[31mFAILED\x1b[0m: ${sessionID} ${err}`);
                 response.writeHead(200, { 'Content-Type' : 'application/json' });
                 return response.end(JSON.stringify({session_id : null, error : ERRORS.SQLITE3_ERROR}));
         });
@@ -113,7 +115,7 @@ const logoutHandle = (body, response) => {
             response.end(JSON.stringify({error : null}));
     },
         (err) => {
-            logs.log(`Logout \x1b[31mFAILED\x1b[0m: ${body.session}\n${err}`);
+            logs.log(`Logout \x1b[31mFAILED\x1b[0m: ${body.session} ${err}`);
             response.writeHead(200, { 'Content-Type' : 'application/json' });
             return response.end(JSON.stringify({error : ERRORS.SQLITE3_ERROR}));
     });
@@ -143,9 +145,10 @@ const registerHandle = (body, response) => {
             response.end(JSON.stringify({error : null}));
     },
         (err) => {
-            logs.log(`Register \x1b[31mFAILED\x1b[0m: ${body.email}\n${err}`);
+            logs.log(`Register \x1b[31mFAILED\x1b[0m: ${body.email} ${err}`);
             response.writeHead(200, { 'Content-Type' : 'application/json' });
-            return response.end(JSON.stringify({error : ERRORS.SQLITE3_ERROR})); 
+            return response.end(JSON.stringify({error : err.message.indexOf('UNIQUE') === -1 ?
+                    ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_UNIQUE})); 
     });
 }
 

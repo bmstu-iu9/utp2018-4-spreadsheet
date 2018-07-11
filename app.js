@@ -1,5 +1,6 @@
 'use strict';
 
+const url = require('url');
 const http = require('http');
 const index = require('./routes/index').index;
 const login = require('./routes/login').login;
@@ -13,15 +14,17 @@ const CONFIG = require('./config/main_config.json');
 http.ServerResponse.prototype.render = render;
 
 http.createServer((req, res) => {
-    if (req.url === '/') {
+    const parsedURL = url.parse(req.url);
+
+    if (parsedURL.pathname === '/') {
         index(req, res);
-    } else if (req.url === '/login') {
+    } else if (parsedURL.pathname === '/login') {
         login(req, res);
-    } else if (req.url === '/register') {
+    } else if (parsedURL.pathname === '/register') {
         register(req, res);
-    } else if (req.url === '/logout') {
+    } else if (parsedURL.pathname === '/logout') {
         logout(req, res);
-    } else if (req.url.match(/\.(html|css|js|png|jpg)$/)){
+    } else if (parsedURL.pathname.match(/\.(html|css|js|png|jpg)$/)){
         publicResource(req, res);  
     } else {
         res.render('error.html', {"code" : 404, "message" : '404 Not Found!'});
