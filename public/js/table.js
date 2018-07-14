@@ -28,6 +28,7 @@ const updateLetters = (index) => {
 }
 
 const getXCoord = (elem) => elem.getBoundingClientRect().left + pageXOffset;
+const getYCoord = (elem) => elem.getBoundingClientRect().top + pageYOffset;
 
 const addExpansion = (letter, j) => {
   let newDiv = document.createElement('div');
@@ -62,6 +63,39 @@ const addExpansion = (letter, j) => {
   movableLine.ondragstart = () => false;
 }
 
+const addVerticalExpansion = (i) => {
+  let newDiv = document.createElement('div');
+  newDiv.innerHTML = '';
+  newDiv['id'] = i;
+  newDiv['className'] = 'modVertSymb';
+  table.rows[i].cells[0].appendChild(newDiv);
+
+  const movableLine = document.getElementById(i);
+
+  movableLine.onmousedown = (e) => {
+    const shiftY = e.pageY - getYCoord(movableLine);
+
+    document.onmousemove = (e) => {
+      const newTop = e.pageY - shiftY - getYCoord(movableLine.parentNode);
+
+      if (newTop - 2.75 < 18) {
+        newTop = movableLine.style.top;
+      }
+
+      movableLine.style.top = newTop + 'px';
+      for (let j = 1; j <= COLS; j++) {
+          document.getElementById(currentLet[j - 1] + i).style.height = newTop - 2.75 + 'px';
+      }
+    }
+
+    document.onmouseup = () => document.onmousemove = document.onmouseup = null;
+
+    return false;
+  }
+
+  movableLine.ondragstart = () => false;
+}
+
 const addCells = function(rows, cols){
   if (rows === 0) {
     for (let i = COLS + 1; i <= COLS + cols; i++) {
@@ -72,12 +106,15 @@ const addCells = function(rows, cols){
 
         for (let j = 0; j < ROWS; j++) {
             table.rows[j].insertCell(-1).innerHTML = i && j ? "<input id = '"+ letter + j +"'/>" : `<div align = "center"> ${letter} </div>`;
+            if (i && j) {
+                document.getElementById(letter + j).style.height = document.getElementById(currentLet[i - 2] + j).style.height;
+            }
         }
         
         addExpansion(letter, i);
     }
   } else {
-    for (let i = ROWS; i < ROWS + rows; i++) { //'<=' так как +1 строка для индексов
+    for (let i = ROWS; i < ROWS + rows; i++) {
 
         const row = document.getElementById('table').insertRow(-1);
 
@@ -95,6 +132,8 @@ const addCells = function(rows, cols){
                 addExpansion(letter, j);
             } else if ((i && j) && (i >= DEFAULT_ROWS)) {
                 document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
+            } else if (i && !j) {
+                addVerticalExpansion(i);
             }
         }
     }
