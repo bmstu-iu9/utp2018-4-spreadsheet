@@ -87,11 +87,14 @@ const addCells = function(rows, cols){
                 currentLet.push(String.fromCharCode.apply(null, letters));
                 updateLetters(letters.length - 1);
             }
+            
             const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
             row.insertCell(-1).innerHTML = i && j ? "<input id = '"+ letter + i +"'/>" : i || j ? `<div align = "center"> ${i||letter} </div>`: "";
             
             if (!i && j) {
                 addExpansion(letter, j);
+            } else if ((i && j) && (i >= DEFAULT_ROWS)) {
+                document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
             }
         }
     }
