@@ -1,4 +1,3 @@
-
 'use strict';
 const tableDiv = document.getElementById('table-div');
 
@@ -65,7 +64,7 @@ const addExpansion = (letter, j) => {
 
 const addCells = function(rows, cols){
   if (rows === 0) {
-    for (let i = COLS + 1; i <= COLS + 1 + cols; i++) {
+    for (let i = COLS + 1; i <= COLS + cols; i++) {
 
         currentLet.push(String.fromCharCode.apply(null, letters));
         updateLetters(letters.length - 1);
