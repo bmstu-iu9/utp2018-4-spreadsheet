@@ -27,6 +27,7 @@ table {
 }
 
 td {
+    cursor: cell;
     background-color: #fff;
     border: 1px solid #555;
     padding: 0;
