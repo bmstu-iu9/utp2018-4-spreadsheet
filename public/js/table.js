@@ -112,8 +112,8 @@ const addVerticalExpansion = (i) => {
  * Initialize cell events
  * @param {String} id 
  */
-const initCell = (letterColumn, rowNumber) => {
-    const id = letterColumn + rowNumber;
+const initCell = (columnNumber, rowNumber) => {
+    const id = currentLet[columnNumber] + rowNumber;
     const newInput = document.getElementById(id);
     const newCell = document.getElementById('Cell_' + id);
     newCell.onmousedown = (e) => {
@@ -131,13 +131,24 @@ const initCell = (letterColumn, rowNumber) => {
     }
 
     //При нажатии на Enter спускаемся вниз
-    newInput.addEventListener('keyup', (e) => {
-        if (e.keyCode == 13) { //Enter button
-            const low_cell = document.getElementById('Cell_' + letterColumn + (rowNumber + 1))
-            const low_input = document.getElementById(letterColumn + (rowNumber + 1))
-            low_cell.dispatchEvent(new Event('mousedown', {keyCode : 13}));
-            low_input.focus();
-        } 
+    newInput.addEventListener('keydown', (e) => {
+        let dx = 0;
+        let dy = 0;
+
+        if (e.keyCode === 13 || e.keyCode === 40) { //Enter and down button
+            dy = 1;
+        } else if (e.keyCode === 38) { //up
+            dy = (rowNumber ? -1 : 0);
+        } else if (e.keyCode === 37) { //left
+            dx = (columnNumber ? -1 : 0);
+        } else if (e.keyCode === 39) { //right
+            dx = 1;
+        }
+
+        const low_cell = document.getElementById('Cell_' + currentLet[columnNumber + dx] + (rowNumber + dy))
+        const low_input = document.getElementById(currentLet[columnNumber + dx] + (rowNumber + dy))
+        low_cell.dispatchEvent(new Event('mousedown', {keyCode : 13}));
+        low_input.focus();
     });
 }
 
@@ -153,7 +164,7 @@ const addCells = function(rows, cols){
                 new_cell.innerHTML = i && j ? "<input id = '"+ letter + j +"'/>" : `<div align = "center"> ${letter} </div>`;
                 new_cell.id = 'Cell_' + letter + j;
                 if (i && j) {
-                    initCell(letter, j);
+                    initCell(currentLet.length - 1, j);
                     document.getElementById(letter + j).style.height = document.getElementById(currentLet[i - 2] + j).style.height;
                 }
             }
@@ -178,7 +189,7 @@ const addCells = function(rows, cols){
                 if (!i && j) {
                     addExpansion(letter, j);
                 } else if (i && j) {
-                    initCell(letter, i);
+                    initCell(j - 1, i);
                     if (i >= DEFAULT_ROWS) {
                         document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
                     }
