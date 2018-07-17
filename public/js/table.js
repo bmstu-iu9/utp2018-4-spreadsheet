@@ -50,24 +50,53 @@ const addExpansion = (letter, j) => {
   table.rows[0].cells[j].appendChild(newDiv);
 
   const movableLine = document.getElementById(letter);
+  
+  const changeParams = () => {
+      const oldParams = {
+          height: getComputedStyle(movableLine).height,
+          backgroundColor: getComputedStyle(movableLine).backgroundColor,
+          color: getComputedStyle(movableLine).color,
+          widht: getComputedStyle(movableLine).width,
+      }
 
+      movableLine.style.height = getComputedStyle(document.getElementById('table')).height;
+      movableLine.style.backgroundColor = '#808080';
+      movableLine.style.color = '#808080';
+      movableLine.style.width = '2px';
+
+      return oldParams;
+  }
+  
   movableLine.onmousedown = (e) => {
     const shiftX = e.pageX - getXCoord(movableLine);
-
+    const params = changeParams();
+    let coords = 0;
+      
     document.onmousemove = (e) => {
       const newLeft = e.pageX - shiftX - getXCoord(movableLine.parentNode);
 
-      if (newLeft - 2.75 < 100) {
-        newLeft = movableLine.style.left;
+      if (newLeft < 16.75) {
+        newLeft = 16.75;
       }
 
       movableLine.style.left = newLeft + 'px';
-      for (let i = 1; i < ROWS; i++) {
-          document.getElementById(letter + i).style.width = newLeft - 2.75 + 'px';
-      }
+      coords = newLeft;
     }
 
-    document.onmouseup = () => document.onmousemove = document.onmouseup = null;
+    document.onmouseup = () => {
+        if (coords) {
+          for (let i = 1; i < ROWS; i++) {
+              document.getElementById(letter + i).style.width = coords - 2.75 + 'px';
+          }
+        }
+
+        movableLine.style.height = params.height;
+        movableLine.style.widht = params.widht;
+        movableLine.style.backgroundColor = params.backgroundColor;
+        movableLine.style.color = params.color;
+
+        document.onmousemove = document.onmouseup = null;
+    }
 
     return false;
   }
