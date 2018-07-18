@@ -56,7 +56,7 @@ const addExpansion = (letter, j) => {
           height: getComputedStyle(movableLine).height,
           backgroundColor: getComputedStyle(movableLine).backgroundColor,
           color: getComputedStyle(movableLine).color,
-          widht: getComputedStyle(movableLine).width,
+          width: getComputedStyle(movableLine).width,
       }
 
       movableLine.style.height = getComputedStyle(document.getElementById('table')).height;
@@ -70,32 +70,47 @@ const addExpansion = (letter, j) => {
   movableLine.onmousedown = (e) => {
     const shiftX = e.pageX - getXCoord(movableLine);
     const params = changeParams();
-    let coords = 0;
+    let coords = 'no move';
+      
+    const goExpansion = (delta1, delta2, padSize) => {
+      document.getElementById(letter + '0').style.width = coords + delta1 + 'px';
+      for (let i = 1; i < ROWS; i++) {
+          document.getElementById(letter + i).style.padding = padSize + 'px';
+          document.getElementById(letter + i).style.width = coords + delta2 + 'px';
+      }
+    }
       
     document.onmousemove = (e) => {
       const newLeft = e.pageX - shiftX - getXCoord(movableLine.parentNode);
-
-      if (newLeft < 16.75) {
-        newLeft = 16.75;
-      }
-
       movableLine.style.left = newLeft + 'px';
       coords = newLeft;
     }
 
     document.onmouseup = () => {
-        if (coords) {
-          for (let i = 1; i < ROWS; i++) {
-              document.getElementById(letter + i).style.width = coords - 2.75 + 'px';
-          }
+       if (coords != 'no move') {
+        if (coords < 6) {
+            document.getElementById('Cell_' + letter + '0').style.padding = '0px';
+            if (coords < 3) {
+              goExpansion(-coords, -coords, 0);
+              movableLine.style.left = '-1px';
+              movableLine.style.cursor = 'col-resize';
+            } else {
+              movableLine.style.cursor = 'ew-resize';
+              goExpansion(0, 1, 0);
+            }
+        } else {
+          document.getElementById('Cell_' + letter + '0').style.padding = '1px 3px';
+          movableLine.style.cursor = 'ew-resize';
+          goExpansion(-6, -3, 2);
         }
+      }
 
-        movableLine.style.height = params.height;
-        movableLine.style.widht = params.widht;
-        movableLine.style.backgroundColor = params.backgroundColor;
-        movableLine.style.color = params.color;
+      movableLine.style.height = params.height;
+      movableLine.style.width = params.width;
+      movableLine.style.backgroundColor = params.backgroundColor;
+      movableLine.style.color = params.color;
 
-        document.onmousemove = document.onmouseup = null;
+      document.onmousemove = document.onmouseup = null;
     }
 
     return false;
@@ -190,7 +205,7 @@ const addCells = function(rows, cols){
         
             for (let j = 0; j < ROWS; j++) {
                 const new_cell = table.rows[j].insertCell(-1)
-                new_cell.innerHTML = i && j ? "<input id = '"+ letter + j +"'/>" : `<div align = "center"> ${letter} </div>`;
+                new_cell.innerHTML = i && j ? "<input id = '"+ letter + j +"'/>" : `<div align = "center" id = "${letter + 0}"> ${letter} </div>`;
                 new_cell.id = 'Cell_' + letter + j;
                 if (i && j) {
                     initCell(currentLet.length - 1, j);
@@ -212,7 +227,7 @@ const addCells = function(rows, cols){
 
                 const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
                 const new_cell = row.insertCell(-1);
-                new_cell.innerHTML = i && j ? "<input id = '"+ letter + i +"'/>" : i || j ? `<div align = "center"> ${i||letter} </div>`: "";
+                new_cell.innerHTML = i && j ? "<input id = '"+ letter + i +"'/>" : i || j ? `<div align = "center" id = "${letter + i}"> ${i||letter} </div>`: "";
                 new_cell.id = 'Cell_' + letter + i;
 
                 if (!i && j) {
