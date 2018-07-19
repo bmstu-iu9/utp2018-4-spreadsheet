@@ -139,6 +139,15 @@ body {
   display: flex;
 }
 
+.example-text{
+  border		: 1.5px solid black;
+  resize: none;
+  width: 176px;
+  height: 67px;
+  margin-top: 60px;
+  font-size:16px
+}
+
 .transformtext {
   min-width: 500px;
   width: 45%;
@@ -146,6 +155,10 @@ body {
 
 .alignment {
   margin-bottom: 20px;
+  display: flex;
+}
+
+.font{
   display: flex;
 }
 
@@ -160,8 +173,22 @@ body {
 }
 
 .horizontally .left {
-
+  background: url('img/align-to-left.svg') center center / 100% 100% ;
+  box-sizing: content-box;;
 }
+
+.horizontally .center {
+  background: url('img/align-justify.svg') center center / 100% 100% ;
+  box-sizing: content-box;;
+}
+
+.horizontally .right {
+  background: url('img/align-to-right.svg') center center / 100% 100% ;
+  box-sizing: content-box;;
+}
+
+.font .
+
 
 .transformtext{
   color: #000000;
@@ -174,9 +201,53 @@ body {
 }
 
 .alignment{
-  margin-top: 20px;
+  margin-top: 60px;
+  margin-left:20px;
+}
+
+
+
+.font{
+  margin-top: 35px;
+  margin-left:20px;
 }
 
 .format{
   background: white;
 }
+
+.font .left{
+  background: url('img/font-symbol-of-letter-a.svg') center center / 100% 100% ;
+  box-sizing: content-box;;
+}
+
+.font .center{
+  background: url('img/italicize-text.svg') center center / 100% 100% ;
+  box-sizing: content-box;;
+}
+
+.font .right{
+  background: url('img/font.svg') center center / 100% 100% ;
+  box-sizing: content-box;;
+}
+
+.font .font-settings{
+  margin-left: 50px;
+}
+
+.font button{
+  width: 25px;
+  height: 25px;
+}
+
+.font {
+  color: #222222;
+}
+
+.alignment{
+  color: #222222;
+}
+
+
+
+
