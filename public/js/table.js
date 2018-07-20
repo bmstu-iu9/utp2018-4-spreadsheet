@@ -1,5 +1,8 @@
 'use strict';
 const tableDiv = document.getElementById('table-div');
+const mainTable = document.getElementById('main-table');
+const upTable = document.getElementById('up-table');
+const leftTable = document.getElementById('left-table');
 
 let DEFAULT_ROWS = 50, DEFAULT_COLS = 26;
 let ROWS = 0, COLS = 0;
@@ -97,6 +100,7 @@ const addVerticalExpansion = (i) => {
 }
 
 const addCells = function(rows, cols){
+
   if (rows === 0) {
     for (let i = COLS + 1; i <= COLS + cols; i++) {
 
@@ -105,37 +109,68 @@ const addCells = function(rows, cols){
         const letter = currentLet[currentLet.length - 1];
 
         for (let j = 0; j < ROWS; j++) {
-            table.rows[j].insertCell(-1).innerHTML = i && j ? "<input id = '"+ letter + j +"'/>" : `<div align = "center"> ${letter} </div>`;
+            mainTable.rows[j].insertCell(-1).innerHTML = i && j ? "<input id = '"+ letter + j +"'/>" : `<div align = "center"> ${letter} </div>`;
             if (i && j) {
                 document.getElementById(letter + j).style.height = document.getElementById(currentLet[i - 2] + j).style.height;
             }
         }
-        
+
         addExpansion(letter, i);
     }
   } else {
-    for (let i = ROWS; i < ROWS + rows; i++) {
 
-        const row = document.getElementById('table').insertRow(-1);
+      for (let i = ROWS; i < ROWS + rows; i++) {
 
-        for (let j = 0; j <= COLS + cols; j++) {
+        if (ROWS + i === 0){
+          const row = upTable.insertRow(-1);
 
-            if (j > currentLet.length) {
-                currentLet.push(String.fromCharCode.apply(null, letters));
-                updateLetters(letters.length - 1);
-            }
-            
-            const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
-            row.insertCell(-1).innerHTML = i && j ? "<input id = '"+ letter + i +"'/>" : i || j ? `<div align = "center"> ${i||letter} </div>`: "";
-            
-            if (!i && j) {
-                addExpansion(letter, j);
-            } else if ((i && j) && (i >= DEFAULT_ROWS)) {
-                document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
-            } else if (i && !j) {
-                addVerticalExpansion(i);
-            }
+          for (let j = 0; j <= COLS + cols; j++) {
+
+              if (j > currentLet.length) {
+                  currentLet.push(String.fromCharCode.apply(null, letters));
+                  updateLetters(letters.length - 1);
+              }
+
+              const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
+              row.insertCell(-1).innerHTML = `<div align = "center"> ${i||letter} </div>`;
+
+  /*
+              if (!i && j) {
+                  addExpansion(letter, j);
+              } else if ((i && j) && (i >= DEFAULT_ROWS)) {
+                  document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
+              } else if (i && !j) {
+                  addVerticalExpansion(i);
+              }
+              */
+          }
+        } else {
+          const row = mainTable.insertRow(-1);
+          const leftRow = leftTable.insertRow(-1);
+
+          leftRow.insertCell(-1).innerHTML = `<div align = "center"> ${i||letter} </div>`;
+
+          for (let j = 0; j <= COLS + cols; j++) {
+
+              if (j > currentLet.length) {
+                  currentLet.push(String.fromCharCode.apply(null, letters));
+                  updateLetters(letters.length - 1);
+              }
+
+              const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
+              row.insertCell(-1).innerHTML = "<input id = '"+ letter + i +"'/>";
+  /*
+              if (!i && j) {
+                  addExpansion(letter, j);
+              } else if ((i && j) && (i >= DEFAULT_ROWS)) {
+                  document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
+              } else if (i && !j) {
+                  addVerticalExpansion(i);
+              }
+              */
+          }
         }
+
     }
   }
   ROWS += rows;

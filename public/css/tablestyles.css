@@ -1,7 +1,51 @@
 .scroll-table {
-  width: 100%;
+  width: 97%;
+  float: left;
   overflow: auto;
-  height: 90vh;
+  height: 88vh;
+}
+
+.great-table{
+  float: left;
+}
+
+.left-div{
+  overflow: hidden;
+  width: 3%;
+  height: 88vh;
+  float: left;
+}
+
+.up-div{
+  width: 90%;
+  overflow: auto;
+}
+
+.up-div td:nth-of-type(1) {
+  background-color: #0c0;
+  width: 3%;
+}
+
+
+.up-div table td{
+   position: relative;
+   background-color: #eee;
+   width: 100px;
+   padding: 1px 3px;
+   font-weight: bold;
+   text-align: center;
+}
+
+.left-div table td{
+   position: relative;
+   background-color: #eee;
+   padding: 1px 3px;
+   font-weight: bold;
+   text-align: left;
+}
+
+td {
+  width: 100px;
 }
 
 input {
@@ -11,10 +55,10 @@ input {
     width: 100px;
     font-size: 14px;
     padding: 2px;
+    height: 16px;
 }
 
 input:focus {
-    z-index: 666;
     outline: 2px solid #000;
 }
 
@@ -26,19 +70,15 @@ table {
     border-collapse: collapse;
 }
 
+
 td {
     background-color: #fff;
     border: 1px solid #555;
     padding: 0;
 }
 
-tr:first-child td, td:first-child {
-    position: relative;
-    background-color: #eee;
-    padding: 1px 3px;
-    font-weight: bold;
-    text-align: center;
-}
+
+
 
 .modSymb {
     cursor: ew-resize;
