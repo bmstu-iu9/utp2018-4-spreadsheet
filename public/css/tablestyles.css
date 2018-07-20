@@ -17,7 +17,6 @@
 }
 
 .up-div{
-  width: 90%;
   overflow: auto;
 }
 
@@ -30,7 +29,6 @@
 .up-div table td{
    position: relative;
    background-color: #eee;
-   width: 100px;
    padding: 1px 3px;
    font-weight: bold;
    text-align: center;
@@ -53,6 +51,7 @@ input {
     cursor: cell;
     background-color: #fff;
     width: 100px;
+    height: 16px;
     font-size: 14px;
     padding: 2px;
     height: 16px;

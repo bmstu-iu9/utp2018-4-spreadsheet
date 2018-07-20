@@ -108,8 +108,10 @@ const addCells = function(rows, cols){
         updateLetters(letters.length - 1);
         const letter = currentLet[currentLet.length - 1];
 
+        upTable.rows[0].insertCell(-1).innerHTML = `<div align = "center"> ${letter} </div>`;
+
         for (let j = 0; j < ROWS; j++) {
-            mainTable.rows[j].insertCell(-1).innerHTML = i && j ? "<input id = '"+ letter + j +"'/>" : `<div align = "center"> ${letter} </div>`;
+            mainTable.rows[j].insertCell(-1).innerHTML = "<input id = '"+ letter + j +"'/>";
             if (i && j) {
                 document.getElementById(letter + j).style.height = document.getElementById(currentLet[i - 2] + j).style.height;
             }
@@ -132,7 +134,7 @@ const addCells = function(rows, cols){
               }
 
               const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
-              row.insertCell(-1).innerHTML = `<div align = "center"> ${i||letter} </div>`;
+              row.insertCell(-1).innerHTML = `<div align = "center"  width = 100px> ${letter} </div>`;
 
   /*
               if (!i && j) {
@@ -145,10 +147,11 @@ const addCells = function(rows, cols){
               */
           }
         } else {
+
           const row = mainTable.insertRow(-1);
           const leftRow = leftTable.insertRow(-1);
 
-          leftRow.insertCell(-1).innerHTML = `<div align = "center"> ${i||letter} </div>`;
+          leftRow.insertCell(-1).innerHTML = `<div align = "center"> ${i} </div>`;
 
           for (let j = 0; j <= COLS + cols; j++) {
 
