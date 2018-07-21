@@ -127,28 +127,70 @@ const addVerticalExpansion = (i) => {
   table.rows[i].cells[0].appendChild(newDiv);
 
   const movableLine = document.getElementById(i);
-
-  movableLine.onmousedown = (e) => {
-    const shiftY = e.pageY - getYCoord(movableLine);
-
-    document.onmousemove = (e) => {
-      const newTop = e.pageY - shiftY - getYCoord(movableLine.parentNode);
-
-      if (newTop - 2.75 < 18) {
-        newTop = movableLine.style.top;
+  
+  const changeParams = () => {
+      const oldParams = {
+          height: getComputedStyle(movableLine).height,
+          backgroundColor: getComputedStyle(movableLine).backgroundColor,
+          width: getComputedStyle(movableLine).width,
       }
 
-      movableLine.style.top = newTop + 'px';
+      movableLine.style.height = '2px';
+      movableLine.style.backgroundColor = '#808080';
+      movableLine.style.width = getComputedStyle(document.getElementById('table')).width;
+
+      return oldParams;
+  }
+    
+  movableLine.onmousedown = (e) => {
+    const shiftY = e.pageY - getYCoord(movableLine);
+    const params = changeParams();
+    let coords = 'no move';
+
+    const goExpansion = (delta1, delta2, padSize) => {
+      document.getElementById('@' + i).style.height = coords + delta1 + 'px';
+      document.getElementById('table').rows[i].style['line-height'] = coords + delta1 + 'px';
       for (let j = 1; j <= COLS; j++) {
-          document.getElementById(currentLet[j - 1] + i).style.height = newTop - 2.75 + 'px';
+          document.getElementById(currentLet[j - 1] + i).style.padding = padSize + 'px';
+          document.getElementById(currentLet[j - 1] + i).style.height = coords + delta2 + 'px';
       }
     }
 
-    document.onmouseup = () => document.onmousemove = document.onmouseup = null;
+    document.onmousemove = (e) => {
+      const newTop = e.pageY - shiftY - getYCoord(movableLine.parentNode);
+      movableLine.style.top = newTop + 'px';
+      coords = newTop;
+    }
+
+    document.onmouseup = () => {
+      if (coords != 'no move') {
+        if (coords < 6) {
+            document.getElementById('Cell_undefined' + i).style.padding = '0px';
+            if (coords < 3) {
+              goExpansion(-coords, -coords, 0);
+              movableLine.style.top = '-1px';
+              movableLine.style.cursor = 'row-resize';
+            } else {
+              movableLine.style.cursor = 'ns-resize';
+              goExpansion(0, 1, 0);
+            }
+        } else {
+          document.getElementById('Cell_undefined' + i).style.padding = '1px 3px';
+          movableLine.style.cursor = 'ns-resize';
+          goExpansion(-3, -3, 2);
+        }
+      }
+
+      movableLine.style.height = params.height;
+      movableLine.style.width = params.width;
+      movableLine.style.backgroundColor = params.backgroundColor;
+
+      document.onmousemove = document.onmouseup = null;
+    }
 
     return false;
   }
-
+  
   movableLine.ondragstart = () => false;
 }
 
@@ -227,7 +269,10 @@ const addCells = function(rows, cols){
 
                 const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
                 const new_cell = row.insertCell(-1);
-                new_cell.innerHTML = i && j ? "<input id = '"+ letter + i +"'/>" : i || j ? `<div align = "center" id = "${letter + i}"> ${i||letter} </div>`: "";
+                new_cell.innerHTML = i && j ? "<input id = '"+ letter + i +"'/>" :
+                                                       i && !j ? `<div align = "center" id = "${'@' + i}" style = "overflow: hidden;"> ${i} </div>`:
+                                                       !i && j ? `<div align = "center" id = "${letter + 0}"> ${letter} </div>`:
+                                                       "";
                 new_cell.id = 'Cell_' + letter + i;
 
                 if (!i && j) {
