@@ -82,7 +82,7 @@ const addExpansion = (letter, j) => {
       
     document.onmousemove = (e) => {
       const newLeft = e.pageX - shiftX - getXCoord(movableLine.parentNode);
-      movableLine.style.left = newLeft + 'px';
+      movableLine.style.left = (newLeft > 0)? newLeft + 'px': '0px';
       coords = newLeft;
     }
 
@@ -158,7 +158,7 @@ const addVerticalExpansion = (i) => {
 
     document.onmousemove = (e) => {
       const newTop = e.pageY - shiftY - getYCoord(movableLine.parentNode);
-      movableLine.style.top = newTop + 'px';
+      movableLine.style.top = (newTop > 0)? newTop + 'px': '0px';
       coords = newTop;
     }
 
