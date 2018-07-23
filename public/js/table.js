@@ -134,6 +134,7 @@ const addCells = function(rows, cols){
               }
 
               const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
+              if (letter === '') continue;
               row.insertCell(-1).innerHTML = `<div align = "center"  width = 100px> ${letter} </div>`;
 
   /*
