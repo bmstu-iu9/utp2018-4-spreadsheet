@@ -1,8 +1,10 @@
 'use strict';
-const tableDiv = document.getElementById('table-div');
+const mainDiv = document.getElementById('main-div');
 const mainTable = document.getElementById('main-table');
 const upTable = document.getElementById('up-table');
 const leftTable = document.getElementById('left-table');
+const upDiv = document.getElementById('up-div');
+const leftDiv = document.getElementById('left-div');
 
 let DEFAULT_ROWS = 50, DEFAULT_COLS = 26;
 let ROWS = 0, COLS = 0;
@@ -180,11 +182,13 @@ const addCells = function(rows, cols){
 
 addCells(DEFAULT_ROWS, DEFAULT_COLS);
 
-tableDiv.onscroll = function() {
-  const moreCellsOnY = tableDiv.scrollHeight - tableDiv.clientHeight;
-  const moreCellsOnX = tableDiv.scrollWidth - tableDiv.clientWidth;
-  const percentY = (tableDiv.scrollTop / moreCellsOnY) * 100;
-  const percentX = (tableDiv.scrollLeft / moreCellsOnX) * 100;
+mainDiv.onscroll = function() {
+  upDiv.scrollLeft = this.scrollLeft;
+  leftDiv.scrollTop = this.scrollTop;
+  const moreCellsOnY = mainDiv.scrollHeight - mainDiv.clientHeight;
+  const moreCellsOnX = mainDiv.scrollWidth - mainDiv.clientWidth;
+  const percentY = (mainDiv.scrollTop / moreCellsOnY) * 100;
+  const percentX = (mainDiv.scrollLeft / moreCellsOnX) * 100;
   if(percentY > 80){
     addCells(5, 0);
   }
