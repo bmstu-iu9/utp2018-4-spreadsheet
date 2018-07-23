@@ -117,25 +117,21 @@ const addCells = function(rows, cols){
             }
         }
 
-        addExpansion(letter, i);
+        //addExpansion(letter, i);
     }
   } else {
 
-      for (let i = ROWS; i < ROWS + rows; i++) {
+    if (ROWS === 0){
+      const row = upTable.insertRow(-1);
+      for (let j = 0; j <= COLS + cols; j++) {
+          if (j > currentLet.length) {
+              currentLet.push(String.fromCharCode.apply(null, letters));
+              updateLetters(letters.length - 1);
+          }
 
-        if (ROWS + i === 0){
-          const row = upTable.insertRow(-1);
-
-          for (let j = 0; j <= COLS + cols; j++) {
-
-              if (j > currentLet.length) {
-                  currentLet.push(String.fromCharCode.apply(null, letters));
-                  updateLetters(letters.length - 1);
-              }
-
-              const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
-              if (letter === '') continue;
-              row.insertCell(-1).innerHTML = `<div align = "center"  width = 100px> ${letter} </div>`;
+          const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
+          if (letter === '') continue;
+          row.insertCell(-1).innerHTML = `<div align = "center"  width = 100px> ${letter} </div>`;
 
   /*
               if (!i && j) {
@@ -146,37 +142,38 @@ const addCells = function(rows, cols){
                   addVerticalExpansion(i);
               }
               */
-          }
-        } else {
+        }
+      }
 
+        for (let i = ROWS; i < ROWS + rows; i++) {
           const row = mainTable.insertRow(-1);
           const leftRow = leftTable.insertRow(-1);
 
-          leftRow.insertCell(-1).innerHTML = `<div align = "center"> ${i} </div>`;
+          leftRow.insertCell(-1).innerHTML = `<div align = "center"> ${i+1} </div>`;
 
           for (let j = 0; j <= COLS + cols; j++) {
+            if (j > currentLet.length) {
+              currentLet.push(String.fromCharCode.apply(null, letters));
+              updateLetters(letters.length - 1);
+            }
 
-              if (j > currentLet.length) {
-                  currentLet.push(String.fromCharCode.apply(null, letters));
-                  updateLetters(letters.length - 1);
-              }
-
-              const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
-              row.insertCell(-1).innerHTML = "<input id = '"+ letter + i +"'/>";
-  /*
-              if (!i && j) {
-                  addExpansion(letter, j);
-              } else if ((i && j) && (i >= DEFAULT_ROWS)) {
-                  document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
-              } else if (i && !j) {
-                  addVerticalExpansion(i);
-              }
-              */
+            const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
+            row.insertCell(-1).innerHTML = "<input id = '"+ letter + i +"'/>";
+    /*
+                if (!i && j) {
+                    addExpansion(letter, j);
+                } else if ((i && j) && (i >= DEFAULT_ROWS)) {
+                    document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
+                } else if (i && !j) {
+                    addVerticalExpansion(i);
+                }
+                */
           }
         }
+      }
 
-    }
-  }
+
+
   ROWS += rows;
   COLS += cols;
 }
