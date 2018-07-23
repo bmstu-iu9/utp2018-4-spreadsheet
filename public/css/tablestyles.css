@@ -78,6 +78,7 @@
 input {
     border: none;
     cursor: cell;
+    color: #000000;
     background-color: #fff;
     width: 100px;
     height: 16px;
@@ -86,27 +87,54 @@ input {
     height: 16px;
 }
 
+/*
 input:focus {
+<<<<<< fixed
     outline: 2px solid #000;
 }
 
 input:not(:focus) {
     text-align: right;
+=======
+    outline: none;
+>>>>>> fixed+expansion
 }
+*/
 
 table {
     border-collapse: collapse;
 }
 
+/*
 td {
+<<<<<< fixed
   font-size: 17px;
 }
 
-/*
+// коммента начало
 
 td {
     border: 1px solid #555;
     padding: 0;
+=======
+    outline-offset: -1px;
+    cursor: cell;
+    background-color: #fff;
+    border: 1px solid #555;
+    padding: 0;
+}
+
+td:focus {
+    outline: none;
+}
+
+tr:first-child td, td:first-child {
+    position: relative;
+    background-color: #eee;
+    padding: 1px 3px;
+    font-weight: bold;
+    text-align: center;
+>>>>>> fixed+expansion
 }
 */
 
