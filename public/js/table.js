@@ -1,5 +1,10 @@
 'use strict';
-const tableDiv = document.getElementById('table-div');
+const mainDiv = document.getElementById('main-div');
+const mainTable = document.getElementById('main-table');
+const upTable = document.getElementById('up-table');
+const leftTable = document.getElementById('left-table');
+const upDiv = document.getElementById('up-div');
+const leftDiv = document.getElementById('left-div');
 
 let DEFAULT_ROWS = 50, DEFAULT_COLS = 26;
 let ROWS = 0, COLS = 0;
@@ -194,6 +199,84 @@ const addVerticalExpansion = (i) => {
   movableLine.ondragstart = () => false;
 }
 
+/*
+<<<<<< fixed
+const addCells = function(rows, cols){
+
+  if (rows === 0) {
+    for (let i = COLS + 1; i <= COLS + cols; i++) {
+
+        currentLet.push(String.fromCharCode.apply(null, letters));
+        updateLetters(letters.length - 1);
+        const letter = currentLet[currentLet.length - 1];
+
+        upTable.rows[0].insertCell(-1).innerHTML = `<div align = "center"> ${letter} </div>`;
+
+        for (let j = 0; j < ROWS; j++) {
+            mainTable.rows[j].insertCell(-1).innerHTML = "<input id = '"+ letter + j +"'/>";
+            if (i && j) {
+                document.getElementById(letter + j).style.height = document.getElementById(currentLet[i - 2] + j).style.height;
+            }
+        }
+
+        //addExpansion(letter, i);
+    }
+  } else {
+
+    if (ROWS === 0){
+      const row = upTable.insertRow(-1);
+      for (let j = 0; j <= COLS + cols; j++) {
+          if (j > currentLet.length) {
+              currentLet.push(String.fromCharCode.apply(null, letters));
+              updateLetters(letters.length - 1);
+          }
+
+          const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
+          if (letter === '') continue;
+          row.insertCell(-1).innerHTML = `<div align = "center"  width = 100px> ${letter} </div>`;
+
+  /*
+              if (!i && j) {
+                  addExpansion(letter, j);
+              } else if ((i && j) && (i >= DEFAULT_ROWS)) {
+                  document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
+              } else if (i && !j) {
+                  addVerticalExpansion(i);
+              }
+              */
+        }
+      }
+
+        for (let i = ROWS; i < ROWS + rows; i++) {
+          const row = mainTable.insertRow(-1);
+          const leftRow = leftTable.insertRow(-1);
+
+          leftRow.insertCell(-1).innerHTML = `<div align = "center"> ${i+1} </div>`;
+
+          for (let j = 0; j <= COLS + cols; j++) {
+            if (j > currentLet.length) {
+              currentLet.push(String.fromCharCode.apply(null, letters));
+              updateLetters(letters.length - 1);
+            }
+
+            const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
+            row.insertCell(-1).innerHTML = "<input id = '"+ letter + i +"'/>";
+    /*
+                if (!i && j) {
+                    addExpansion(letter, j);
+                } else if ((i && j) && (i >= DEFAULT_ROWS)) {
+                    document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
+                } else if (i && !j) {
+                    addVerticalExpansion(i);
+                }
+                */
+          }
+        }
+      }
+
+
+
+=======
 /**
  * Initialize cell events
  * @param {String} id 
@@ -289,17 +372,21 @@ const addCells = function(rows, cols){
         }
   }
   
+>>>>>> fixed+expansion
+  */
   ROWS += rows;
   COLS += cols;
 }
 
 addCells(DEFAULT_ROWS, DEFAULT_COLS);
 
-tableDiv.onscroll = function() {
-  const moreCellsOnY = tableDiv.scrollHeight - tableDiv.clientHeight;
-  const moreCellsOnX = tableDiv.scrollWidth - tableDiv.clientWidth;
-  const percentY = (tableDiv.scrollTop / moreCellsOnY) * 100;
-  const percentX = (tableDiv.scrollLeft / moreCellsOnX) * 100;
+mainDiv.onscroll = function() {
+  upDiv.scrollLeft = this.scrollLeft;
+  leftDiv.scrollTop = this.scrollTop;
+  const moreCellsOnY = mainDiv.scrollHeight - mainDiv.clientHeight;
+  const moreCellsOnX = mainDiv.scrollWidth - mainDiv.clientWidth;
+  const percentY = (mainDiv.scrollTop / moreCellsOnY) * 100;
+  const percentX = (mainDiv.scrollLeft / moreCellsOnX) * 100;
   if(percentY > 80){
     addCells(5, 0);
   }

@@ -1,8 +1,79 @@
 .scroll-table {
-  width: 100%;
+  width: 97%;
+  float: left;
   overflow: auto;
-  height: 90vh;
+  height: 88vh;
 }
+
+.scroll-table td {
+  border: 1px solid #000;
+}
+
+.great-table{
+  float: left;
+}
+
+.left-div{
+  overflow: hidden;
+  width: 3%;
+  height: 88vh;
+  float: left;
+}
+
+.up{
+  margin:0 auto;
+  width:100%;
+}
+
+
+.up-div{
+  float: left;
+  overflow: hidden;
+  width: 97%;
+}
+
+.up-div table{
+  width: 100%
+}
+
+.up-div td{
+   width: 100px;
+   height: 18px;
+   position: relative;
+   background-color: #eee;
+   padding: 1px 3px;
+   border: 1px solid #555;
+   font-weight: bold;
+   text-align: center;
+}
+
+.up-div td:before {
+    content: '';
+    display: block;
+    width: 100px;
+}
+
+.left-div table td{
+   position: relative;
+   background-color: #eee;
+   border: 1px solid #555;
+   padding: 1px 3px;
+   font-weight: bold;
+   text-align: left;
+}
+
+.null-div {
+  float: left;
+  width: 3%;
+}
+
+.null-div td {
+  background-color: #eee;
+  border: 1px solid #555;
+  height: 20px;
+  width: 100px;
+}
+
 
 input {
     border: none;
@@ -10,19 +81,42 @@ input {
     color: #000000;
     background-color: #fff;
     width: 100px;
+    height: 16px;
     font-size: 14px;
     padding: 2px;
+    height: 16px;
 }
 
+/*
 input:focus {
-    outline: none;
+<<<<<< fixed
+    outline: 2px solid #000;
 }
+
+input:not(:focus) {
+    text-align: right;
+=======
+    outline: none;
+>>>>>> fixed+expansion
+}
+*/
 
 table {
     border-collapse: collapse;
 }
 
+/*
 td {
+<<<<<< fixed
+  font-size: 17px;
+}
+
+// коммента начало
+
+td {
+    border: 1px solid #555;
+    padding: 0;
+=======
     outline-offset: -1px;
     cursor: cell;
     background-color: #fff;
@@ -40,8 +134,11 @@ tr:first-child td, td:first-child {
     padding: 1px 3px;
     font-weight: bold;
     text-align: center;
+>>>>>> fixed+expansion
 }
+*/
 
+/*
 .modSymb {
     cursor: ew-resize;
     position: absolute;
@@ -66,3 +163,4 @@ tr:first-child td, td:first-child {
     top: 19.5px;
     left: 0px;
 }
+*/
