@@ -173,17 +173,17 @@ body {
 }
 
 .horizontally .left {
-  background: url('img/align-to-left.svg') center center / 100% 100% ;
+  background: url('../img/align-to-left.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 }
 
 .horizontally .center {
-  background: url('img/align-justify.svg') center center / 100% 100% ;
+  background: url('../img/align-justify.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 }
 
 .horizontally .right {
-  background: url('img/align-to-right.svg') center center / 100% 100% ;
+  background: url('../img/align-to-right.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 }
 
@@ -217,17 +217,17 @@ body {
 }
 
 .font .left{
-  background: url('img/font-symbol-of-letter-a.svg') center center / 100% 100% ;
+  background: url('../img/font-symbol-of-letter-a.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 }
 
 .font .center{
-  background: url('img/italicize-text.svg') center center / 100% 100% ;
+  background: url('../img/italicize-text.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 }
 
 .font .right{
-  background: url('img/font.svg') center center / 100% 100% ;
+  background: url('../img/font.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 }
 

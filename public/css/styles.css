@@ -116,7 +116,7 @@ ul.top-menu > li:hover > ul.submenu {
   height: 35px;
   margin-top: 20px;
   width: 35px;
-  background: url('img/undo-variant.svg') center center / 100% 100% ;
+  background: url('../img/undo-variant.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 
 }
@@ -125,7 +125,7 @@ ul.top-menu > li:hover > ul.submenu {
   margin-top: 20px;
   height: 35px;
   width: 35px;
-  background: url('img/redo-variant.svg') center center / 100% 100% ;
+  background: url('../img/redo-variant.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 
 }
@@ -135,7 +135,7 @@ ul.top-menu > li:hover > ul.submenu {
   margin-left: 30px;
   height: 35px;
   width: 35px;
-  background: url('img/copy-file.svg') center center / 100% 100% ;
+  background: url('../img/copy-file.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 
 }
@@ -144,7 +144,7 @@ ul.top-menu > li:hover > ul.submenu {
   margin-top: 20px;
   height: 35px;
   width: 35px;
-  background: url('img/cut.svg') center center / 100% 100% ;
+  background: url('../img/cut.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 
 }
@@ -154,7 +154,7 @@ ul.top-menu > li:hover > ul.submenu {
   margin-top: 20px;
   height: 35px;
   width: 35px;
-  background: url('img/clipboard-paste-button.svg') center center / 100% 100% ;
+  background: url('../img/clipboard-paste-button.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 
 }
@@ -164,7 +164,7 @@ ul.top-menu > li:hover > ul.submenu {
   margin-left: 30px;
   height: 35px;
   width: 35px;
-  background: url('img/locked-padlock.svg') center center / 100% 100% ;
+  background: url('../img/locked-padlock.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 
 }
@@ -173,7 +173,7 @@ ul.top-menu > li:hover > ul.submenu {
   margin-top: 20px;
   height: 35px;
   width: 35px;
-  background: url('img/unlocked-padlock.svg') center center / 100% 100% ;
+  background: url('../img/unlocked-padlock.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 
 }

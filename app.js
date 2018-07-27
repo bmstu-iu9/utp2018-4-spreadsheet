@@ -10,7 +10,7 @@ http.ServerResponse.prototype.render = render;
 http.createServer((req, res) => {
     if (req.url === '/') {
         index(req, res);
-    } else if (req.url.match(/\.(html|css|js|png|jpg)$/)){
+    } else if (req.url.match(/\.(html|css|js|png|jpg|svg)$/)){
         public(req, res);  
     } else {
         res.render('error.html', {"code" : 404, "message" : '404 Not Found!'});

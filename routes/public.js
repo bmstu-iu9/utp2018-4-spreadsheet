@@ -24,6 +24,9 @@ const public = (req, res) => {
         case '.jpg':
             contentType = 'image/jpg';
             break;
+        case '.svg':
+            contentType = 'image/svg+xml';
+            break;
         default:
             contentType = 'text/plain';
             break;
