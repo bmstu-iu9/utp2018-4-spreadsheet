@@ -1,22 +1,24 @@
 body {
     height: 100%;
-    left: calc(50% - 232px);
+    left: calc(50% - 205px);
     top: calc(50% - 200px);
     position: fixed;
     width: auto;
     height: auto;
-    /*background-color: aliceblue;*/
+/*    background-color: aliceblue;*/
+/*    background-color: */
     background-size: cover;
     -webkit-filter: blur(0px);
 }
 
 #logo {
-    height: 80px;
+    height: 85px;
 }
 
 
 #formHead {
     font-family: 'Roboto', serif;
+    text-shadow: grey 0px 0px 2px;
     font-size: 23px;
     margin: 25px 0 5px 30px;
     font-weight: lighter;
