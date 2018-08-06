@@ -1,0 +1,153 @@
+body {
+    height: 100%;
+    left: calc(50% - 232px);
+    top: calc(50% - 200px);
+    position: fixed;
+    width: auto;
+    height: auto;
+    /*background-color: aliceblue;*/
+    background-size: cover;
+    -webkit-filter: blur(0px);
+}
+
+#logo {
+    height: 80px;
+}
+
+
+#formHead {
+    font-family: 'Roboto', serif;
+    font-size: 23px;
+    margin: 25px 0 5px 30px;
+    font-weight: lighter;
+    font-variant: inherit;
+}
+
+
+#loginform {
+    margin: 0;
+    height: 240px;
+    width: 403px;
+    border: 1px solid #ebebeb;
+    border-radius: 8px;
+    background-color: #ebebeb;
+    -webkit-filter: blur(0px);
+}
+
+#email {
+    display: block;
+    margin-left: 15px;
+    padding: 7px;
+    height: 23px;
+    width: 314px;
+    border: 1px transparent;
+    border-radius: 6px;
+	padding-left: 27px;
+    transition: top 0.3s ease-out;
+}
+
+#pswrd {
+    display: block;
+    margin-left: 15px;
+    margin-top: 15px;
+    padding: 7px;
+    height: 23px;
+    width: 314px;
+    border: 0.5px transparent;
+    border-radius: 6px;
+	padding-left: 27px;
+    transition: top 0.3s ease-out;
+}
+
+#email:focus {
+    outline: none;
+    border: 1px solid; /*various*/
+    border-color:forestgreen;
+}
+
+#pswrd:focus {
+    outline: none;
+    border: 1px solid;
+    border-color:forestgreen;
+}
+
+::-webkit-input-placeholder {
+    font-family: Roboto; font-size: 16px;
+}
+::-moz-placeholder {
+    font-family: Roboto; font-size: 16px;
+}
+:-ms-input-placeholder { 
+    font-family: Roboto; font-size: 16px;
+}
+:-moz-placeholder { 
+    font-family: Roboto; font-size: 16px;
+}
+
+#btn {
+    font-family: 'Roboto', sans-serif;
+    outline: none;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 10px;
+    padding: 7px;
+    margin-left: 30px;
+    height: 35px;
+    width: 346px;
+    background: #d6d6d6;
+    border: 0;
+    border-radius: 6px;
+    text-align: center;
+    text-decoration: none;
+    transition: top 0.2s ease-out;
+}
+
+
+#btn:hover {
+/*    color:darkorange;*/
+    background: #f0f0f5;/*black;*/
+}
+
+
+#loginFields {
+    border: 0;
+    color: #ffffff;
+}
+
+#toRegister {
+    margin-left: 10px;
+    font-size: 18px;
+    font-family: "Roboto", sans-serif;
+}
+
+#signup {
+    font-family: "Roboto", sans-serif;
+    margin-left: 10px;
+    font-size: 18px;
+}
+
+i.fas.fa-envelope {
+	margin-left: 18px;
+	color: #808080;
+	width: 20px;
+	height: 20px;
+	margin-top: 10px;
+	text-align: center;
+	margin-right: -26px;
+	position: relative;
+	z-index: 1;
+	float: left;
+}
+
+i.fas.fa-lock {
+	margin-left: 18px;
+	color: #808080;
+	width: 20px;
+	height: 20px;
+	margin-top: 25px;
+	text-align: center;
+	margin-right: -26px;
+	position: relative;
+	z-index: 1;
+	float: left;
+}
