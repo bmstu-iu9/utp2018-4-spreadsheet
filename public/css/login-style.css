@@ -1,24 +1,39 @@
 body {
     height: 100%;
+<<<<<<< HEAD
     left: calc(50% - 205px);
+=======
+    left: calc(50% - 232px);
+>>>>>>> 05a5c43397c025a2f6251e4e85cdf2e8729e2d61
     top: calc(50% - 200px);
     position: fixed;
     width: auto;
     height: auto;
+<<<<<<< HEAD
 /*    background-color: aliceblue;*/
 /*    background-color: */
+=======
+    /*background-color: aliceblue;*/
+>>>>>>> 05a5c43397c025a2f6251e4e85cdf2e8729e2d61
     background-size: cover;
     -webkit-filter: blur(0px);
 }
 
 #logo {
+<<<<<<< HEAD
     height: 85px;
+=======
+    height: 80px;
+>>>>>>> 05a5c43397c025a2f6251e4e85cdf2e8729e2d61
 }
 
 
 #formHead {
     font-family: 'Roboto', serif;
+<<<<<<< HEAD
     text-shadow: grey 0px 0px 2px;
+=======
+>>>>>>> 05a5c43397c025a2f6251e4e85cdf2e8729e2d61
     font-size: 23px;
     margin: 25px 0 5px 30px;
     font-weight: lighter;
