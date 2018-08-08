@@ -36,41 +36,31 @@ body {
     -webkit-filter: blur(0px);
 }
 
-#email {
+#email, #pswrd {
     display: block;
     margin-left: 15px;
     padding: 7px;
     height: 23px;
     width: 314px;
-    border: 1px transparent;
     border-radius: 6px;
 	padding-left: 27px;
     transition: top 0.3s ease-out;
+}
+
+#email {
+    border: 1px transparent;
 }
 
 #pswrd {
-    display: block;
-    margin-left: 15px;
     margin-top: 15px;
-    padding: 7px;
-    height: 23px;
-    width: 314px;
     border: 0.5px transparent;
-    border-radius: 6px;
-	padding-left: 27px;
-    transition: top 0.3s ease-out;
 }
 
-#email:focus {
+#email:focus, #pswrd:focus {
     outline: none;
-    border: 1px solid; /*various*/
-    border-color:forestgreen;
-}
-
-#pswrd:focus {
-    outline: none;
-    border: 1px solid;
-    border-color:forestgreen;
+    box-shadow: inset 0 0 7px #6bc961;
+    /*border: 1px solid; /*various*/
+    /*border-color:#6bc961;*/
 }
 
 ::-webkit-input-placeholder {
@@ -107,7 +97,7 @@ body {
 
 #btn:hover {
 /*    color:darkorange;*/
-    background: #f0f0f5;/*black;*/
+    background: #6bc961;/*black;*/
 }
 
 
@@ -117,7 +107,7 @@ body {
 }
 
 #toRegister {
-    margin-left: 10px;
+    margin: 20px 0px 5px 10px;
     font-size: 18px;
     font-family: "Roboto", sans-serif;
 }
