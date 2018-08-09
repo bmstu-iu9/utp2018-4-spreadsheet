@@ -62,7 +62,10 @@ const loginHandle = (body, response) => {
                     [body.email], (err, row) => {
         if (err || !row || row.pass != body.password) {
             logs.log(`Login \x1b[31mFAILED\x1b[0m: user: ${body.email} ${err}`);
-            response.writeHead(200, { 'Content-Type' : 'application/json' });
+            response.writeHead(200, { 
+                'Content-Type' : 'application/json',
+                'Access-Control-Allow-Origin' : '*',
+            });
             return response.end(JSON.stringify({session_id : null, error : (err) ?
                  ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_NO_USER}));
         }
@@ -82,12 +85,18 @@ const loginHandle = (body, response) => {
         }).then(
             () => {
                 logs.log(`Login \x1b[32mSUCCESS\x1b[0m: user: ${body.email}, sessionID: ${sessionID}`);
-                response.writeHead(200, { 'Content-Type' : 'application/json' });
+                response.writeHead(200, { 
+                    'Content-Type' : 'application/json',
+                    'Access-Control-Allow-Origin' : '*',
+                });
                 response.end(JSON.stringify({session_id : sessionID, error : null})); 
         },
             (err) => {
                 logs.log(`Set sessionID \x1b[31mFAILED\x1b[0m: ${sessionID} ${err}`);
-                response.writeHead(200, { 'Content-Type' : 'application/json' });
+                response.writeHead(200, { 
+                    'Content-Type' : 'application/json',
+                    'Access-Control-Allow-Origin' : '*',
+                });
                 return response.end(JSON.stringify({session_id : null, error : ERRORS.SQLITE3_ERROR}));
         });
     });

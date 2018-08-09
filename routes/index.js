@@ -19,7 +19,7 @@ const index = (req, res) => {
     const cookies = parseCookies(req.headers.cookie);
     const postData = qs.stringify({"session" : cookies['token']});
     sendAuthRequest('/check_session', postData).then(
-        (authINFO) => {
+        authINFO => {
             if (authINFO.error) {
                 const redirectURL = 'http://' + CONFIG.host + ':' + CONFIG.port + '/login';
                 logs.log(`\x1b[33mREDIRECT\x1b[0m ${redirectURL}`);
@@ -28,6 +28,10 @@ const index = (req, res) => {
             }
 
             res.render('index.html', authINFO);
+        },
+
+        () => {
+            res.render('error.html', {"code" : 500, "message" : '500 Internal server error!'});
         });    
 }
 

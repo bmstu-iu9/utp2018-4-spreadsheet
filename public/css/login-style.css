@@ -112,6 +112,13 @@ input {
     color: #ffffff;
 }
 
+#loginError {
+    color: red;
+    font-family: "Roboto", sans-serif;
+    margin: 0 0 0 28px;
+    font-size: 14px;
+}
+
 #toRegister {
     margin: 20px 0px 5px 10px;
     font-size: 18px;

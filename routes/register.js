@@ -12,9 +12,10 @@ const ERROR_MESSAGES = {
 }
 
 const register = (req, res) => {
+    logs.log('\x1b[34mREGISTER\x1b[0m Method: ' + req.method);
+
     if (req.method === 'GET') {
         const parsedURL = url.parse(req.url, true);
-        logs.log('\x1b[34mREGISTER\x1b[0m Method: ' + req.method);
         const error_message = parsedURL.query['e'] ? ERROR_MESSAGES[parseInt(parsedURL.query['e'], 10)] : ' ';
         res.render('register.html', {"error_message" : error_message});
     } else if (req.method === 'POST') {
