@@ -768,80 +768,85 @@ const addVerticalExpansion = (i) => {
     movableLine.ondragstart = () => false;
 }
 
-const addCells = function (rows, cols) {
-    console.log('rows:', rows, ', cols:', cols);
+const addCells = (rows, cols) => {
     if (rows === 0) {
-        for (let i = COLS + 1; i <= COLS + cols; i++) {
-
-            currentLet.push(String.fromCharCode.apply(null, letters));
-            updateLetters(letters.length - 1);
-            const letter = currentLet[currentLet.length - 1];
-            alert('letter')
-            alert(letter)
-            upTable.rows[0].insertCell(-1).innerHTML = `<div align = "center"> ${letter} </div>`;
-
-            for (let j = 0; j < ROWS; j++) {
-                mainTable.rows[j].insertCell(-1).innerHTML = "<input id = '" + letter + j + "'/>";
-                if (i && j) {
-                    document.getElementById(letter + j).style.height = document.getElementById(currentLet[i - 2] + j).style.height;
-                }
-            }
-
-            //addExpansion(letter, i);
-        }
+      for (let i = COLS + 1; i <= COLS + cols; i++) {
+  
+          currentLet.push(String.fromCharCode.apply(null, letters));
+          updateLetters(letters.length - 1);
+          const letter = currentLet[currentLet.length - 1];
+  
+          const new_cell = upTable.rows[0].insertCell(-1);
+          new_cell.innerHTML = `<div align = "center" id = "${letter + 0}"> ${letter} </div>`;
+          new_cell.id = 'Cell_' + letter;//new
+  
+          for (let j = 0; j < ROWS; j++) {
+              mainTable.rows[j].insertCell(-1).innerHTML = "<input id = '"+ letter + (j + 1) +"'/>";
+              if (i && j) {
+                  document.getElementById(letter + j).style.height = document.getElementById(currentLet[i - 2] + j).style.height;
+              }
+          }
+  
+          //addExpansion(letter, i);
+      }
     } else {
-
-        if (ROWS === 0) {
-            const row = upTable.insertRow(-1);
-            for (let j = 0; j <= COLS + cols; j++) {
-                if (j > currentLet.length) {
-                    currentLet.push(String.fromCharCode.apply(null, letters));
-                    updateLetters(letters.length - 1);
+  
+      if (ROWS === 0){
+        const row = upTable.insertRow(-1);
+        for (let j = 0; j <= COLS + cols; j++) {
+            //if (j >= currentLet.length) {//chng
+                currentLet.push(String.fromCharCode.apply(null, letters));
+                updateLetters(letters.length - 1);
+            //}
+  
+            //const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
+            const letter = currentLet[j];
+            //if (letter === '') continue;
+            const new_cell = row.insertCell(-1);
+            new_cell.innerHTML = `<div align = "center" id = "${letter + 0}"> ${letter} </div>`;
+            new_cell.id = 'Cell_' + letter;
+            //addExpansion(letter, j); //control_them!11!
+    /*
+                if (!i && j) {
+                    addExpansion(letter, j);
+                } else if ((i && j) && (i >= DEFAULT_ROWS)) {
+                    document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
+                } else if (i && !j) {
+                    addVerticalExpansion(i);
                 }
-
-                const letter = (currentLet.length === 0) ? '' : currentLet[j - 1];
-                if (letter === '') continue;
-                row.insertCell(-1).innerHTML = `<div align = "center"  width = 100px> ${letter} </div>`;
-
-                /*
-                            if (!i && j) {
-                                addExpansion(letter, j);
-                            } else if ((i && j) && (i >= DEFAULT_ROWS)) {
-                                document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
-                            } else if (i && !j) {
-                                addVerticalExpansion(i);
-                            }
-                            */
-            }
+                */
+          }
         }
-
-        for (let i = ROWS; i < ROWS + rows; i++) {
+  
+          for (let i = ROWS; i < ROWS + rows; i++) {
             const row = mainTable.insertRow(-1);
             const leftRow = leftTable.insertRow(-1);
-
-            leftRow.insertCell(-1).innerHTML = `<div align = "center"> ${i + 1} </div>`;
-
+  
+            leftRow.insertCell(-1).innerHTML = `<div align = "center"> ${i+1} </div>`;
+  
             for (let j = 0; j <= COLS + cols; j++) {
-                if (j > currentLet.length) {
-                    currentLet.push(String.fromCharCode.apply(null, letters));
-                    updateLetters(letters.length - 1);
-                }
-
-                const letter = (currentLet.length === 0) ? '' : currentLet[j - 1];
-                row.insertCell(-1).innerHTML = "<input id = '" + letter + i + "'/>";
-                /*
-                            if (!i && j) {
-                                addExpansion(letter, j);
-                            } else if ((i && j) && (i >= DEFAULT_ROWS)) {
-                                document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
-                            } else if (i && !j) {
-                                addVerticalExpansion(i);
-                            }
-                            */
+              if (j > currentLet.length) {
+                currentLet.push(String.fromCharCode.apply(null, letters));
+                updateLetters(letters.length - 1);
+              }
+  
+              //const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
+              const letter = currentLet[j];
+              //if (letter === '') continue;
+              row.insertCell(-1).innerHTML = "<input id = '"+ letter + (i + 1) +"'/>";
+      /*
+                  if (!i && j) {
+                      addExpansion(letter, j);
+                  } else if ((i && j) && (i >= DEFAULT_ROWS)) {
+                      document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
+                  } else if (i && !j) {
+                      addVerticalExpansion(i);
+                  }
+                  */
             }
+          }
         }
-    }
-
+  
     ROWS += rows;
     COLS += cols;
 }
