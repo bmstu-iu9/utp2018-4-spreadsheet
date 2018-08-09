@@ -819,6 +819,18 @@ const addCells = (rows, cols) => {
             for (let j = 0; j < ROWS; j++) {
                 mainTable.rows[j].insertCell(-1).innerHTML = "<input id = '" + letter + (j + 1) + "'/>";
                 let curCell = document.getElementById(letter + (j + 1));
+                curCell.addEventListener("keydown", function (elem) {
+                    return (event) => {
+                        console.log(curCell.id, 'code=', event.code, 'key=', event.key);
+                        if(event.key == 'Enter'){
+                            elem.blur();
+                        }
+                        if(event.key == 'Escape'){
+                            console.log(elem.value);
+                            elem.value = '';
+                        }
+                    }
+                }(curCell))
                 curCell.onfocus = function (elem) {
                     return () => {
                         console.log('onfocus')
