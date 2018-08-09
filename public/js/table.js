@@ -10,18 +10,6 @@ let DEFAULT_ROWS = 50, DEFAULT_COLS = 26;
 let ROWS = 0, COLS = 0;
 let letters = [65];
 let currentLet = [];
-let focusID = '';
-
-/**
- * Colorize cell in user focus;
- * @param {String} color 
- */
-const colorize = (color) => {
-    if (focusID) {
-        document.getElementById(focusID).style.backgroundColor = color
-        document.getElementById('Cell_' + focusID).style.backgroundColor = color // для FF
-    }
-}
 
 const clear = (index) => {
     for (let i = index; i < letters.length; i++) {
@@ -48,72 +36,99 @@ const getXCoord = (elem) => elem.getBoundingClientRect().left + pageXOffset;
 const getYCoord = (elem) => elem.getBoundingClientRect().top + pageYOffset;
 
 const addExpansion = (letter, j) => {
-  let newDiv = document.createElement('div');
-  newDiv.innerHTML = '|';
+  const newDiv = document.createElement('div');
+  //newDiv.innerHTML = '';
   newDiv['id'] = letter;
   newDiv['className'] = 'modSymb';
-  table.rows[0].cells[j].appendChild(newDiv);
+  upTable.rows[0].cells[j].appendChild(newDiv);
+  //table.rows[0].cells[j].appendChild(newDiv); //old
 
   const movableLine = document.getElementById(letter);
-  
-  const changeParams = () => {
+
+  const changeParams = (element) => {
       const oldParams = {
-          height: getComputedStyle(movableLine).height,
-          backgroundColor: getComputedStyle(movableLine).backgroundColor,
-          color: getComputedStyle(movableLine).color,
-          width: getComputedStyle(movableLine).width,
+          height: getComputedStyle(element).height,
+          backgroundColor: getComputedStyle(element).backgroundColor,
+          //color: getComputedStyle(movableLine).color,
+          width: getComputedStyle(element).width,
       }
 
-      movableLine.style.height = getComputedStyle(document.getElementById('table')).height;
-      movableLine.style.backgroundColor = '#808080';
-      movableLine.style.color = '#808080';
-      movableLine.style.width = '2px';
+      element.style.height = getComputedStyle(mainTable).height;
+      element.style.backgroundColor = '#808080';
+      //movableLine.style.color = '#808080';
+      element.style.width = '2px';
 
       return oldParams;
   }
-  
+
   movableLine.onmousedown = (e) => {
     const shiftX = e.pageX - getXCoord(movableLine);
-    const params = changeParams();
+    const params = changeParams(movableLine);
+    
+    let helpDiv;
+    if (document.getElementById(letter + 'helper') === null) {
+      helpDiv = document.createElement('div');
+      helpDiv['id'] = letter + 'helper';
+      helpDiv['className'] = 'modSymb';
+      helpDiv.style.cursor = 'cell';
+      mainTable.rows[0].cells[j].appendChild(helpDiv);
+    } else {
+      helpDiv = document.getElementById(letter + 'helper');
+    }
+    const params2 = changeParams(helpDiv);
+    
     let coords = 'no move';
-      
-    const goExpansion = (delta1, delta2, padSize) => {
+
+    const goExpansion = (delta1, delta2, padSize1, padSize2) => {
       document.getElementById(letter + '0').style.width = coords + delta1 + 'px';
-      for (let i = 1; i < ROWS; i++) {
-          document.getElementById(letter + i).style.padding = padSize + 'px';
+      //document.getElementById('Cell_' + letter).style.width = coords + delta1 + 'px';
+      for (let i = 1; i <= ROWS; i++) {
+          //document.getElementById(letter + i).style.padding = (document.getElementById('Cell_undefined' + i).isZeroPad)?
+          //                                                                                      '0px ' + padSize + 'px' : '2px ' + padSize + 'px';
+          document.getElementById(letter + i).style.padding = '2px ' + padSize1 + 'px';
+          document.getElementById('Cell_' + letter + i).style.padding = '1px ' + padSize2 + 'px';
           document.getElementById(letter + i).style.width = coords + delta2 + 'px';
       }
     }
-      
+
     document.onmousemove = (e) => {
       const newLeft = e.pageX - shiftX - getXCoord(movableLine.parentNode);
       movableLine.style.left = (newLeft > 0)? newLeft + 'px': '0px';
+      helpDiv.style.left = (newLeft > 0)? newLeft + 'px': '0px'; //new
       coords = newLeft;
     }
 
     document.onmouseup = () => {
        if (coords != 'no move') {
+        const mainCell = document.getElementById('Cell_' + letter);
         if (coords < 6) {
-            document.getElementById('Cell_' + letter + '0').style.padding = '0px';
+            mainCell.style.padding = '0px';
+            mainCell.isZeroPad = true;
             if (coords < 3) {
-              goExpansion(-coords, -coords, 0);
+              goExpansion(-coords, -coords, 0, 0);
               movableLine.style.left = '-1px';
               movableLine.style.cursor = 'col-resize';
             } else {
               movableLine.style.cursor = 'ew-resize';
-              goExpansion(0, 1, 0);
+              goExpansion(0, 0, 0, 0); //check
             }
         } else {
-          document.getElementById('Cell_' + letter + '0').style.padding = '1px 3px';
+          mainCell.style.padding = '1px 3px';
+          mainCell.isZeroPad = false;
           movableLine.style.cursor = 'ew-resize';
-          goExpansion(-6, -3, 2);
+          goExpansion(-6, -6, 2, 1); //new
         }
       }
 
       movableLine.style.height = params.height;
       movableLine.style.width = params.width;
       movableLine.style.backgroundColor = params.backgroundColor;
-      movableLine.style.color = params.color;
+      //new1!!!1
+      helpDiv.style.height = params2.height;
+      helpDiv.style.width = params2.width;
+      helpDiv.style.backgroundColor = params2.backgroundColor;
+      //movableLine.style.color = params.color;
+      //mainTable.rows[0].cells[j].removeChild(helpDiv);
 
       document.onmousemove = document.onmouseup = null;
     }
@@ -124,83 +139,7 @@ const addExpansion = (letter, j) => {
   movableLine.ondragstart = () => false;
 }
 
-const addVerticalExpansion = (i) => {
-  let newDiv = document.createElement('div');
-  newDiv.innerHTML = '';
-  newDiv['id'] = i;
-  newDiv['className'] = 'modVertSymb';
-  table.rows[i].cells[0].appendChild(newDiv);
 
-  const movableLine = document.getElementById(i);
-  
-  const changeParams = () => {
-      const oldParams = {
-          height: getComputedStyle(movableLine).height,
-          backgroundColor: getComputedStyle(movableLine).backgroundColor,
-          width: getComputedStyle(movableLine).width,
-      }
-
-      movableLine.style.height = '2px';
-      movableLine.style.backgroundColor = '#808080';
-      movableLine.style.width = getComputedStyle(document.getElementById('table')).width;
-
-      return oldParams;
-  }
-    
-  movableLine.onmousedown = (e) => {
-    const shiftY = e.pageY - getYCoord(movableLine);
-    const params = changeParams();
-    let coords = 'no move';
-
-    const goExpansion = (delta1, delta2, padSize) => {
-      document.getElementById('@' + i).style.height = coords + delta1 + 'px';
-      document.getElementById('table').rows[i].style['line-height'] = coords + delta1 + 'px';
-      for (let j = 1; j <= COLS; j++) {
-          document.getElementById(currentLet[j - 1] + i).style.padding = padSize + 'px';
-          document.getElementById(currentLet[j - 1] + i).style.height = coords + delta2 + 'px';
-      }
-    }
-
-    document.onmousemove = (e) => {
-      const newTop = e.pageY - shiftY - getYCoord(movableLine.parentNode);
-      movableLine.style.top = (newTop > 0)? newTop + 'px': '0px';
-      coords = newTop;
-    }
-
-    document.onmouseup = () => {
-      if (coords != 'no move') {
-        if (coords < 6) {
-            document.getElementById('Cell_undefined' + i).style.padding = '0px';
-            if (coords < 3) {
-              goExpansion(-coords, -coords, 0);
-              movableLine.style.top = '-1px';
-              movableLine.style.cursor = 'row-resize';
-            } else {
-              movableLine.style.cursor = 'ns-resize';
-              goExpansion(0, 1, 0);
-            }
-        } else {
-          document.getElementById('Cell_undefined' + i).style.padding = '1px 3px';
-          movableLine.style.cursor = 'ns-resize';
-          goExpansion(-3, -3, 2);
-        }
-      }
-
-      movableLine.style.height = params.height;
-      movableLine.style.width = params.width;
-      movableLine.style.backgroundColor = params.backgroundColor;
-
-      document.onmousemove = document.onmouseup = null;
-    }
-
-    return false;
-  }
-  
-  movableLine.ondragstart = () => false;
-}
-
-/*
-<<<<<< fixed
 const addCells = function(rows, cols){
 
   if (rows === 0) {
@@ -210,31 +149,38 @@ const addCells = function(rows, cols){
         updateLetters(letters.length - 1);
         const letter = currentLet[currentLet.length - 1];
 
-        upTable.rows[0].insertCell(-1).innerHTML = `<div align = "center"> ${letter} </div>`;
+        const new_cell = upTable.rows[0].insertCell(-1);
+        new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
+        new_cell.id = 'Cell_' + letter;//new
 
         for (let j = 0; j < ROWS; j++) {
-            mainTable.rows[j].insertCell(-1).innerHTML = "<input id = '"+ letter + j +"'/>";
+            const cell = mainTable.rows[j].insertCell(-1);
+            cell.innerHTML = "<input id = '"+ letter + (j + 1) +"'/>";
+            cell.id = 'Cell_' + letter + (j + 1);
             if (i && j) {
                 document.getElementById(letter + j).style.height = document.getElementById(currentLet[i - 2] + j).style.height;
             }
         }
 
-        //addExpansion(letter, i);
+        addExpansion(letter, i);
     }
   } else {
 
     if (ROWS === 0){
       const row = upTable.insertRow(-1);
       for (let j = 0; j <= COLS + cols; j++) {
-          if (j > currentLet.length) {
+          //if (j >= currentLet.length) {//chng
               currentLet.push(String.fromCharCode.apply(null, letters));
               updateLetters(letters.length - 1);
-          }
+          //}
 
-          const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
-          if (letter === '') continue;
-          row.insertCell(-1).innerHTML = `<div align = "center"  width = 100px> ${letter} </div>`;
-
+          //const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
+          const letter = currentLet[j];
+          //if (letter === '') continue;
+          const new_cell = row.insertCell(-1);
+          new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
+          new_cell.id = 'Cell_' + letter;
+          addExpansion(letter, j); //control_them!11!
   /*
               if (!i && j) {
                   addExpansion(letter, j);
@@ -259,8 +205,20 @@ const addCells = function(rows, cols){
               updateLetters(letters.length - 1);
             }
 
-            const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
-            row.insertCell(-1).innerHTML = "<input id = '"+ letter + i +"'/>";
+            //const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
+            const letter = currentLet[j];
+            //if (letter === '') continue;
+            const new_cell = row.insertCell(-1);
+            new_cell.innerHTML = "<input id = '"+ letter + (i + 1) +"'/>";
+            new_cell.id = 'Cell_' + letter + (i + 1);
+            if (i >= DEFAULT_ROWS) {
+                const inp = document.getElementById(letter + (i + 1));
+                const preInp = document.getElementById(letter + i);
+                inp.style.width = preInp.style.width;
+                inp.style.padding = preInp.style.padding;
+                new_cell.style.padding = document.getElementById('Cell_' + letter + i).style.padding;
+                //document.getElementById(letter + (i + 1)).style.width = document.getElementById(letter + i).style.width;
+            }
     /*
                 if (!i && j) {
                     addExpansion(letter, j);
@@ -274,106 +232,6 @@ const addCells = function(rows, cols){
         }
       }
 
-
-
-=======
-/**
- * Initialize cell events
- * @param {String} id 
- */
-const initCell = (columnNumber, rowNumber) => {
-    const id = currentLet[columnNumber] + rowNumber;
-    const newInput = document.getElementById(id);
-    const newCell = document.getElementById('Cell_' + id);
-    newCell.onmousedown = (e) => {
-        if (focusID) {
-            const oldInput = document.getElementById(focusID);
-            const oldCell = document.getElementById('Cell_' + focusID);
-
-            oldInput.style.textAlign = 'right';
-            oldCell.style.outline = '';
-        }
-
-        focusID = newInput.id;
-        newInput.style.textAlign = 'left';
-        newCell.style.outline = '3px solid #35b729';
-    }
-
-    //При нажатии на Enter спускаемся вниз
-    newInput.addEventListener('keydown', (e) => {
-        let dx = 0;
-        let dy = 0;
-
-        if (e.keyCode === 13 || e.keyCode === 40) { //Enter and down button
-            dy = 1;
-        } else if (e.keyCode === 38) { //up
-            dy = (rowNumber ? -1 : 0);
-        } else if (e.keyCode === 37) { //left
-            dx = (columnNumber ? -1 : 0);
-        } else if (e.keyCode === 39) { //right
-            dx = 1;
-        }
-
-        const low_cell = document.getElementById('Cell_' + currentLet[columnNumber + dx] + (rowNumber + dy))
-        const low_input = document.getElementById(currentLet[columnNumber + dx] + (rowNumber + dy))
-        low_cell.dispatchEvent(new Event('mousedown', {keyCode : 13}));
-        low_input.focus();
-    });
-}
-
-const addCells = function(rows, cols){
-  if (rows === 0) {
-        for (let i = COLS + 1; i <= COLS + cols; i++) {        
-            currentLet.push(String.fromCharCode.apply(null, letters));
-            updateLetters(letters.length - 1);
-            const letter = currentLet[currentLet.length - 1];
-        
-            for (let j = 0; j < ROWS; j++) {
-                const new_cell = table.rows[j].insertCell(-1)
-                new_cell.innerHTML = i && j ? "<input id = '"+ letter + j +"'/>" : `<div align = "center" id = "${letter + 0}"> ${letter} </div>`;
-                new_cell.id = 'Cell_' + letter + j;
-                if (i && j) {
-                    initCell(currentLet.length - 1, j);
-                    document.getElementById(letter + j).style.height = document.getElementById(currentLet[i - 2] + j).style.height;
-                }
-            }
-            
-            addExpansion(letter, i);
-        }
-  } else {
-        for (let i = ROWS; i < ROWS + rows; i++) {
-            const row = document.getElementById('table').insertRow(-1);
-
-            for (let j = 0; j <= COLS + cols; j++) {
-                if (j > currentLet.length) {
-                    currentLet.push(String.fromCharCode.apply(null, letters));
-                    updateLetters(letters.length - 1);
-                }
-
-                const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
-                const new_cell = row.insertCell(-1);
-                new_cell.innerHTML = i && j ? "<input id = '"+ letter + i +"'/>" :
-                                                       i && !j ? `<div align = "center" id = "${'@' + i}" style = "overflow: hidden;"> ${i} </div>`:
-                                                       !i && j ? `<div align = "center" id = "${letter + 0}"> ${letter} </div>`:
-                                                       "";
-                new_cell.id = 'Cell_' + letter + i;
-
-                if (!i && j) {
-                    addExpansion(letter, j);
-                } else if (i && j) {
-                    initCell(j - 1, i);
-                    if (i >= DEFAULT_ROWS) {
-                        document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
-                    }
-                } else if (i && !j) {
-                    addVerticalExpansion(i);
-                }
-            }
-        }
-  }
-  
->>>>>> fixed+expansion
-  */
   ROWS += rows;
   COLS += cols;
 }
