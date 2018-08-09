@@ -804,73 +804,44 @@ const addExpansion = (letter, j) => {
 }
 
 
-const addCells = function(rows, cols){
-
-  if (rows === 0) {
-    for (let i = COLS + 1; i <= COLS + cols; i++) {
-
-        currentLet.push(String.fromCharCode.apply(null, letters));
-        updateLetters(letters.length - 1);
-        const letter = currentLet[currentLet.length - 1];
-
-        const new_cell = upTable.rows[0].insertCell(-1);
-        new_cell.innerHTML = `<div align = "center" id = "${letter + 0}"> ${letter} </div>`;
-        new_cell.id = 'Cell_' + letter;//new
-
-        for (let j = 0; j < ROWS; j++) {
-            mainTable.rows[j].insertCell(-1).innerHTML = "<input id = '"+ letter + (j + 1) +"'/>";
-            if (i && j) {
-                document.getElementById(letter + j).style.height = document.getElementById(currentLet[i - 2] + j).style.height;
-            }
-        }
-
-        addExpansion(letter, i);
-    }
-  } else {
-
-    if (ROWS === 0){
-      const row = upTable.insertRow(-1);
-      for (let j = 0; j <= COLS + cols; j++) {
-          //if (j >= currentLet.length) {//chng
-              currentLet.push(String.fromCharCode.apply(null, letters));
-              updateLetters(letters.length - 1);
-          //}
-
-          //const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
-          const letter = currentLet[j];
-          //if (letter === '') continue;
-          const new_cell = row.insertCell(-1);
+const addCells = (rows, cols) => {
+    if (rows === 0) {
+      for (let i = COLS + 1; i <= COLS + cols; i++) {
+  
+          currentLet.push(String.fromCharCode.apply(null, letters));
+          updateLetters(letters.length - 1);
+          const letter = currentLet[currentLet.length - 1];
+  
+          const new_cell = upTable.rows[0].insertCell(-1);
           new_cell.innerHTML = `<div align = "center" id = "${letter + 0}"> ${letter} </div>`;
-          new_cell.id = 'Cell_' + letter;
-          addExpansion(letter, j); //control_them!11!
-  /*
-              if (!i && j) {
-                  addExpansion(letter, j);
-              } else if ((i && j) && (i >= DEFAULT_ROWS)) {
-                  document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
-              } else if (i && !j) {
-                  addVerticalExpansion(i);
+          new_cell.id = 'Cell_' + letter;//new
+  
+          for (let j = 0; j < ROWS; j++) {
+              mainTable.rows[j].insertCell(-1).innerHTML = "<input id = '"+ letter + (j + 1) +"'/>";
+              if (i && j) {
+                  document.getElementById(letter + j).style.height = document.getElementById(currentLet[i - 2] + j).style.height;
               }
-              */
-        }
+          }
+  
+          //addExpansion(letter, i);
       }
-
-        for (let i = ROWS; i < ROWS + rows; i++) {
-          const row = mainTable.insertRow(-1);
-          const leftRow = leftTable.insertRow(-1);
-
-          leftRow.insertCell(-1).innerHTML = `<div align = "center"> ${i+1} </div>`;
-
-          for (let j = 0; j <= COLS + cols; j++) {
-            if (j > currentLet.length) {
-              currentLet.push(String.fromCharCode.apply(null, letters));
-              updateLetters(letters.length - 1);
-            }
-
+    } else {
+  
+      if (ROWS === 0){
+        const row = upTable.insertRow(-1);
+        for (let j = 0; j <= COLS + cols; j++) {
+            //if (j >= currentLet.length) {//chng
+                currentLet.push(String.fromCharCode.apply(null, letters));
+                updateLetters(letters.length - 1);
+            //}
+  
             //const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
             const letter = currentLet[j];
             //if (letter === '') continue;
-            row.insertCell(-1).innerHTML = "<input id = '"+ letter + (i + 1) +"'/>";
+            const new_cell = row.insertCell(-1);
+            new_cell.innerHTML = `<div align = "center" id = "${letter + 0}"> ${letter} </div>`;
+            new_cell.id = 'Cell_' + letter;
+            //addExpansion(letter, j); //control_them!11!
     /*
                 if (!i && j) {
                     addExpansion(letter, j);
@@ -882,10 +853,38 @@ const addCells = function(rows, cols){
                 */
           }
         }
-      }
-
-  ROWS += rows;
-  COLS += cols;
+  
+          for (let i = ROWS; i < ROWS + rows; i++) {
+            const row = mainTable.insertRow(-1);
+            const leftRow = leftTable.insertRow(-1);
+  
+            leftRow.insertCell(-1).innerHTML = `<div align = "center"> ${i+1} </div>`;
+  
+            for (let j = 0; j <= COLS + cols; j++) {
+              if (j > currentLet.length) {
+                currentLet.push(String.fromCharCode.apply(null, letters));
+                updateLetters(letters.length - 1);
+              }
+  
+              //const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
+              const letter = currentLet[j];
+              //if (letter === '') continue;
+              row.insertCell(-1).innerHTML = "<input id = '"+ letter + (i + 1) +"'/>";
+      /*
+                  if (!i && j) {
+                      addExpansion(letter, j);
+                  } else if ((i && j) && (i >= DEFAULT_ROWS)) {
+                      document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
+                  } else if (i && !j) {
+                      addVerticalExpansion(i);
+                  }
+                  */
+            }
+          }
+        }
+  
+    ROWS += rows;
+    COLS += cols;
 }
 
 addCells(DEFAULT_ROWS, DEFAULT_COLS);
@@ -938,14 +937,18 @@ const updateTables = () => {
 mainTable.onchange = function (e) {
     let coord = convCoord(e.originalTarget.id);
     innerTable.setCeil(coord.x, coord.y, e.originalTarget.value);
-    e.originalTarget.onclick = function (elem) {
+    e.originalTarget.onfocus = function (elem) {
         return () => {
             let coord = convCoord(elem.id)
             elem.value = innerTable.getCeil(coord.x, coord.y).realText;
         };
     }(e.originalTarget);
-    e.originalTarget.oninput = function (elem) {
-        updateTables()
+    e.originalTarget.onblur = function (elem) {
+        return () => {
+            updateTables();
+            let coord = convCoord(elem.id)
+            elem.value = innerTable.getCeil(coord.x, coord.y).toDisplay;
+        };
     }(e.originalTarget);
     updateTables();
 

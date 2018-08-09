@@ -84,6 +84,7 @@ input {
     font-size: 14px;
     padding: 2px;
     height: 16px;
+    color: #000;
 }
 
 input:focus {
