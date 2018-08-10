@@ -37,11 +37,9 @@ const getYCoord = (elem) => elem.getBoundingClientRect().top + pageYOffset;
 
 const addExpansion = (letter, j) => {
   const newDiv = document.createElement('div');
-  //newDiv.innerHTML = '';
   newDiv['id'] = letter;
   newDiv['className'] = 'modSymb';
   upTable.rows[0].cells[j].appendChild(newDiv);
-  //table.rows[0].cells[j].appendChild(newDiv); //old
 
   const movableLine = document.getElementById(letter);
 
@@ -49,13 +47,11 @@ const addExpansion = (letter, j) => {
       const oldParams = {
           height: getComputedStyle(element).height,
           backgroundColor: getComputedStyle(element).backgroundColor,
-          //color: getComputedStyle(movableLine).color,
           width: getComputedStyle(element).width,
       }
 
       element.style.height = getComputedStyle(mainTable).height;
       element.style.backgroundColor = '#808080';
-      //movableLine.style.color = '#808080';
       element.style.width = '2px';
 
       return oldParams;
@@ -64,8 +60,8 @@ const addExpansion = (letter, j) => {
   movableLine.onmousedown = (e) => {
     const shiftX = e.pageX - getXCoord(movableLine);
     const params = changeParams(movableLine);
-
     let helpDiv;
+
     if (document.getElementById(letter + 'helper') === null) {
       helpDiv = document.createElement('div');
       helpDiv['id'] = letter + 'helper';
@@ -75,18 +71,16 @@ const addExpansion = (letter, j) => {
     } else {
       helpDiv = document.getElementById(letter + 'helper');
     }
-    const params2 = changeParams(helpDiv);
 
+    const params2 = changeParams(helpDiv);
     let coords = 'no move';
 
     const goExpansion = (delta1, delta2, padSize1, padSize2) => {
       document.getElementById(letter + '0').style.width = coords + delta1 + 'px';
-      //document.getElementById('Cell_' + letter).style.width = coords + delta1 + 'px';
       for (let i = 1; i <= ROWS; i++) {
-          //document.getElementById(letter + i).style.padding = (document.getElementById('Cell_undefined' + i).isZeroPad)?
-          //                                                                                      '0px ' + padSize + 'px' : '2px ' + padSize + 'px';
-          document.getElementById(letter + i).style.padding = '2px ' + padSize1 + 'px';
-          document.getElementById('Cell_' + letter + i).style.padding = '1px ' + padSize2 + 'px';
+          const flag = document.getElementById('Cell_' + i).isZeroPad;
+          document.getElementById(letter + i).style.padding = (flag)? '0px ' + padSize1 + 'px' : '2px ' + padSize1 + 'px';
+          document.getElementById('Cell_' + letter + i).style.padding = (flag)? '0px ' + padSize2 + 'px' : '1px ' + padSize2 + 'px';
           document.getElementById(letter + i).style.width = coords + delta2 + 'px';
       }
     }
@@ -94,7 +88,7 @@ const addExpansion = (letter, j) => {
     document.onmousemove = (e) => {
       const newLeft = e.pageX - shiftX - getXCoord(movableLine.parentNode);
       movableLine.style.left = (newLeft > 0)? newLeft + 'px': '0px';
-      helpDiv.style.left = (newLeft > 0)? newLeft + 'px': '0px'; //new
+      helpDiv.style.left = (newLeft > 0)? newLeft + 'px': '0px';
       coords = newLeft;
     }
 
@@ -107,28 +101,27 @@ const addExpansion = (letter, j) => {
             if (coords < 3) {
               goExpansion(-coords, -coords, 0, 0);
               movableLine.style.left = '-1px';
+              helpDiv.style.left = '-1px';
               movableLine.style.cursor = 'col-resize';
             } else {
               movableLine.style.cursor = 'ew-resize';
-              goExpansion(0, 0, 0, 0); //check
+              goExpansion(0, 0, 0, 0);
             }
         } else {
           mainCell.style.padding = '1px 3px';
           mainCell.isZeroPad = false;
           movableLine.style.cursor = 'ew-resize';
-          goExpansion(-6, -6, 2, 1); //new
+          goExpansion(-6, -6, 2, 1);
         }
       }
 
       movableLine.style.height = params.height;
       movableLine.style.width = params.width;
       movableLine.style.backgroundColor = params.backgroundColor;
-      //new1!!!1
+
       helpDiv.style.height = params2.height;
       helpDiv.style.width = params2.width;
       helpDiv.style.backgroundColor = params2.backgroundColor;
-      //movableLine.style.color = params.color;
-      //mainTable.rows[0].cells[j].removeChild(helpDiv);
 
       document.onmousemove = document.onmouseup = null;
     }
@@ -141,7 +134,6 @@ const addExpansion = (letter, j) => {
 
 const addVerticalExpansion = (i) => {
   const newDiv = document.createElement('div');
-  //newDiv.innerHTML = '';
   newDiv['id'] = (i + 1);
   newDiv['className'] = 'modVertSymb';
   leftTable.rows[i].cells[0].appendChild(newDiv);
@@ -165,8 +157,8 @@ const addVerticalExpansion = (i) => {
   movableLine.onmousedown = (e) => {
     const shiftY = e.pageY - getYCoord(movableLine);
     const params = changeParams(movableLine);
-
     let helpDiv;
+
     if (document.getElementById((i + 1) + 'helper') === null) {
       helpDiv = document.createElement('div');
       helpDiv['id'] = (i + 1) + 'helper';
@@ -176,18 +168,19 @@ const addVerticalExpansion = (i) => {
     } else {
       helpDiv = document.getElementById((i + 1) + 'helper');
     }
-    const params2 = changeParams(helpDiv);
 
+    const params2 = changeParams(helpDiv);
     let coords = 'no move';
 
     const goExpansion = (delta1, delta2, padSize1, padSize2) => {
       document.getElementById('@' + (i + 1)).style.height = coords + delta1 + 'px';
       mainTable.rows[i].style['line-height'] = coords + delta2 + 'px';
       for (let j = 0; j <= COLS; j++) {
-          //document.getElementById(currentLet[j - 1] + i).style.padding =
-         //        (document.getElementById('Cell_' + currentLet[j - 1] + '0').isZeroPad)? padSize + 'px 0px' : padSize + 'px 2px';
-          document.getElementById(currentLet[j] + (i + 1)).style.padding = padSize1 + 'px 2px';
-          document.getElementById('Cell_' + currentLet[j] + (i + 1)).style.padding = padSize2 + 'px 1px';
+          const flag = document.getElementById('Cell_' + currentLet[j]).isZeroPad;
+          document.getElementById(currentLet[j] + (i + 1)).style.padding =
+                          (flag)? padSize1 + 'px 0px' : padSize1 + 'px 2px';
+          document.getElementById('Cell_' + currentLet[j] + (i + 1)).style.padding =
+                          (flag)? padSize2 + 'px 0px' : padSize2 + 'px 1px';
           document.getElementById(currentLet[j] + (i + 1)).style.height = coords + delta2 + 'px';
       }
     }
@@ -208,6 +201,7 @@ const addVerticalExpansion = (i) => {
             if (coords < 3) {
               goExpansion(-coords, -coords, 0, 0);
               movableLine.style.top = '-1px';
+              helpDiv.style.top = '-1px';
               movableLine.style.cursor = 'row-resize';
             } else {
               movableLine.style.cursor = 'ns-resize';
@@ -249,15 +243,19 @@ const addCells = function(rows, cols){
 
         const new_cell = upTable.rows[0].insertCell(-1);
         new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
-        new_cell.id = 'Cell_' + letter;//new
+        new_cell.id = 'Cell_' + letter;
 
         for (let j = 0; j < ROWS; j++) {
+
             const cell = mainTable.rows[j].insertCell(-1);
             cell.innerHTML = "<input id = '"+ letter + (j + 1) +"'/>";
             cell.id = 'Cell_' + letter + (j + 1);
-            if (i && j) {
-                document.getElementById(letter + j).style.height = document.getElementById(currentLet[i - 2] + j).style.height;
-            }
+
+            const inp = document.getElementById(letter + (j + 1));
+            const preInp = document.getElementById(currentLet[currentLet.length - 2] + (j + 1));
+            inp.style.height = preInp.style.height;
+            inp.style.padding = preInp.style.padding;
+            cell.style.padding = document.getElementById('Cell_' + currentLet[currentLet.length - 2] + (j + 1)).style.padding;
         }
 
         addExpansion(letter, i);
@@ -266,28 +264,17 @@ const addCells = function(rows, cols){
 
     if (ROWS === 0){
       const row = upTable.insertRow(-1);
-      for (let j = 0; j <= COLS + cols; j++) {
-          //if (j >= currentLet.length) {//chng
-              currentLet.push(String.fromCharCode.apply(null, letters));
-              updateLetters(letters.length - 1);
-          //}
 
-          //const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
+      for (let j = 0; j <= COLS + cols; j++) {
+
+          currentLet.push(String.fromCharCode.apply(null, letters));
+          updateLetters(letters.length - 1);
           const letter = currentLet[j];
-          //if (letter === '') continue;
+
           const new_cell = row.insertCell(-1);
           new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
           new_cell.id = 'Cell_' + letter;
-          addExpansion(letter, j); //control_them!11!
-  /*
-              if (!i && j) {
-                  addExpansion(letter, j);
-              } else if ((i && j) && (i >= DEFAULT_ROWS)) {
-                  document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
-              } else if (i && !j) {
-                  addVerticalExpansion(i);
-              }
-              */
+          addExpansion(letter, j);
         }
       }
 
@@ -296,39 +283,29 @@ const addCells = function(rows, cols){
           const leftRow = leftTable.insertRow(-1);
 
           const left_cell = leftRow.insertCell(-1);
-          left_cell.innerHTML = `<div align = "center" id = "${'@' + (i + 1)}"> ${i+1} </div>`;
+          left_cell.innerHTML = `<div align = "center" id = "${'@' + (i + 1)}" class = "left"> ${i+1} </div>`;
           left_cell.id = 'Cell_' + (i + 1);
-          addVerticalExpansion(i);//new
+          addVerticalExpansion(i);
 
           for (let j = 0; j <= COLS + cols; j++) {
+
             if (j > currentLet.length) {
               currentLet.push(String.fromCharCode.apply(null, letters));
               updateLetters(letters.length - 1);
             }
-
-            //const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
             const letter = currentLet[j];
-            //if (letter === '') continue;
+
             const new_cell = row.insertCell(-1);
             new_cell.innerHTML = "<input id = '"+ letter + (i + 1) +"'/>";
             new_cell.id = 'Cell_' + letter + (i + 1);
+
             if (i >= DEFAULT_ROWS) {
                 const inp = document.getElementById(letter + (i + 1));
                 const preInp = document.getElementById(letter + i);
                 inp.style.width = preInp.style.width;
                 inp.style.padding = preInp.style.padding;
                 new_cell.style.padding = document.getElementById('Cell_' + letter + i).style.padding;
-                //document.getElementById(letter + (i + 1)).style.width = document.getElementById(letter + i).style.width;
             }
-    /*
-                if (!i && j) {
-                    addExpansion(letter, j);
-                } else if ((i && j) && (i >= DEFAULT_ROWS)) {
-                    document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
-                } else if (i && !j) {
-                    addVerticalExpansion(i);
-                }
-                */
           }
         }
       }
