@@ -1,0 +1,152 @@
+body {
+    height: 100%;
+    left: calc(50% - 230px);
+    top: calc(50% - 310px);
+    position: fixed;
+    width: auto;
+    height: auto;
+/*    background-color: aliceblue;*/
+    /*background-image: url(http://www.2fons.ru/pic/201502/1920x1080/2fons.ru-76715.jpg);*/
+    background-size: cover;
+    -webkit-filter: blur(0px);
+}
+
+#logo {
+    height: 80px;
+}
+
+
+#regHead {
+    font-family: 'Roboto', serif;
+    font-size: 24px;
+    margin: 25px 0px 5px 30px;
+    font-weight: 500;
+    font-variant: inherit;
+}
+
+
+#regform {
+    margin: 0;
+    height: 550px;
+    width: 390px;
+    border: 1px solid #ebebeb;
+    border-radius: 8px;
+    background-color: #ebebeb;
+    -webkit-filter: blur(0px);
+}
+
+
+#first_name {
+    outline: none;
+    display: block;
+    margin-left: 30px;
+    padding: 7px;
+    height: 23px;
+    width: 314px;
+    border: none;
+    border-radius: 6px;
+}
+
+#last_name {
+    outline: none;
+    display: block;
+    margin-left: 30px;
+    padding: 7px;
+    height: 23px;
+    width: 314px;
+    border: none;
+    border-radius: 6px;
+}
+
+#org {
+    outline: none;
+    display: block;
+    margin-left: 30px;
+    padding: 7px;
+    height: 23px;
+    width: 314px;
+    border: none;
+    border-radius: 6px;
+}
+
+#password {
+    display: block;
+    margin-left: 30px;
+    padding: 7px;
+    height: 23px;
+    width: 314px;
+    border: none;
+    border-radius: 6px;
+}
+
+#email {
+    display: block;
+    margin-left: 30px;
+    padding: 7px;
+    height: 23px;
+    width: 314px;
+    border: none;
+    border-radius: 6px;
+}
+
+#firstname:focus {
+    outline: none;
+/*    border: 1px solid;*/
+/*    border-color:forestgreen;*/
+}
+
+#lastname {
+    outline:none;
+}
+
+#email {
+    outline:none;
+}
+
+#password:focus {
+    outline: none;
+}
+
+#btn {
+    font-family: 'Roboto', sans-serif;
+    outline: none;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 10px;
+    padding: 7px;
+    margin-left: 30px;
+    height: 35px;
+    width: 330px;
+    background: #d6d6d6;
+    border: 0;
+    border-radius: 6px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s ease-out;
+}
+
+
+#btn:hover {
+/*    color:darkorange;*/
+    background: #f0f0f5;/*black;*/
+}
+
+
+.textfields {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    margin-left: 30px;
+    font-size: 18px;
+}
+
+#p1 {
+    margin-left: 10px;
+    font-size: 18px;
+    font-family: "Roboto", sans-serif;
+}
+
+#signup {
+    font-family: "Roboto", sans-serif;
+    margin-left: 10px;
+    font-size: 18px;
+}
