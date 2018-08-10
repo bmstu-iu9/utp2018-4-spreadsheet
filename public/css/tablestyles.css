@@ -1,0 +1,131 @@
+.scroll-table {
+  width: 97%;
+  float: left;
+  overflow: auto;
+  height: 88vh;
+}
+
+.scroll-table td {
+  border: 1px solid #000;
+}
+
+.great-table{
+  float: left;
+}
+
+.left-div{
+  overflow: hidden;
+  width: 3%;
+  height: 88vh;
+  float: left;
+}
+
+.up{
+  margin:0 auto;
+  width:100%;
+}
+
+
+.up-div{
+  float: left;
+  overflow: hidden;
+  width: 97%;
+}
+
+.up-div table{
+  width: 100%
+}
+
+.up-div td{
+   width: 100px;
+   height: 18px;
+   position: relative;
+   background-color: #eee;
+   padding: 1px 3px;
+   border: 1px solid #555;
+   font-weight: bold;
+   text-align: center;
+}
+
+.up-div td:before {
+    content: '';
+    display: block;
+    width: 100px;
+}
+
+.left-div table td{
+   position: relative;
+   background-color: #eee;
+   border: 1px solid #555;
+   padding: 1px 3px;
+   font-weight: bold;
+   text-align: left;
+}
+
+.null-div {
+  float: left;
+  width: 3%;
+}
+
+.null-div td {
+  background-color: #eee;
+  border: 1px solid #555;
+  height: 20px;
+  width: 100px;
+}
+
+
+input {
+    border: none;
+    cursor: cell;
+    background-color: #fff;
+    width: 100px;
+    height: 16px;
+    font-size: 14px;
+    padding: 2px;
+    height: 16px;
+    color: #000;
+}
+
+input:focus {
+    outline: 2px solid #000;
+}
+
+input:not(:focus) {
+    text-align: right;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td {
+  font-size: 17px;
+}
+
+/*
+.modSymb {
+    cursor: ew-resize;
+    position: absolute;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    z-index: 666;
+    height: 100%;
+    top: 0px;
+    left: 102.75px;
+}
+
+.modVertSymb {
+    cursor: ns-resize;
+    position: absolute;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    z-index: 666;
+    height: 3.5px;
+    width: 100%;
+    top: 19.5px;
+    left: 0px;
+}
+*/
