@@ -1,110 +1,83 @@
 body {
     height: 100%;
-    left: calc(50% - 230px);
-    top: calc(50% - 310px);
+    left: calc(50% - 205px);
+    top: calc(50% - 330px);
     position: fixed;
     width: auto;
     height: auto;
-/*    background-color: aliceblue;*/
-    /*background-image: url(http://www.2fons.ru/pic/201502/1920x1080/2fons.ru-76715.jpg);*/
     background-size: cover;
     -webkit-filter: blur(0px);
+}
+
+input {
+    color: #666666
 }
 
 #logo {
     height: 80px;
 }
 
-
-#regHead {
-    font-family: 'Roboto', serif;
-    font-size: 24px;
-    margin: 25px 0px 5px 30px;
-    font-weight: 500;
-    font-variant: inherit;
-}
-
-
 #regform {
     margin: 0;
-    height: 550px;
-    width: 390px;
+    height: 480px;
+    width: 403px;
     border: 1px solid #ebebeb;
     border-radius: 8px;
     background-color: #ebebeb;
     -webkit-filter: blur(0px);
 }
 
+#regHead {
+    font-family: 'Roboto', serif;
+    font-size: 23px;
+    text-shadow: grey 0px 0px 2px;
+    margin: 25px 0px 0px 35px;
+    font-weight: lighter;
+    font-variant: inherit;
+}
+
+#firstP, #lastP {
+    display: inline-block;
+}
+#lastP {
+    margin-left: 93px;
+}
+
 
 #first_name {
-    outline: none;
-    display: block;
-    margin-left: 30px;
-    padding: 7px;
-    height: 23px;
-    width: 314px;
-    border: none;
-    border-radius: 6px;
+    margin-left: 35px;
 }
 
 #last_name {
+    margin-left: 10px;
+}
+
+#first_name, #last_name {
+    outline: none;
+    display: inline-block;
+    padding: 7px;
+    height: 23px;
+    width: 144px;
+    border: none;
+    border-radius: 6px;
+    background-color: #ffffff
+}
+
+.inputs {
     outline: none;
     display: block;
-    margin-left: 30px;
+    margin-left: 35px;
     padding: 7px;
     height: 23px;
     width: 314px;
     border: none;
     border-radius: 6px;
+    background-color: #ffffff
 }
 
-#org {
+#first_name:focus, #last_name:focus, #org:focus, #email:focus, #password:focus {
     outline: none;
-    display: block;
-    margin-left: 30px;
-    padding: 7px;
-    height: 23px;
-    width: 314px;
-    border: none;
-    border-radius: 6px;
-}
-
-#password {
-    display: block;
-    margin-left: 30px;
-    padding: 7px;
-    height: 23px;
-    width: 314px;
-    border: none;
-    border-radius: 6px;
-}
-
-#email {
-    display: block;
-    margin-left: 30px;
-    padding: 7px;
-    height: 23px;
-    width: 314px;
-    border: none;
-    border-radius: 6px;
-}
-
-#firstname:focus {
-    outline: none;
-/*    border: 1px solid;*/
-/*    border-color:forestgreen;*/
-}
-
-#lastname {
-    outline:none;
-}
-
-#email {
-    outline:none;
-}
-
-#password:focus {
-    outline: none;
+    box-shadow: inset 0 0 7px #6bc961;
 }
 
 #btn {
@@ -114,7 +87,7 @@ body {
     display: inline-block;
     margin-top: 10px;
     padding: 7px;
-    margin-left: 30px;
+    margin-left: 35px;
     height: 35px;
     width: 330px;
     background: #d6d6d6;
@@ -125,28 +98,20 @@ body {
     transition: all 0.2s ease-out;
 }
 
-
 #btn:hover {
-/*    color:darkorange;*/
-    background: #f0f0f5;/*black;*/
+    background: #6bc961
 }
 
 
 .textfields {
     margin-top: 15px;
     margin-bottom: 10px;
-    margin-left: 30px;
+    margin-left: 35px;
     font-size: 18px;
 }
 
-#p1 {
+#toLogin, #signup {
     margin-left: 10px;
     font-size: 18px;
     font-family: "Roboto", sans-serif;
-}
-
-#signup {
-    font-family: "Roboto", sans-serif;
-    margin-left: 10px;
-    font-size: 18px;
 }
