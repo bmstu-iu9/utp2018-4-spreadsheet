@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+    
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,25 +19,25 @@
             <form id="regform" action="" method="POST">
                     <h1 id="regHead">Create an account</h1>
                 <label>
-                    <p class="textfields" id="first">First name</p>
-                    <p class="textfields" id="last">Last name</p>
+                    <p class="textfields" id="firstP">First name</p>
+                    <p class="textfields" id="lastP">Last name</p>
                     <input type="text" id="first_name" name="first_name">
                     <input type="text" id="last_name" name="last_name">
                 </label>
                 
                 <label>
                     <p class="textfields">Organisation</p>
-                    <input type="text" id="org" name="org">
+                    <input type="text" id="org" name="org" class="inputs">
                 </label>
                 
                 <label>
                     <p id="emailtext" class="textfields">Email</p>
-                    <input type="text" id="email" name="email">
+                    <input type="text" id="email" name="email" class="inputs">
                 </label>
                 
                 <label>
                     <p id="passwordltext" class="textfields">Create a password</p>
-                    <input type="password" id="password" name="password"><br>
+                    <input type="password" id="password" name="password" class="inputs"><br>
                 </label>
                 
                     <input type="button" value="Sign up" id="btn"/>
