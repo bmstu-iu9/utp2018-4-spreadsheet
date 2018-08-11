@@ -6,13 +6,11 @@
 }
 
 .scroll-table td {
-  position: relative;/*check it*/
+  position: relative;
   border: 1px solid #000;
+  cursor: cell;
+  outline-offset: -1px;
 }
-
-/*.great-table{
-  float: left;
-}*/
 
 .left-div{
   overflow: hidden;
@@ -20,12 +18,6 @@
   height: 88vh;
   float: left;
 }
-
-/*.up{
-  margin:0 auto;
-  width:100%;
-}*/
-
 
 .up-div{
   float: left;
@@ -38,7 +30,6 @@
 }
 
 .up-div td{
-   /*width: 100px;*/
    height: 18px;
    position: relative;
    background-color: #eee;
@@ -50,13 +41,10 @@
 
 .up {
   width: 100px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
-
-/*.up-div td:before {
-    content: '';
-    display: block;
-    width: 100px;
-}*/
 
 .left-div table td{
    position: relative;
@@ -65,6 +53,12 @@
    padding: 1px 3px;
    font-weight: bold;
    text-align: left;
+}
+
+.left {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .null-div {
@@ -79,7 +73,6 @@
   width: 100px;
 }
 
-
 input {
     border: none;
     cursor: cell;
@@ -88,11 +81,10 @@ input {
     height: 16px;
     font-size: 14px;
     padding: 2px;
-  /*  height: 16px;*/
 }
 
 input:focus {
-    outline: 2px solid #000;
+    outline: none;
 }
 
 input:not(:focus) {
@@ -107,17 +99,7 @@ td {
   font-size: 17px;
 }
 
-
 .modSymb {
-    /*cursor: ew-resize;
-    position: absolute;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    z-index: 666;
-    height: 100%;
-    top: 0px;
-    left: 100px;*/
     cursor: ew-resize;
     position: absolute;
     -webkit-user-select: none;
@@ -141,4 +123,14 @@ td {
     width: 100%;
     top: 21px;
     left: 0px;
+}
+
+.context-menu {
+  display: none;
+  position: absolute;
+  z-index: 667;
+}
+
+.context-menu--active {
+  display: block;
 }
