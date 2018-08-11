@@ -58,7 +58,7 @@ const saveHandle = (body, response) => {
                 clearTimeout(removeTimers[body.session])
             }
 
-            removeTimers[body.session] = setTimeout(() => removeToken(body.session), 31536000000); //будем хранить год 31536000000
+            removeTimers[body.session] = setTimeout(() => removeToken(body.session), 2147483647); //будем хранить год 24 дня, потому что вот так((((
             logs.log(`Save \x1b[32mSUCCESS\x1b[0m: sessionID: ${body.session}, ${localeTime}`);
             response.writeHead(200, { 
                 'Content-Type' : 'application/json',
