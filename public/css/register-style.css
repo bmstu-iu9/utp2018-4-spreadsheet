@@ -57,7 +57,8 @@ input {
     display: inline-block;
     padding: 7px;
     height: 23px;
-    width: 144px;
+    width: 124px;
+    padding-left: 27px;
     border: none;
     border-radius: 6px;
     background-color: #ffffff
@@ -69,9 +70,10 @@ input {
     margin-left: 35px;
     padding: 7px;
     height: 23px;
-    width: 314px;
+    width: 297px;
     border: none;
     border-radius: 6px;
+    padding-left: 27px;
     background-color: #ffffff
 }
 
@@ -114,4 +116,39 @@ input {
     margin-left: 10px;
     font-size: 18px;
     font-family: "Roboto", sans-serif;
+}
+
+#fn_icon {
+    margin-left: 40px;
+    margin-right: -70px;
+    float: left;
+}
+
+#ln_icon {
+	margin-left: -170px;
+	margin-right: 170px;
+	float: right;
+}
+
+#fn_icon, #ln_icon {
+	color: #808080;
+	width: 20px;
+	height: 20px;
+	margin-top: 10px;
+	text-align: center;
+	position: relative;
+	z-index: 1;
+}
+
+#org_icon, #email_icon, #pass_icon {
+	margin-left: 40px;
+	color: #808080;
+	width: 20px;
+	height: 20px;
+	margin-top: 10px;
+	text-align: center;
+	margin-right: -26px;
+	position: relative;
+	z-index: 1;
+	float: left;
 }
