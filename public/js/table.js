@@ -10,6 +10,7 @@ let DEFAULT_ROWS = 50, DEFAULT_COLS = 26;
 let ROWS = 0, COLS = 0;
 let letters = [65];
 let currentLet = [];
+let focusID = '';
 
 const clear = (index) => {
     for (let i = index; i < letters.length; i++) {
@@ -232,6 +233,50 @@ const addVerticalExpansion = (i) => {
   movableLine.ondragstart = () => false;
 }
 
+/**
+ * Initialize cell events
+ * @param {String} id
+ */
+const initCell = (columnNumber, rowNumber) => {
+    const id = currentLet[columnNumber] + rowNumber;
+    const newInput = document.getElementById(id);
+    const newCell = document.getElementById('Cell_' + id);
+    newCell.onmousedown = (e) => {
+        if (focusID) {
+            const oldInput = document.getElementById(focusID);
+            const oldCell = document.getElementById('Cell_' + focusID);
+
+            oldInput.style.textAlign = 'right';
+            oldCell.style.outline = '';
+        }
+
+        focusID = newInput.id;
+        newInput.style.textAlign = 'left';
+        newCell.style.outline = '3px solid #35b729';
+    }
+
+    //При нажатии на Enter спускаемся вниз
+    newInput.addEventListener('keydown', (e) => {
+        let dx = 0;
+        let dy = 0;
+
+        if (e.keyCode === 13 || e.keyCode === 40) { //Enter and down button
+            dy = 1;
+        } else if (e.keyCode === 38) { //up
+            dy = (rowNumber ? -1 : 0);
+        } else if (e.keyCode === 37) { //left
+            dx = (columnNumber ? -1 : 0);
+        } else if (e.keyCode === 39) { //right
+            dx = 1;
+        }
+
+        const low_cell = document.getElementById('Cell_' + currentLet[columnNumber + dx] + (rowNumber + dy))
+        const low_input = document.getElementById(currentLet[columnNumber + dx] + (rowNumber + dy))
+        low_cell.dispatchEvent(new Event('mousedown', {keyCode : 13}));
+        low_input.focus();
+    });
+}
+
 const addCells = function(rows, cols){
 
   if (rows === 0) {
@@ -250,6 +295,7 @@ const addCells = function(rows, cols){
             const cell = mainTable.rows[j].insertCell(-1);
             cell.innerHTML = "<input id = '"+ letter + (j + 1) +"'/>";
             cell.id = 'Cell_' + letter + (j + 1);
+            initCell(currentLet.length - 1, j + 1);
 
             const inp = document.getElementById(letter + (j + 1));
             const preInp = document.getElementById(currentLet[currentLet.length - 2] + (j + 1));
@@ -298,6 +344,7 @@ const addCells = function(rows, cols){
             const new_cell = row.insertCell(-1);
             new_cell.innerHTML = "<input id = '"+ letter + (i + 1) +"'/>";
             new_cell.id = 'Cell_' + letter + (i + 1);
+            initCell(j, i + 1);
 
             if (i >= DEFAULT_ROWS) {
                 const inp = document.getElementById(letter + (i + 1));
