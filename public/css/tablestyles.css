@@ -9,6 +9,7 @@
   position: relative;
   border: 1px solid #000;
   cursor: cell;
+  outline-offset: -1px;
 }
 
 .left-div{
@@ -83,7 +84,7 @@ input {
 }
 
 input:focus {
-    outline: 2px solid #000;
+    outline: none;
 }
 
 input:not(:focus) {
