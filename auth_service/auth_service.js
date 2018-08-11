@@ -179,6 +179,9 @@ http.createServer((req, res) => {
                 registerHandle(qs.parse(body), res);
             } else if (path.path === '/logout') {
                 logoutHandle(qs.parse(body), res);
+            } else {
+                res.writeHead(404, { 'Content-Type' : 'text/plain' });
+                res.end(); 
             }
         }); 
     } else {

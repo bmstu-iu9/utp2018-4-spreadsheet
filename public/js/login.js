@@ -22,8 +22,8 @@ const ERROR_MESSAGES = {
 const ajax_auth = (adress, postData) => {
     const ajax = new XMLHttpRequest();
     ajax.onreadystatechange = () => {
-        if (ajax.readyState == 4) {
-            if (ajax.status == 200) {
+        if (ajax.readyState === 4) {
+            if (ajax.status === 200) {
                 let loginINFO = null;
                 try {
                     loginINFO = JSON.parse(ajax.responseText);

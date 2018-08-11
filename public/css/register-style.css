@@ -111,6 +111,7 @@ input {
 }
 
 #toLogin, #signup {
+    margin-bottom: 5px;
     margin-left: 10px;
     font-size: 18px;
     font-family: "Roboto", sans-serif;

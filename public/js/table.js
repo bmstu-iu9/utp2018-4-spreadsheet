@@ -220,6 +220,23 @@ class Table {
         return { realText: this.field[x][y].realText, toDisplay: this.field[x][y].toDisplay, error: this.field[x][y].error }
     }
 
+    collectData() {
+        let data = {size: [ROWS, COLS]};
+        for (let i = 0; i < this.field.length; i++){
+            if (this.field[i]) { //Надо ли?
+                for (let j = 0; j < this.field[i].length; j++) {
+                    if (this.field[i][j].realText) {
+                        //сохраняем координаты, а не индекс, потому что загружаться надо будет один раз за сеанс,
+                        //а сохранятся много, и время конвертации было бы велико.
+                        data[[j, i]] = this.field[i][j].realText;
+                    }
+                }
+            }
+        }
+    
+        return data;//на что-нибудь уникальное
+    }
+
     update() {
         let rightOrderedUPD = new Stack();
         let depth_stack = new Stack();
@@ -945,8 +962,6 @@ const addCells = (rows, cols) => {
     COLS += cols;
 }
 
-addCells(DEFAULT_ROWS, DEFAULT_COLS);
-
 mainDiv.onscroll = function () {
     upDiv.scrollLeft = this.scrollLeft;
     leftDiv.scrollTop = this.scrollTop;
@@ -980,7 +995,6 @@ const convNumtoId = (x, y) => {
     return colName(x) + String(y + 1);
 }
 
-
 const updateTables = () => {
     let upd = innerTable.update();
     console.log(upd);
@@ -992,3 +1006,49 @@ const updateTables = () => {
     }
 }
 
+const loadTable = (token) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://' + config.host_save + ':' + config.port_save + '/load');
+    xhr.send('session='+token);
+    xhr.onload = () => {
+        let data = null;
+        try {
+            data = JSON.parse(xhr.responseText);
+        } catch {
+            addCells(DEFAULT_ROWS, DEFAULT_COLS);
+            return;
+        }
+
+        if (data.error) {
+            console.log(data.error);
+            addCells(DEFAULT_ROWS, DEFAULT_COLS);
+            return;
+        }
+
+        const tableData = JSON.parse(data.data);
+        addCells(tableData['size'][0], tableData['size'][1]);
+        delete tableData['size'];
+
+        for (let coordStr in tableData) {
+            const coord = coordStr.split(',');
+            innerTable.setCeil(coord[1], coord[0], arr2str(tableData[coord]));
+        }
+
+        updateTables();
+    }
+}
+
+
+const cookie = parseCookies(document.cookie);
+//Сохраняем перед закрытием
+window.onbeforeunload = () => {
+    navigator.sendBeacon('http://' + config.host_save + ':' + config.port_save + '/save', 'session='+cookie['token'] +
+     '&data='+JSON.stringify(prepareText(innerTable.collectData())));
+    //ajax_save({session: parseCookies(document.cookie)['token'], data: JSON.stringify(prepareText(innerTable.collectData()))});
+}
+
+if (cookie['token']) {
+    loadTable(cookie['token']);
+} else {
+    addCells(DEFAULT_ROWS, DEFAULT_COLS);
+}
