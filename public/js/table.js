@@ -252,7 +252,7 @@ const initCell = (columnNumber, rowNumber) => {
 
         focusID = newInput.id;
         newInput.style.textAlign = 'left';
-        newCell.style.outline = '3px solid #35b729';
+        newCell.style.outline = '3px solid #6bc961' 
     }
 
     //При нажатии на Enter спускаемся вниз
