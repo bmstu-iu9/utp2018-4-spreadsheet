@@ -343,7 +343,7 @@ const addCells = function(rows, cols){
             const letter = currentLet[j];
 
             const new_cell = row.insertCell(-1);
-            new_cell.innerHTML = "<input id = '"+ letter + (i + 1) +"' class = 'cell'/>";
+            new_cell.innerHTML = "<input id = '"+ letter + (i + 1) +"' class = 'cell-input'/>";
             new_cell.id = 'Cell_' + letter + (i + 1);
             initCell(j, i + 1);
 
@@ -423,8 +423,6 @@ const getPosition = e => {
 
 const menu = document.getElementById("context-menu");
 let menuState = 0;
-const active = "context-menu--active";
-
 var menuPosition;
 var menuPositionX;
 var menuPositionY;
@@ -438,7 +436,9 @@ var clickCoords;
 var clickCoordsX;
 var clickCoordsY;
 
-function positionMenu(e) {
+var itemInContext;
+
+const positionMenu = e => {
   clickCoords = getPosition(e);
   clickCoordsX = clickCoords.x;
   clickCoordsY = clickCoords.y;
@@ -449,51 +449,98 @@ function positionMenu(e) {
   windowWidth = window.innerWidth;
   windowHeight = window.innerHeight;
 
-  if ( (windowWidth - clickCoordsX) < menuWidth ) {
+  if ((windowWidth - clickCoordsX) < menuWidth) {
     menu.style.left = windowWidth - menuWidth + "px";
   } else {
     menu.style.left = clickCoordsX + "px";
   }
 
-  if ( (windowHeight - clickCoordsY) < menuHeight ) {
+  if ((windowHeight - clickCoordsY) < menuHeight) {
     menu.style.top = windowHeight - menuHeight + "px";
   } else {
     menu.style.top = clickCoordsY + "px";
   }
 }
 
-function spreadsheetMenuOn() {
+function contextMenuOn() {
   if (menuState !== 1) {
     menuState = 1;
-    menu.classList.add(active);
+    menu.classList.add("context-menu--active");
   }
 }
 
-function spreadsheetMenuOff() {
+function contextMenuOff() {
   if (menuState !== 0) {
     menuState = 0;
-    menu.classList.remove(active);
+    menu.classList.remove("context-menu--active");
   }
+}
+
+function triggerPasteEvent(element) {
+    var pasteEvent = document.createEvent('ClipboardEvent')
+    pasteEvent.initEvent('paste', true, true)
+    element.dispatchEvent(pasteEvent)
+}
+
+const menuItemListener = link => {
+  //alert("Cell - " + itemInContext.id + ", Action - " + link.getAttribute("data-action"));
+  let cell = itemInContext;
+  let action = link.getAttribute("data-action");
+  switch (action){
+    case 'paste':
+      alert("Nerabotaet(((");
+      break;
+    case 'copy':
+      cell.focus();
+      cell.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+          alert("Opa4ki!");
+      }
+      window.getSelection().removeAllRanges();
+      break;
+    case 'cut':
+      cell.focus();
+      cell.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+          alert("Opa4ki!");
+      }
+    case 'delete':
+      cell.value = null;
+    }
+  contextMenuOff();
 }
 
 function contextMenuListener() {
   document.addEventListener("contextmenu", e => {
-    if ( clickInsideElement(e, 'cell')) {
+    itemInContext = clickInsideElement(e, 'cell-input');
+
+    if (itemInContext) {
       e.preventDefault();
-      spreadsheetMenuOn();
+      contextMenuOn();
       positionMenu(e);
     } else {
-      spreadsheetMenuOff();
+      itemInContext = null;
+      contextMenuOff();
     }
   });
-  //alert(el);
 }
 
 function clickListener() {
   document.addEventListener("click", e => {
-    var button = e.which || e.button;
-    if (button === 1) {
-      spreadsheetMenuOff();
+    let clickeElIsLink = clickInsideElement(e, 'context-menu_link');
+
+    if (clickeElIsLink) {
+      e.preventDefault();
+      menuItemListener(clickeElIsLink);
+    } else {
+      let button = e.which || e.button;
+      if (button === 1) {
+        contextMenuOff();
+      }
     }
   });
 }
@@ -501,14 +548,14 @@ function clickListener() {
 function keyupListener() {
   window.onkeyup = e => {
     if (e.keyCode === 27) {
-      spreadsheetMenuOff();
+      contextMenuOff();
     }
   }
 }
 
 function resizeListener() {
   window.onresize = function(e) {
-    spreadsheetMenuOff();
+    contextMenuOff();
   };
 }
 

@@ -158,11 +158,11 @@ td {
 .context-menu_link {
   display: block;
   padding: 4px 12px;
-  color: #0066aa;
+  color: #35b729;
   text-decoration: none;
 }
 
 .context-menu_link:hover {
   color: #fff;
-  background-color: #0066aa;
+  background-color: #35b729;
 }
