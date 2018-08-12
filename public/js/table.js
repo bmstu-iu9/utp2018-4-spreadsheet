@@ -110,19 +110,14 @@ class Ceil {
 
 const coordFromLetters = (str) => {
     str = str.toUpperCase();
-    let res = str.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
-    let delta = 0;
-    for (let i = 1; i < str.length; i++) {
-        console.log("delta: " + delta)
-        delta *= 26;
-        delta += str.charCodeAt(i - 1) - 'A'.charCodeAt(0) + 1;
-        console.log("delta: " + delta)
-        console.log("res: " + res)
-        res *= 27;
-        res += str.charCodeAt(i) - 'A'.charCodeAt(0) + 1;
-        console.log("res: " + res)
+    let res = 0;
+    let mul = 1;
+    for(let i = str.length - 1; i >= 0; i--){
+        res += mul * (str.charCodeAt(i) - 'A'.charCodeAt(0) + 1);
+        mul *= 26;
     }
-    return res - delta - 1;
+    
+    return res - 1;
 }
 
 const isAlphabetic = (str) => {
