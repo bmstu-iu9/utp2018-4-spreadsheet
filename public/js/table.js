@@ -366,9 +366,7 @@ const addCells = function(rows, cols){
 
 addCells(DEFAULT_ROWS, DEFAULT_COLS);
 
-contextMenuListener();
-clickListener();
-keyupListener();
+initContextMenu();
 
 mainDiv.onscroll = function() {
   upDiv.scrollLeft = this.scrollLeft;
@@ -385,14 +383,14 @@ mainDiv.onscroll = function() {
   }
 }
 
-function clickInsideElement( e, className ) {
+const clickInsideElement = (e, className) => {
   let el = e.srcElement || e.target;
 
-  if ( el.classList.contains(className) ) {
+  if (el.classList.contains(className)) {
     return el;
   } else {
-    while ( el = el.parentNode ) {
-      if ( el.classList && el.classList.contains(className) ) {
+    while (el = el.parentNode) {
+      if (el.classList && el.classList.contains(className)) {
         return el;
       }
     }
@@ -400,15 +398,90 @@ function clickInsideElement( e, className ) {
   return false;
 }
 
+const getPosition = e => {
+  let posX = 0;
+  let posY = 0;
+
+  if (!e)
+    e = window.event;
+
+  if (e.pageX || e.pageY) {
+    posX = e.pageX;
+    posY = e.pageY;
+  } else if (e.clientX || e.clientY) {
+    posX = e.clientX + document.body.scrollLeft +
+                       document.documentElement.scrollLeft;
+    posY = e.clientY + document.body.scrollTop +
+                       document.documentElement.scrollTop;
+  }
+
+  return {
+    x: posX,
+    y: posY
+  }
+}
+
 const menu = document.getElementById("context-menu");
 let menuState = 0;
 const active = "context-menu--active";
 
+var menuPosition;
+var menuPositionX;
+var menuPositionY;
+
+let menuWidth = menu.offsetWidth;
+let menuHeight = menu.offsetHeight;
+let windowWidth = window.innerWidth;
+let windowHeight = window.innerHeight;
+
+var clickCoords;
+var clickCoordsX;
+var clickCoordsY;
+
+function positionMenu(e) {
+  clickCoords = getPosition(e);
+  clickCoordsX = clickCoords.x;
+  clickCoordsY = clickCoords.y;
+
+  menuWidth = menu.offsetWidth + 15;
+  menuHeight = menu.offsetHeight + 15;
+
+  windowWidth = window.innerWidth;
+  windowHeight = window.innerHeight;
+
+  if ( (windowWidth - clickCoordsX) < menuWidth ) {
+    menu.style.left = windowWidth - menuWidth + "px";
+  } else {
+    menu.style.left = clickCoordsX + "px";
+  }
+
+  if ( (windowHeight - clickCoordsY) < menuHeight ) {
+    menu.style.top = windowHeight - menuHeight + "px";
+  } else {
+    menu.style.top = clickCoordsY + "px";
+  }
+}
+
+function spreadsheetMenuOn() {
+  if (menuState !== 1) {
+    menuState = 1;
+    menu.classList.add(active);
+  }
+}
+
+function spreadsheetMenuOff() {
+  if (menuState !== 0) {
+    menuState = 0;
+    menu.classList.remove(active);
+  }
+}
+
 function contextMenuListener() {
-  document.addEventListener( "contextmenu", function(e) {
-    if ( clickInsideElement( e, 'cell') ) {
+  document.addEventListener("contextmenu", e => {
+    if ( clickInsideElement(e, 'cell')) {
       e.preventDefault();
       spreadsheetMenuOn();
+      positionMenu(e);
     } else {
       spreadsheetMenuOff();
     }
@@ -416,33 +489,32 @@ function contextMenuListener() {
   //alert(el);
 }
 
-function spreadsheetMenuOn() {
-  if ( menuState !== 1 ) {
-    menuState = 1;
-    menu.classList.add(active);
-  }
-}
-
-function spreadsheetMenuOff() {
-  if ( menuState !== 0 ) {
-    menuState = 0;
-    menu.classList.remove(active);
-  }
-}
-
 function clickListener() {
-  document.addEventListener( "click", function(e) {
+  document.addEventListener("click", e => {
     var button = e.which || e.button;
-    if ( button === 1 ) {
+    if (button === 1) {
       spreadsheetMenuOff();
     }
   });
 }
 
 function keyupListener() {
-  window.onkeyup = function(e) {
-    if ( e.keyCode === 27 ) {
+  window.onkeyup = e => {
+    if (e.keyCode === 27) {
       spreadsheetMenuOff();
     }
   }
+}
+
+function resizeListener() {
+  window.onresize = function(e) {
+    spreadsheetMenuOff();
+  };
+}
+
+function initContextMenu(){
+  contextMenuListener();
+  clickListener();
+  keyupListener();
+  resizeListener();
 }
