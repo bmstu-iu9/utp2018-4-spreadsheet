@@ -1,21 +1,133 @@
-<!DOCTYPE html>
-<html>
- <head>
-  <title>Электронная таблица</title>
-  <meta charset="utf8"/>
-  <link rel="stylesheet" type="text/css" href="/css/tablestyles.css" >
- </head>
- <body>
+<div class="back">
+  <html xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <title>Whitesquare</title>
+    <link rel="stylesheet" href="css/tabs_style.css.css" type="text/css">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Oswald:400,300" type="text/css">
+    <form name="search" action="#" method="get">
 
-  <h1>Матерьяльный дизайн</h1>
-  <!--
-  <img src="/img/teamlogo.png" alt="Our TEAM" id = "img">
-  <-->
 
-  <div id = "table-div" class = "scroll-table">
-    <table id = "table"></table>
+    </form>
+
+
+  </head>
+  <link rel="stylesheet" href="css/tabs_style.css">
+
+  <div id="tab/three" class="abs tabs block">
+    <p class="abs">
+      &lt;div <span style="color: #444">id="tab/three"</span>&gt;
+      <br />...
+      <br />&lt;/div&gt;
+    </p>
   </div>
 
-  <script src="/js/table.js"></script>
- </body>
-</html>
+  <div id="tab/two" class="abs tabs block">
+    <p class="abs">
+      &lt;div <span style="color: #444">id="tab/two"</span>&gt;
+      <br />...
+      <br />&lt;/div&gt;
+    </p></div>
+
+  <div id="tab/one" class="abs tabs block">
+    <p class="abs">
+      &lt;div <span style="color: #444">id="tab/one"</span>&gt;
+      <br />...
+      <br />&lt;/div&gt;
+    </p></div>
+
+  <div id="tab" class="abs block">
+    <a href="#one">#one</a>
+    <a href="#two">#two</a>
+    <b><a href="#tab/one">#tab</a></b>
+
+    <p class="abs" style="font-size: 24px; top: 32px; left: 34px; color: #ccc">
+      &lt;div id="tab"&gt;
+    </p>
+    <p class="abs" style="font-size: 24px; top: 200px; left: 34px; color: #ccc">
+      &lt;div id="tab"&gt;
+    </p>
+
+    <ul class="circle abs">
+      <a href="#tab/one"><li></li></a><a href="#tab/two"><li></li></a><a href="#tab/three"><li></li></a></ul>
+    <ul class="abs"><a href="#tab/one"><li>3.1</li></a><a href="#tab/two"><li>3.2</li></a><a href="#tab/three"><li>3.3</li></a></ul>
+  </div>
+
+  <div id="two" class="abs block">
+    <nav>
+      <ul class="top-menu">
+        <li><a href="#">File</a>
+          <ul class="submenu">
+            <li><a href="#">New</a></li>
+            <li><a href="#">Open</a></li>
+            <li><a href="#">Create copy</a></li>
+          </ul>
+        </li>
+        <li><a href="#one">Edit</a></li>
+
+        <li><a href="#two">Format</a></li>
+      </ul>
+    </nav>
+
+  <section class="format">
+    <div class="transformtext">
+      <div class="alignment">
+        <h2>Aligment:</h2>
+        <div class="horizontally">
+
+          <button class='left'></button>
+          <button class='center'></button>
+          <button class='right'></button>
+        </div>
+      </div>
+      <div class="font">
+        <h2>Font:</h2>
+        <div class="font-settings">
+          <button class='left'></button>
+          <button class='center'></button>
+          <button class='right'></button>
+        </div>
+      </div>
+    </div>
+    <div class="textinput"></div>
+
+    <textarea class="example-text">Example</textarea>
+  </section>
+
+  </div>
+
+<div id="one" class="abs block">
+
+    <div>
+      <nav>
+        <ul class="top-menu">
+          <li><a href="#">File</a>
+            <ul class="submenu">
+              <li><a href="#">New</a></li>
+              <li><a href="#">Open</a></li>
+              <li><a href="#">Create copy</a></li>
+            </ul>
+          </li>
+          <li><a href="#one">Edit</a></li>
+
+          <li><a href="#two">Format</a></li>
+        </ul>
+      </nav>
+    </div>
+
+
+
+    <div class="toolbar">
+      <button class="back-button" title="Cancel"></button>
+      <button class="forward-button" title="Forward"></button>
+      <button class="copy-button" title="Copy"></button>
+      <button class="cut-button" title="Cut"></button>
+      <button class="paste-button" title="Paste"></button>
+      <button class="lock-button" title="Lock"></button>
+      <button class="unlock-button" title="Unlock"></button>
+    </div>
+</div>
+
+</div>
+
