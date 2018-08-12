@@ -16,6 +16,7 @@ const EXPECTED_EXACT = 106;
 const ARG_ERROR = 200;
 const DIV_BY_ZERO = 201;
 const UNDEFINED_ARG = 202;
+const WRONG_ARGS_AMOUNT = 203;
 
 //service errors 3**
 const SERVICE_ERR = 300;
@@ -112,11 +113,11 @@ const coordFromLetters = (str) => {
     str = str.toUpperCase();
     let res = 0;
     let mul = 1;
-    for(let i = str.length - 1; i >= 0; i--){
+    for (let i = str.length - 1; i >= 0; i--) {
         res += mul * (str.charCodeAt(i) - 'A'.charCodeAt(0) + 1);
         mul *= 26;
     }
-    
+
     return res - 1;
 }
 
@@ -283,9 +284,9 @@ class Table {
 
 
 
-const POSSIBLE_FUNCTIONS = new Set(["SUM", "MUL", "ABS"]);
+const POSSIBLE_FUNCTIONS = new Set(["SUM", "MUL"]);
 
-function OPERATOR(first, oper, second) {//TODO: bigNums
+const OPERATOR = (first, oper, second) => {//TODO: bigNums
     if (oper === undefined && second === undefined) {
         return first;
     }
@@ -320,13 +321,92 @@ function OPERATOR(first, oper, second) {//TODO: bigNums
     }
 }
 
-function SUM(...args) {
+const SUM = (...args) => {
     let sum = 0;
     for (let i = 0; i < args.length; i++) {
         sum = OPERATOR(sum, '+', args[i]);
     }
     return sum;
 }
+
+const MUL = (...args) => {
+    let mul = 1;
+    for (let i = 0; i < args.length; i++) {
+        mul = OPERATOR(mul, '*', args[i]);
+    }
+    return mul;
+}
+
+
+const funcConstructor = (func, funcName, min_arg, max_arg) => {
+    POSSIBLE_FUNCTIONS.add(funcName);
+    return (...args) => {
+        if (args.length < min_arg) {
+            throw new FormulaError(
+                WRONG_ARGS_AMOUNT,
+                'expected more then ' + min_arg + ' arguments',
+            );
+        }
+
+        if (max_arg !== undefined && args.length < max_arg) {
+            throw new FormulaError(
+                WRONG_ARGS_AMOUNT,
+                'expected less then ' + max_arg + ' arguments',
+            );
+        }
+
+        for (let arg in args) {
+            if (isNaN(arg)) {
+                throw new FormulaError(
+                    NAN,
+                    arg + ' is not a number'
+                );
+            }
+        }
+
+        let res = func(...args);
+        if (isNaN(res)) {
+            throw new FormulaError(
+                UNDEFINED,
+                funcName + ' result undefined',
+            );
+        }
+        return res;
+    }
+}
+
+const ABS = funcConstructor(Math.abs, 'ABS', 1, 1);
+
+const POWER = funcConstructor(Math.pow, 'POWER', 2, 2);
+
+const LOG = funcConstructor(Math.log, 'LOG', 1, 1);
+
+const SQRT = funcConstructor(Math.sqrt, 'SQRT', 1, 1);
+
+const ROUND = funcConstructor(Math.round, 'ROUND', 1, 1);
+
+const FLOOR = funcConstructor(Math.floor, 'FLOOR', 1, 1);
+
+const COS = funcConstructor(Math.cos, 'COS', 1, 1);
+
+const SIN = funcConstructor(Math.sin, 'SIN', 1, 1);
+
+const ACOS = funcConstructor(Math.acos, 'ACOS', 1, 1);
+
+const ASIN = funcConstructor(Math.asin, 'ASIN', 1, 1);
+
+const EXP = funcConstructor(Math.exp, 'EXP', 1, 1);
+
+const PI = funcConstructor(() => Math.PI, 'PI', 0, 0);
+
+const MAX = funcConstructor(Math.max, 'MAX', 1);
+
+const MIN = funcConstructor(Math.min, 'MIN', 1);
+
+const SIGN = funcConstructor(Math.sign, 'SIGN', 1, 1);
+
+const RAND = funcConstructor(Math.random, 'RAND', 1, 1);
+
 
 const isCircDepend = (startCeil) => {
     let depth_stack = new Stack();
@@ -817,10 +897,10 @@ const addCells = (rows, cols) => {
                 curCell.addEventListener("keydown", function (elem) {
                     return (event) => {
                         console.log(curCell.id, 'code=', event.code, 'key=', event.key);
-                        if(event.key == 'Enter'){
+                        if (event.key == 'Enter') {
                             elem.blur();
                         }
-                        if(event.key == 'Escape'){
+                        if (event.key == 'Escape') {
                             console.log(elem.value);
                             elem.value = '';
                         }
@@ -898,10 +978,10 @@ const addCells = (rows, cols) => {
                 curCell.addEventListener("keydown", function (elem) {
                     return (event) => {
                         console.log(curCell.id, 'code=', event.code, 'key=', event.key);
-                        if(event.key == 'Enter'){
+                        if (event.key == 'Enter') {
                             elem.blur();
                         }
-                        if(event.key == 'Escape'){
+                        if (event.key == 'Escape') {
                             console.log(elem.value);
                             elem.value = '';
                         }
