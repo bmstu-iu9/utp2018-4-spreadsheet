@@ -11,6 +11,7 @@ const UNKNOWN_IDENTIFIER = 103;
 const EXPECTED_OPERATOR = 104;
 const EXPECTED_IDENTIFIER = 105;
 const EXPECTED_EXACT = 106;
+const EXPECTED_CELL = 107;
 
 //formula args errors 2**
 const ARG_ERROR = 200;
@@ -123,7 +124,8 @@ const coordFromLetters = (str) => {
 
 const isAlphabetic = (str) => {
     return ('A'.charCodeAt(0) <= str.charCodeAt(0) && str.charCodeAt(0) <= 'Z'.charCodeAt(0) ||
-        'a'.charCodeAt(0) <= str.charCodeAt(0) && str.charCodeAt(0) <= 'z'.charCodeAt(0));
+        'a'.charCodeAt(0) <= str.charCodeAt(0) && str.charCodeAt(0) <= 'z'.charCodeAt(0)
+    );
 }
 
 const isNumeric = (str) => {
@@ -134,7 +136,7 @@ const isSpecial = (str) => {
     return ((str === '(') || (str === ')') ||
         (str === '+') || (str === '-') ||
         (str === '*') || (str === '/') ||
-        (str === ';'));
+        (str === ';') || (str === ':'));
 }
 
 const isSpaceChar = (str) => {
@@ -142,6 +144,7 @@ const isSpaceChar = (str) => {
 }
 
 const convCoord = (str) => {
+    console.log(str)
     str = str.toUpperCase();
     let beg = 0;
     if (str[0] === "$") beg = 1;
@@ -180,7 +183,6 @@ class Table {
     }
 
     createCeilIfNeed(x, y) {
-        console.log('CREATE ' + x + ' ' + y);
         if (this.field[x] == undefined) {
             this.field[x] = new Array(y + 1);
         }
@@ -217,6 +219,9 @@ class Table {
     }
 
     update() {
+        console.log(this.field[0][0].receivers)
+        console.log(this.field[0][1].receivers)
+        console.log(this.field[1][1].receivers)
         let rightOrderedUPD = new Stack();
         let depth_stack = new Stack();
         let usage_array = new Array();
@@ -227,23 +232,24 @@ class Table {
             }
             depth_stack.push(this.toUpdate.top());
             usage_array.push(this.toUpdate.top());
-            this.toUpdate.top().colour = GREY;
             this.toUpdate.pop();
 
             while (!depth_stack.isEmpty()) {
                 console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TRACKING UPDATE")
-                if (depth_stack.top().colour === BLACK) {
-                    depth_stack.top().colour = BLACK;
-                    rightOrderedUPD.push(depth_stack.pop());
-                } else {
-                    depth_stack.top().colour = BLACK;
+                if (depth_stack.top().colour === WHITE) {
+                    depth_stack.top().colour = GREY;
+                    console.log(depth_stack.top().x, depth_stack.top().y, 'not popped');
                     depth_stack.top().receivers.forEach(ceil => {
+                        console.log(ceil.x, ceil.y, 'watching', ceil.colour);
                         if (ceil.colour === WHITE) {
                             depth_stack.push(ceil);
                             usage_array.push(ceil);
-                            ceil.colour = GREY;
                         }
                     })
+                } else {
+                    console.log(depth_stack.top().x, depth_stack.top().y,'popped');
+                    depth_stack.top().colour = BLACK;
+                    rightOrderedUPD.push(depth_stack.pop());
                 }
             }
 
@@ -275,7 +281,7 @@ class Table {
 
             res.push({ x: curCeil.x, y: curCeil.y });
         }
-        console.log(res);
+        console.log('res:', res);
         return res;
     }
 
@@ -382,6 +388,8 @@ const POWER = funcConstructor(Math.pow, 'POWER', 2, 2);
 const LOG = funcConstructor(Math.log, 'LOG', 1, 1);
 
 const SQRT = funcConstructor(Math.sqrt, 'SQRT', 1, 1);
+
+const KOPEH = funcConstructor(Math.sqrt, 'KOPEH', 1, 1);
 
 const ROUND = funcConstructor(Math.round, 'ROUND', 1, 1);
 
@@ -510,7 +518,7 @@ const tokenize = (formula) => {
                 temp += formula[ptL];
                 ptL++;
             }
-            if (!POSSIBLE_FUNCTIONS.has(temp))
+            if (!POSSIBLE_FUNCTIONS.has(temp)) {
                 try {
                     convCoord(temp);
                 } catch (e) {
@@ -520,6 +528,7 @@ const tokenize = (formula) => {
                         beg,
                     )
                 }
+            }
             tokens.push(temp);
         } else {
             console.log("kek lol kek lol")
@@ -621,7 +630,7 @@ const parseAddEnd = (table, ceil, tokens, funcStr) => {
             funcStr = 'OPERATOR(' + funcStr + ', \'' + tokens.next().token + '\', ';
             funcStr += parseMulBeg(table, ceil, tokens) + ')';
             return parseAddEnd(table, ceil, tokens, funcStr);
-        } else if (tokens.peek().token === ')' || tokens.peek().token === ';') {
+        } else if (tokens.peek().token === ')' || tokens.peek().token === ';' || tokens.peek().token === ':') {
             return funcStr;
         }
     } else {
@@ -716,12 +725,54 @@ const parseElem = (table, ceil, tokens) => {
 
 const parseArgs = (table, ceil, tokens) => {
     console.log('parseArgs')
+    let cur = '';
     let funcStr = '';
+    let temp = '';
+    let next1 = '';
+    let next2 = '';
     if (tokens.peek().token === ')') {
         return funcStr;
     }
     while (!tokens.isEmpty()) {
-        funcStr += parseAddBeg(table, ceil, tokens);
+        cur = tokens.peek().token;
+        next1 = parseAddBeg(table, ceil, tokens)
+        if (tokens.peek().token !== ':')
+            funcStr += next1;
+        else {
+            tokens.next();
+            temp = tokens.peek().token;
+            next2 = parseAddBeg(table, ceil, tokens);
+
+            try {
+                if (next1.indexOf('()') !== next1.lastIndexOf('()') || next2.indexOf('()') !== next2.lastIndexOf('()'))
+                    throw 'err';
+                let firstCoord = convCoord(cur);
+                let secondCoord = convCoord(temp);
+                let s1 = Math.min(firstCoord.x, secondCoord.x);
+                let s2 = Math.min(firstCoord.y, secondCoord.y);
+                let f1 = Math.max(firstCoord.x, secondCoord.x);
+                let f2 = Math.max(firstCoord.y, secondCoord.y);
+                console.log('KKKEEEKKK', s1, s2, f1, f2);
+                for (; s1 <= f1; s1++) {
+                    for (let i = s2; i <= f2; i++) {
+                        funcStr += 'table.getInnerCeil(' + s1 + ',' + i + ').get()';
+
+                        ceil.dependencies.add(table.getInnerCeil(s1, i));
+                        table.getInnerCeil(s1, i).receivers.add(ceil);
+                        if (s1 != f1 || i != f2) {
+                            funcStr += ',';
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+                console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+                throw new FormulaError(
+                    EXPECTED_CELL,
+                    'expected: *cell*:*cell*, found: ' + next1 + ':' + next2,
+                )
+            }
+        }
         if (tokens.peek().token === ')') {
             return funcStr;
         }
@@ -1058,11 +1109,15 @@ const convNumtoId = (x, y) => {
 
 const updateTables = () => {
     let upd = innerTable.update();
+    
     console.log(upd);
     console.log('POKA OKEY')
     for (let i = 0; i < upd.length; i++) {
         let ceil = upd[i];
         console.log(ceil.x, ceil.y);
+        console.log(innerTable.getCeil(ceil.x, ceil.y).toDisplay);
+        console.log(innerTable.getCeil(ceil.x, ceil.y).realText);
+        console.log(innerTable.getCeil(ceil.x, ceil.y).error);
         document.getElementById(convNumtoId(ceil.x, ceil.y)).value = innerTable.getCeil(ceil.x, ceil.y).toDisplay;
     }
 }
