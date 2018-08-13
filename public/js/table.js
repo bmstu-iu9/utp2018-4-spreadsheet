@@ -368,6 +368,7 @@ addCells(DEFAULT_ROWS, DEFAULT_COLS);
 
 initContextMenu();
 
+
 mainDiv.onscroll = function() {
   upDiv.scrollLeft = this.scrollLeft;
   leftDiv.scrollTop = this.scrollTop;
@@ -482,13 +483,30 @@ function triggerPasteEvent(element) {
     element.dispatchEvent(pasteEvent)
 }
 
+function PasteFromClipboard(el)
+{
+    el.focus();
+    //var PastedText = el.createTextRange();
+    PastedText.execCommand("Paste");
+}
+
 const menuItemListener = link => {
   //alert("Cell - " + itemInContext.id + ", Action - " + link.getAttribute("data-action"));
   let cell = itemInContext;
   let action = link.getAttribute("data-action");
   switch (action){
     case 'paste':
-      alert("Nerabotaet(((");
+      if (navigator.clipboard) {
+        navigator.clipboard.readText()
+          .then(text => {
+            cell.value = text;
+          })
+          .catch(err => {
+            alert('Failed to read clipboard contents: ' + err);
+          });
+      } else {
+        alert("Only for Chromium 66+");
+      }
       break;
     case 'copy':
       cell.focus();
