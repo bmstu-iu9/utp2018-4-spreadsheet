@@ -1,20 +1,91 @@
 .scroll-table {
-  width: 100%;
+  width: 97%;
+  float: left;
   overflow: auto;
-  height: 90vh;
+  height: 88vh;
+}
+
+.scroll-table td {
+  position: relative;
+  border: 1px solid #000;
+  cursor: cell;
+  outline-offset: -1px;
+}
+
+.left-div{
+  overflow: hidden;
+  width: 3%;
+  height: 88vh;
+  float: left;
+}
+
+.up-div{
+  float: left;
+  overflow: hidden;
+  width: 97%;
+}
+
+.up-div table{
+  width: 100%;
+}
+
+.up-div td{
+   height: 18px;
+   position: relative;
+   background-color: #eee;
+   padding: 1px 3px;
+   border: 1px solid #555;
+   font-weight: bold;
+   text-align: center;
+}
+
+.up {
+  width: 100px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.left-div table td{
+   position: relative;
+   background-color: #eee;
+   border: 1px solid #555;
+   padding: 1px 3px;
+   font-weight: bold;
+   text-align: left;
+}
+
+.left {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.null-div {
+  float: left;
+  width: 3%;
+}
+
+.null-div td {
+  background-color: #eee;
+  border: 1px solid #555;
+  height: 20px;
+  width: 100px;
 }
 
 input {
     border: none;
+    cursor: cell;
     background-color: #fff;
+    color: #000;
     width: 100px;
+    height: 16px;
     font-size: 14px;
     padding: 2px;
 }
 
 input:focus {
-    z-index: 666;
-    outline: 2px solid #000;
+    outline: none;
 }
 
 input:not(:focus) {
@@ -26,14 +97,31 @@ table {
 }
 
 td {
-    background-color: #fff;
-    border: 1px solid #555;
-    padding: 0;
+  font-size: 17px;
 }
 
-tr:first-child td, td:first-child {
-    background-color: #eee;
-    padding: 1px 3px;
-    font-weight: bold;
-    text-align: center;
+.modSymb {
+    cursor: ew-resize;
+    position: absolute;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    z-index: 666;
+    height: 100%;
+    width: 3px;
+    top: 0px;
+    left: 105px;
+}
+
+.modVertSymb {
+    cursor: ns-resize;
+    position: absolute;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    z-index: 666;
+    height: 3px;
+    width: 100%;
+    top: 21px;
+    left: 0px;
 }
