@@ -881,7 +881,7 @@ const upDiv = document.getElementById('up-div');
 const leftDiv = document.getElementById('left-div');
 
 let DEFAULT_ROWS = 50,
-    DEFAULT_COLS = 26;
+    DEFAULT_COLS = 25;
 let ROWS = 0,
     COLS = 0;
 let letters = [65];
@@ -1310,7 +1310,7 @@ const addCreateButton = () => {
     }
 }
 
-addCells(DEFAULT_ROWS, DEFAULT_COLS);
+//addCells(DEFAULT_ROWS, DEFAULT_COLS);
 addRemoveButton();
 addCreateButton();
 
@@ -1405,7 +1405,7 @@ const loadTableGuest = (token) => {
         }
 
         const tableData = JSON.parse(data.data);
-        addCells(tableData['size'][0], tableData['size'][1]);
+        addCells(parseInt(tableData['size'][0]), parseInt(tableData['size'][1]));
         delete tableData['size'];
 
         for (let coordStr in tableData) {
@@ -1418,12 +1418,13 @@ const loadTableGuest = (token) => {
 }
 
 //Сохраняем перед закрытием
-window.onbeforeunload = () => {
+window.onbeforeunload = function() {
     const cookie = parseCookies(document.cookie);
-    navigator.sendBeacon('http://' + config.host_save + ':' + config.port_save + '/save', 'session=' + cookie['token'] +
+    navigator.sendBeacon('http://' + config.host_save + ':' + config.port_save + '/save_guest', 'session=' + cookie['token'] +
         '&data=' + JSON.stringify(Object.assign({}, {
             'size': [ROWS, COLS]
         }, innerTable.activeCeils)));
+
     //ajax_save({session: parseCookies(document.cookie)['token'], data: JSON.stringify(prepareText(innerTable.collectData()))});
 }
 

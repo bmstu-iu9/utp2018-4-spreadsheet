@@ -97,6 +97,12 @@ function str2arr(str) {
     return buf;
 }
 
-const save = () => ajax_save({session: parseCookies(document.cookie)['token'], data: JSON.stringify(innerTable.activeCeils)});
+const save = () => ajax_save({
+                                session: parseCookies(document.cookie)['token'],
+                                data: JSON.stringify(Object.assign({}, {'size': [ROWS, COLS]}, innerTable.activeCeils))
+                            });
 //const mem = () => ajax_remove({session: parseCookies(document.cookie)['token']});
-setInterval(() => ajax_save({session: parseCookies(document.cookie)['token'], data:JSON.stringify(innerTable.activeCeils)}), 600000 * 3); //30 минут
+setInterval(() => ajax_save({
+                                session: parseCookies(document.cookie)['token'],
+                                data: JSON.stringify(Object.assign({}, {'size': [ROWS, COLS]}, innerTable.activeCeils))
+                            }), 600000 * 3); //30 минут
