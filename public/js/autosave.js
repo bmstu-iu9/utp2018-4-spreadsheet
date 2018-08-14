@@ -1,21 +1,5 @@
 'use strict';
 
-const config = {
-    "host_main" : "127.0.0.1",
-    "port_main" : 8080,
-    
-    "host_save" : "127.0.0.1",
-    "port_save" : 8082,
-
-    "column_del" : ',',
-    "row_del" : '|',
-}
-
-const ERROR_MESSAGES = {
-    4 : 'Something goes wrong',
-    5 : 'The save server has a rest :)',
-}
-
 /**
  * Send AJAX save request to save server
  * @param {String} adress 
@@ -42,7 +26,7 @@ const ajax_save = (postData) => {
         }
     };
 
-    ajax.open('POST', 'http://' + config.host_save + ':' + config.port_save + '/save');
+    ajax.open('POST', 'http://' + config.host_save + ':' + config.port_save + '/save_guest');
     ajax.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     ajax.send('session='+postData.session + '&data='+postData.data);
 }
@@ -73,38 +57,32 @@ const ajax_remove = (postData) => {
         }
     };
 
-    ajax.open('POST', 'http://' + config.host_save + ':' + config.port_save + '/remove');
+    ajax.open('POST', 'http://' + config.host_save + ':' + config.port_save + '/remove_guest');
     ajax.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     ajax.send('session='+postData.session);
 }
 
-/**
- * Simple cookie parser
- * @param {String} reqCookies
- * @returns {Object} Parsed key-value cookie pairs
- */
-const parseCookies = (reqCookies) => {
-    const cookies = {};
-    
-    if (reqCookies) {
-        reqCookies.split(';').forEach((cookie) => {
-            const kv = cookie.split('=');
-            cookies[kv[0]] = kv[1];
-        });
-    }
-
-    return cookies;
+const transfer = (title) => { //юзать camel
+    const newTitle = prompt('Enter title of new file', 'new_file');
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://' + config.host_main + ':' + config.port_main + '/save_user_data');
+    xhr.send('session='+parseCookies(document.cookie)['token']);
+    xhr.onload = () => {
+        let dataINFO = null;
+        try {
+            dataINFO = JSON.parse(ajax.responseText);
+        } catch {
+            return;
+        }
+        
+        if (dataINFO.error) {
+            return;
+        }
+        
+        ajax_remove({session : parseCookies(document.cookie)['token']});
+        console.log(dataINFO.data);
+    };
 }
-
-const prepareText = (data) => {
-    for (let field in data) {
-        if (field === 'size') continue;
-        data[field] = str2arr(data[field]);
-    }
-
-    return data;
-}
-
 
 function arr2str(buf) {
     return String.fromCharCode.apply(null, buf);
@@ -119,6 +97,6 @@ function str2arr(str) {
     return buf;
 }
 
-const save = () => ajax_save({session: parseCookies(document.cookie)['token'], data: JSON.stringify(prepareText(innerTable.collectData()))});
+const save = () => ajax_save({session: parseCookies(document.cookie)['token'], data: JSON.stringify(innerTable.activeCeils)});
 //const mem = () => ajax_remove({session: parseCookies(document.cookie)['token']});
-setInterval(() => ajax_save({session: parseCookies(document.cookie)['token'], data: JSON.stringify(prepareText(innerTable.collectData()))}), 600000 * 3); //30 минут
+setInterval(() => ajax_save({session: parseCookies(document.cookie)['token'], data:JSON.stringify(innerTable.activeCeils)}), 600000 * 3); //30 минут

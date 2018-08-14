@@ -2,10 +2,13 @@
 
 const url = require('url');
 const http = require('http');
+const qs = require('querystring');
 const index = require('./routes/index').index;
 const login = require('./routes/login').login;
 const logout = require('./routes/logout').logout;
 const register = require('./routes/register').register;
+const loadUserData = require('./routes/load_user_data').loadUserData;
+const saveUserData = require('./routes/save_user_data').saveUserData;
 const publicResource = require('./routes/public').publicResource;
 const render = require('./app/render').render;
 const CONFIG = require('./config/main_config.json');
@@ -24,6 +27,16 @@ http.createServer((req, res) => {
         register(req, res);
     } else if (parsedURL.pathname === '/logout' && req.method == 'GET') {
         logout(req, res);
+    } else if (parsedURL.pathname === '/load_user_data' && req.method == 'GET'){
+        loadUserData(req, res);
+    } else if (parsedURL.pathname === '/save_user_data' && req.method == 'POST')  {
+        let body = '';
+        req.on('data', (data) => {
+            body += data;
+        });
+        req.on('end', () => {
+            saveUserData(qs.parse(body), res);
+        });
     } else if (parsedURL.pathname.match(/\.(html|css|js|png|jpg)$/)){
         publicResource(req, res);  
     } else {

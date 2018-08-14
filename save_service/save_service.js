@@ -8,13 +8,11 @@ const logs = require('../app/logs');
 const CONFIG = require('./config.json');
 
 const ERRORS = {
-    CHECK_SESSION_ERROR : 1,
-    SQLITE3_ERROR_NO_USER : 2,
-    SQLITE3_ERROR_UNIQUE : 3,
-    SQLITE3_ERROR_UNKNOWN : 4,
+    CHECK_SESSION_ERROR: 1,
+    SQLITE3_ERROR_NO_USER: 2,
+    SQLITE3_ERROR_UNIQUE: 3,
+    SQLITE3_ERROR_UNKNOWN: 4,
 };
-
-const removeTimers = {};
 
 //Connection with database
 const saveClient = new sqlite3.Database(CONFIG.dbAdress, sqlite3.OPEN_READWRITE, (err) => {
@@ -26,14 +24,44 @@ const saveClient = new sqlite3.Database(CONFIG.dbAdress, sqlite3.OPEN_READWRITE,
 });
 
 const removeToken = (token) => {
-    saveClient.run(`DELETE FROM saves WHERE Token=?`,
-                    [token], (err) => {
-            if (err) {
-                console.log(`Planned remove \x1b[31mFAILED\x1b[0m: ${err}, ${token}`)
-            }
+    saveClient.run(`DELETE FROM saves WHERE Token=?`, [token], (err) => {
+        if (err) {
+            console.log(`Planned remove \x1b[31mFAILED\x1b[0m: ${err}, ${token}`)
+        }
 
-            console.log(`Planned remove \x1b[32mSUCCESS\x1b[0m: ${token}`)
+        console.log(`Planned remove \x1b[32mSUCCESS\x1b[0m: ${token}`)
+    });
+}
+
+const loadUserTitlesHandle = (body, response) => {
+    saveClient.all(`SELECT Title title FROM saves_user
+                    WHERE Email=? ORDER BY SaveTime DESC`, [body.email], (err, rows) => {
+        if (err || !rows) {
+            logs.log(`Load user titles \x1b[31mFAILED\x1b[0m: ${err}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            });
+            return response.end(JSON.stringify({
+                titles: null,
+                error: (err) ?
+                    ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_NO_USER
+            }));
+        }
+
+        const titles = rows.map(e => e.title)
+        logs.log(`Load user titles \x1b[32mSUCCESS\x1b[0m: ${body.email}`);
+
+
+        response.writeHead(200, {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
         });
+        return response.end(JSON.stringify({
+            titles: titles,
+            error: null
+        }));
+    });
 }
 
 /**
@@ -41,11 +69,14 @@ const removeToken = (token) => {
  * @param {Object} body 
  * @param {http.ServerResponse} response 
  */
-const saveHandle = (body, response) => {
-    const localeTime = new Date().toLocaleTimeString();
+const saveGuestHandle = (body, response) => {
+    const currDate = new Date();
     new Promise((resolve, reject) => {
-        saveClient.run(`REPLACE INTO saves(Token, Data, Time) VALUES(?, ?, ?)`,
-                    [body.session, body.data, localeTime], (err) => {
+        if (body.session === 'undefined') {
+            reject(new Error('Session undefined'));
+        }
+
+        saveClient.run(`REPLACE INTO saves_guest(Token, Data, SaveTime) VALUES(?, ?, ?)`, [body.session, body.data, Math.round(currDate.getTime() / 1000)], (err) => {
             if (err) {
                 reject(err);
             }
@@ -54,25 +85,95 @@ const saveHandle = (body, response) => {
         });
     }).then(
         () => {
-            if (removeTimers[body.session]) {
-                clearTimeout(removeTimers[body.session])
+            logs.log(`Save GUEST \x1b[32mSUCCESS\x1b[0m: sessionID: ${body.session}, ${currDate.toLocaleTimeString()}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            });
+            response.end(JSON.stringify({
+                error: null
+            }));
+        },
+        (err) => {
+            logs.log(`Save GUEST \x1b[31mFAILED\x1b[0m: ${err}, ${currDate.toLocaleTimeString()}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            });
+            return response.end(JSON.stringify({
+                error: ERRORS.SQLITE3_ERROR
+            }));
+        });
+}
+
+const saveUserHandle = (body, response) => {
+    const currDate = new Date();
+    new Promise((resolve, reject) => {
+        saveClient.run(`REPLACE INTO saves_users(Title, Email, Data, SaveTime) VALUES(?, ?, ?, ?)`,
+            [body.title, body.email, body.data, Math.round(currDate.getTime() / 1000)], (err) => {
+            if (err) {
+                reject(err);
             }
 
-            removeTimers[body.session] = setTimeout(() => removeToken(body.session), 2147483647); //будем хранить год 24 дня, потому что вот так((((
-            logs.log(`Save \x1b[32mSUCCESS\x1b[0m: sessionID: ${body.session}, ${localeTime}`);
-            response.writeHead(200, { 
-                'Content-Type' : 'application/json',
-                'Access-Control-Allow-Origin' : '*',
+            resolve();
+        });
+    }).then(
+        () => {
+            logs.log(`Save USER \x1b[32mSUCCESS\x1b[0m: Title: ${body.title}, Email: ${body.email}, Time: ${currDate.toLocaleTimeString()}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
             });
-            response.end(JSON.stringify({error : null})); 
-    },
+            response.end(JSON.stringify({
+                error: null
+            }));
+        },
         (err) => {
-            logs.log(`Save \x1b[31mFAILED\x1b[0m: ${err}, ${localeTime}`);
-            response.writeHead(200, { 
-                'Content-Type' : 'application/json',
-                'Access-Control-Allow-Origin' : '*',
+            logs.log(`Save USER \x1b[31mFAILED\x1b[0m: Title: ${body.title}, Email: ${body.email}, Time: ${currDate.toLocaleTimeString()}, ERROR: ${err}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
             });
-            return response.end(JSON.stringify({error : ERRORS.SQLITE3_ERROR}));
+            return response.end(JSON.stringify({
+                error: ERRORS.SQLITE3_ERROR
+            }));
+        });
+}
+
+
+const checkTitleHandle = (body, response) => {
+    saveClient.get(`SELECT 1 FROM saves_user
+                    WHERE Email=? AND Title=?`, [body.email, body.title], (err, row) => {
+        if (err) {
+            logs.log(`Check title file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            });
+            return response.end(JSON.stringify({
+                error: ERRORS.SQLITE3_ERROR_UNKNOWN
+            }));
+        }
+
+        if (!row) {
+            logs.log(`Check title file \x1b[31mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            });
+            return response.end(JSON.stringify({
+                error: null
+            }));
+        } else {
+            logs.log(`Check title file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: Title is already used`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            });
+            return response.end(JSON.stringify({
+                error: ERROR_MESSAGES.SQLITE3_ERROR_UNIQUE
+            }));
+        }
     });
 }
 
@@ -81,10 +182,13 @@ const saveHandle = (body, response) => {
  * @param {Object} body 
  * @param {http.ServerResponse} response 
  */
-const removeHandle = (body, response) => {
+const removeGuestHandle = (body, response) => {
     new Promise((resolve, reject) => {
-        saveClient.run(`DELETE FROM saves WHERE Token=?`,
-                    [body.session], (err) => {
+        if (body.session === 'undefined') {
+            reject(new Error('Session undefined'));
+        }
+
+        saveClient.run(`DELETE FROM saves_guest WHERE Token=?`, [body.session], (err) => {
             if (err) {
                 reject(err);
             }
@@ -93,74 +197,124 @@ const removeHandle = (body, response) => {
         });
     }).then(
         () => {
-            logs.log(`Remove \x1b[32mSUCCESS\x1b[0m:`);
-            response.writeHead(200, { 
-                'Content-Type' : 'application/json',
-                'Access-Control-Allow-Origin' : '*',
+            logs.log(`Remove \x1b[32mSUCCESS\x1b[0m: ${body.session}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
             });
-            response.end(JSON.stringify({error : null}));
-    },
+            response.end(JSON.stringify({
+                error: null
+            }));
+        },
         (err) => {
-            logs.log(`Remove \x1b[31mFAILED\x1b[0m: ${err}`);
-            response.writeHead(200, { 
-                'Content-Type' : 'application/json',
-                'Access-Control-Allow-Origin' : '*',
+            logs.log(`Remove \x1b[31mFAILED\x1b[0m: ${body.session} ${err}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
             });
-            return response.end(JSON.stringify({error : ERRORS.SQLITE3_ERROR}));
-    });
+            return response.end(JSON.stringify({
+                error: ERRORS.SQLITE3_ERROR
+            }));
+        });
 }
 
-const loadHandle = (body, response) => {
-    saveClient.get(`SELECT Data data, Time time
-                    FROM saves
-                    WHERE Token = ?`,
-                    [body.session], (err, row) => {
+const loadGuestHandle = (body, response) => {
+    saveClient.get(`SELECT Data data, SaveTime time
+                    FROM saves_guest
+                    WHERE Token = ?`, [body.session], (err, row) => {
         if (err || !row) {
             logs.log(`Load \x1b[31mFAILED\x1b[0m: ${err}`);
-            response.writeHead(200, { 
-                'Content-Type' : 'application/json',
-                'Access-Control-Allow-Origin' : '*',
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
             });
-            return response.end(JSON.stringify({data : null, error : (err) ?
-                ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_NO_USER}));
+            return response.end(JSON.stringify({
+                data: null,
+                error: (err) ?
+                    ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_NO_USER
+            }));
         }
 
         logs.log(`Load \x1b[32mSUCCESS\x1b[0m: ${body.session} ${row.time}`);
-        response.writeHead(200, { 
-            'Content-Type' : 'application/json',
-            'Access-Control-Allow-Origin' : '*',
+        response.writeHead(200, {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
         });
-        return response.end(JSON.stringify({data : row.data, error : null}));
+        return response.end(JSON.stringify({
+            data: row.data,
+            error: null
+        }));
+    });
+}
+
+const loadUserHandle = (body, response) => {
+    saveClient.get(`SELECT Data data
+                FROM saves_user
+                WHERE Email=? AND Title=?`, [body.email, body.title], (err, row) => {
+        if (err || !row) {
+            logs.log(`Load user file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            });
+            return response.end(JSON.stringify({
+                data: null,
+                error: (err) ?
+                    ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_NO_USER
+            }));
+        }
+
+        logs.log(`Load user file \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
+        response.writeHead(200, {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+        });
+        return response.end(JSON.stringify({
+            data: row.data,
+            error: null
+        }));
     });
 }
 
 //Starts server, which works only with POST requests
 http.createServer((req, res) => {
-    const path = url.parse(req.url, true)
-    if (req.method === 'POST') {
-        let body = '';
-        req.on('data', (data) => {
-            body += data;
-        });
+        const path = url.parse(req.url, true)
+        if (req.method === 'POST') {
+            let body = '';
+            req.on('data', (data) => {
+                body += data;
+            });
 
-        req.on('end', () => {
-            if (path.path === '/save') {
-                saveHandle(qs.parse(body), res);
-            } else if (path.path === '/remove') {
-                removeHandle(qs.parse(body), res);
-            } else if (path.path === '/load') {
-                loadHandle(qs.parse(body), res);
-            } else {
-                res.writeHead(404, { 'Content-Type' : 'text/plain' });
-                res.end(); 
-            }
-        }); 
-    } else {
-        res.writeHead(404, { 'Content-Type' : 'text/plain' });
-        res.end(); 
-    }
+            req.on('end', () => {
+                if (path.path === '/save_guest') {
+                    saveGuestHandle(qs.parse(body), res);
+                } else if (path.path === '/save_user') {
+                    saveUserHandle(qs.parse(body), res);
+                } else if (path.path === '/check_title') { //Отдельный запрос на проверку уникальности,
+                    checkTitleHandle(qs.parse(body), res); //чтобы не гонять данные с таблицы несколько раз.
+                } else if (path.path === '/remove_guest') {
+                    removeGuestHandle(qs.parse(body), res);
+                } else if (path.path === '/load_guest') {
+                    loadGuestHandle(qs.parse(body), res);
+                } else if (path.path === '/load_user') {
+                    loadUserHandle(qs.parse(body), res);
+                } else if (path.path === '/titles') {
+                    loadUserTitlesHandle(qs.parse(body), res);
+                } else {
+                    res.writeHead(404, {
+                        'Content-Type': 'text/plain'
+                    });
+                    res.end();
+                }
+            });
+        } else {
+            res.writeHead(404, {
+                'Content-Type': 'text/plain'
+            });
+            res.end();
+        }
 
-}).listen(CONFIG.port,() => 
+    }).listen(CONFIG.port, () =>
         logs.log(`\x1b[35mSave service\x1b[0m successfully \x1b[32mstarted\x1b[0m at ${CONFIG.port}`))
     .on('close', () => {
         usersClient.close((err) => {

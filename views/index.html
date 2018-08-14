@@ -7,7 +7,7 @@
  </head>
  <body>
 
-  <p>Матерьяльный дизайн <span id="saveINFO"></span> <button onclick="save()">save</button> <a href="/logout">Выйти</a></p>
+  <p>Матерьяльный дизайн <span id="saveINFO"></span> <button onclick="save()">save</button> {{email}} {{titles}} {{log}}</p>
   <!--
   <img src="/img/teamlogo.png" alt="Our TEAM" id = "img">
   <-->
@@ -24,7 +24,10 @@
   <div id = "main-div" class = "scroll-table">
     <table id = "main-table"></table>
   </div>
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
   <script src="/js/autosave.js"></script>
+  <script src="/js/login.js"></script>
   <script src="/js/table.js"></script>
  </body>
 </html>

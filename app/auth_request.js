@@ -2,7 +2,9 @@
 
 const http = require('http');
 const logs = require('../app/logs');
-const AUTH_CONGIG = require('../config/auth_config.json');
+const AUTH_CONFIG = require('../config/auth_config.json');
+const SAVE_CONFIG = require('../config/save_config.json')
+
 
 /**
  * Sends request to Auth Service server
@@ -11,10 +13,32 @@ const AUTH_CONGIG = require('../config/auth_config.json');
  * @returns {Promise}
  */
 const sendAuthRequest = (adress, postData) => {
+    return sendPostRequest(adress, postData, AUTH_CONFIG.host, AUTH_CONFIG.port);
+}
+
+/**
+ * Sends request to Save Service server
+ * @param {String} adress Save Server path
+ * @param {String} postData Data for http.ClientRequest
+ * @returns {Promise}
+ */
+const sendSaveRequest = (adress, postData) => {
+    return sendPostRequest(adress, postData, SAVE_CONFIG.host, SAVE_CONFIG.port);
+}
+
+/**
+ * Sends request to server
+ * @param {String} adress Server path
+ * @param {String} postData Data for http.ClientRequest
+ * @param {String} hostname
+ * @param {String} port
+ * @returns {Promise}
+ */
+const sendPostRequest = (adress, postData, hostname, port) => {
     return new Promise((resolve, reject) => {
         const postRequest = http.request({ //Ждём проверку токена
-            hostname :  AUTH_CONGIG.host,
-            port : AUTH_CONGIG.port,
+            hostname :  hostname,
+            port : port,
             path : adress,
             method : 'POST',
             headers : {
@@ -43,3 +67,4 @@ const sendAuthRequest = (adress, postData) => {
 }
 
 module.exports.sendAuthRequest = sendAuthRequest;
+module.exports.sendSaveRequest = sendSaveRequest;

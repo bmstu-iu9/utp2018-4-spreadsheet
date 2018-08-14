@@ -24,7 +24,8 @@ function render (templateName, data) {
             });
         }
         
-        this.writeHead(200, { 'Content-Type' : 'text/html' });
+        this.statusCode = 200;
+        this.setHeader('Content-Type', 'text/html' );
         this.end(html);
     });
 }

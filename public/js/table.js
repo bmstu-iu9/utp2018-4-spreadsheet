@@ -60,7 +60,6 @@ class Stack {
     }
 }
 
-
 class FormulaError {
     constructor(error, msg, char_pos = -1, prev = null) {
         this.error = error;
@@ -167,6 +166,7 @@ const convCoord = (str) => {
 class Table {
 
     constructor(x, y) {
+        this.activeCeils = {};
         this.field = new Array(x)
         for (let i = 0; i < x; i++) {
             this.field[i] = new Array(y)
@@ -195,6 +195,12 @@ class Table {
         }
 
         this.field[x][y].realText = text;
+        if (this.field[x][y].realText) { //Обновляем в активных
+            this.activeCeils[[x, y]] = str2arr(this.field[x][y].realText);
+        } else {
+            delete this.activeCeils[[x, y]];
+        }
+
         if (text[0] !== '=') {
             this.field[x][y].toDisplay = text;
             this.field[x][y].error = null;
@@ -215,28 +221,13 @@ class Table {
         return { realText: this.field[x][y].realText, toDisplay: this.field[x][y].toDisplay, error: this.field[x][y].error }
     }
 
-    collectData() {
-        let data = {size: [ROWS, COLS]};
-        for (let i = 0; i < this.field.length; i++){
-            if (this.field[i]) { //Надо ли?
-                for (let j = 0; j < this.field[i].length; j++) {
-                    if (this.field[i][j].realText) {
-                        //сохраняем координаты, а не индекс, потому что загружаться надо будет один раз за сеанс,
-                        //а сохранятся много, и время конвертации было бы велико.
-                        data[[j, i]] = this.field[i][j].realText;
-                    }
-                }
-            }
-        }
-    
-        return data;//на что-нибудь уникальное
-    }
-
     update() {
         let rightOrderedUPD = new Stack();
         let depth_stack = new Stack();
         let usage_array = new Array();
         while (!this.toUpdate.isEmpty()) {
+            
+
             if (this.toUpdate.top().colour !== WHITE) {
                 this.toUpdate.pop();
                 continue;
@@ -297,8 +288,6 @@ class Table {
 
 
 }
-
-
 
 const POSSIBLE_FUNCTIONS = new Set(["SUM", "MUL", "ABS"]);
 
@@ -1001,9 +990,30 @@ const updateTables = () => {
     }
 }
 
-const loadTable = (token) => {
+const loadUserTable = (title) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://' + config.host_save + ':' + config.port_save + '/load');
+    xhr.open('GET', 'http://' + config.host_main + ':' + config.port_main + '/load_user_data?title='+title);
+    xhr.send();
+    xhr.onload = () => {
+        let dataINFO = null;
+        try {
+            dataINFO = JSON.parse(ajax.responseText);
+        } catch {
+            return;
+        }
+        
+        if (dataINFO.error) {
+            return;
+        }
+        
+        ajax_remove({session : parseCookies(document.cookie)['token']});
+        console.log(dataINFO.data);
+    };
+}
+
+const loadTableGuest = (token) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://' + config.host_save + ':' + config.port_save + '/load_guest');
     xhr.send('session='+token);
     xhr.onload = () => {
         let data = null;
@@ -1025,25 +1035,26 @@ const loadTable = (token) => {
         delete tableData['size'];
 
         for (let coordStr in tableData) {
-            const coord = coordStr.split(',');
-            innerTable.setCeil(coord[1], coord[0], arr2str(tableData[coord]));
+            const coord = coordStr.split(',').map(e => parseInt(e, 10));
+            innerTable.setCeil(coord[0], coord[1], arr2str(tableData[coordStr]));
         }
 
         updateTables();
     }
 }
 
-
-const cookie = parseCookies(document.cookie);
 //Сохраняем перед закрытием
 window.onbeforeunload = () => {
+    const cookie = parseCookies(document.cookie);
     navigator.sendBeacon('http://' + config.host_save + ':' + config.port_save + '/save', 'session='+cookie['token'] +
-     '&data='+JSON.stringify(prepareText(innerTable.collectData())));
+     '&data='+JSON.stringify(Object.assign({}, {'size':[ROWS, COLS]}, innerTable.activeCeils)));
     //ajax_save({session: parseCookies(document.cookie)['token'], data: JSON.stringify(prepareText(innerTable.collectData()))});
 }
 
+const cookie = parseCookies(document.cookie);
 if (cookie['token']) {
-    loadTable(cookie['token']);
+    loadTableGuest(cookie['token']);
 } else {
+    ajax_auth_guest('/guest');
     addCells(DEFAULT_ROWS, DEFAULT_COLS);
 }
