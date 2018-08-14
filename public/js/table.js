@@ -11,11 +11,13 @@ const UNKNOWN_IDENTIFIER = 103;
 const EXPECTED_OPERATOR = 104;
 const EXPECTED_IDENTIFIER = 105;
 const EXPECTED_EXACT = 106;
+const EXPECTED_CELL = 107;
 
 //formula args errors 2**
 const ARG_ERROR = 200;
 const DIV_BY_ZERO = 201;
 const UNDEFINED_ARG = 202;
+const WRONG_ARGS_AMOUNT = 203;
 
 //service errors 3**
 const SERVICE_ERR = 300;
@@ -57,6 +59,50 @@ class Stack {
 
     clear() {
         this.stack.length = 0;
+    }
+}
+
+const NONE = 0;
+const PUSH = 1;
+const POP = 2;
+
+class ActionStack {
+    constructor(cap) {
+        this.stack = new Array(cap + 1);
+        this.curPos = 0;
+        this.lastPush = 0;
+        this.lim = 0;
+    }
+
+    do(x) {
+        console.log('do', 'curPos:', this.curPos, 'lastPush:', this.lastPush, 'lim', this.lim);
+        this.stack[this.curPos] = x;
+        this.curPos = (this.curPos + 1) % this.stack.length;
+        this.lastPush = this.curPos;
+        if (this.lim === this.curPos) {
+            this.lim = (this.lim + 1) % this.stack.length;
+        }
+    }
+
+    undo() {
+        console.log('undo', 'curPos:', this.curPos, 'lastPush:', this.lastPush, 'lim', this.lim);
+        if (this.curPos === this.lim) {
+            return false;
+        } else {
+            this.curPos = (this.curPos + this.stack.length - 1) % this.stack.length;
+            return this.stack[this.curPos];
+        }
+    }
+
+    redo() {
+        console.log('redo', 'curPos:', this.curPos, 'lastPush:', this.lastPush, 'lim', this.lim);
+        if (this.curPos === this.lastPush) {
+            return false;
+        } else {
+            let res = this.stack[this.curPos]
+            this.curPos = (this.curPos + 1) % this.stack.length;
+            return res;
+        }
     }
 }
 
@@ -121,7 +167,8 @@ const coordFromLetters = (str) => {
 
 const isAlphabetic = (str) => {
     return ('A'.charCodeAt(0) <= str.charCodeAt(0) && str.charCodeAt(0) <= 'Z'.charCodeAt(0) ||
-        'a'.charCodeAt(0) <= str.charCodeAt(0) && str.charCodeAt(0) <= 'z'.charCodeAt(0));
+        'a'.charCodeAt(0) <= str.charCodeAt(0) && str.charCodeAt(0) <= 'z'.charCodeAt(0)
+    );
 }
 
 const isNumeric = (str) => {
@@ -132,7 +179,7 @@ const isSpecial = (str) => {
     return ((str === '(') || (str === ')') ||
         (str === '+') || (str === '-') ||
         (str === '*') || (str === '/') ||
-        (str === ';'));
+        (str === ';') || (str === ':'));
 }
 
 const isSpaceChar = (str) => {
@@ -140,6 +187,7 @@ const isSpaceChar = (str) => {
 }
 
 const convCoord = (str) => {
+    console.log(str)
     str = str.toUpperCase();
     let beg = 0;
     if (str[0] === "$") beg = 1;
@@ -168,7 +216,7 @@ const convCoord = (str) => {
 
 class Table {
 
-    constructor(x, y) {
+    constructor(x, y, action_memo = 50) {
         this.activeCeils = {};
         this.field = new Array(x)
         for (let i = 0; i < x; i++) {
@@ -179,10 +227,10 @@ class Table {
         }
         console.log('ALL CREATED');
         this.toUpdate = new Stack();
+        this.actions = new ActionStack(action_memo);
     }
 
     createCeilIfNeed(x, y) {
-        console.log('CREATE ' + x + ' ' + y);
         if (this.field[x] == undefined) {
             this.field[x] = new Array(y + 1);
         }
@@ -191,11 +239,14 @@ class Table {
         }
     }
 
-    setCeil(x, y, text) {
+    setCeil(x, y, text, undo_or_redo = false) {
         this.createCeilIfNeed(x, y)
         if (text === this.field[x][y].realText) {
             return;
         }
+
+        if (!undo_or_redo)
+            this.actions.do({ x: x, y: y, newText: text, oldText: this.field[x][y].realText });
 
         this.field[x][y].realText = text;
         if (this.field[x][y].realText) { //Обновляем в активных
@@ -229,6 +280,9 @@ class Table {
     }
 
     update() {
+        console.log(this.field[0][0].receivers)
+        console.log(this.field[0][1].receivers)
+        console.log(this.field[1][1].receivers)
         let rightOrderedUPD = new Stack();
         let depth_stack = new Stack();
         let usage_array = new Array();
@@ -241,23 +295,24 @@ class Table {
             }
             depth_stack.push(this.toUpdate.top());
             usage_array.push(this.toUpdate.top());
-            this.toUpdate.top().colour = GREY;
             this.toUpdate.pop();
 
             while (!depth_stack.isEmpty()) {
                 console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TRACKING UPDATE")
-                if (depth_stack.top().colour === BLACK) {
-                    depth_stack.top().colour = BLACK;
-                    rightOrderedUPD.push(depth_stack.pop());
-                } else {
-                    depth_stack.top().colour = BLACK;
+                if (depth_stack.top().colour === WHITE) {
+                    depth_stack.top().colour = GREY;
+                    console.log(depth_stack.top().x, depth_stack.top().y, 'not popped');
                     depth_stack.top().receivers.forEach(ceil => {
+                        console.log(ceil.x, ceil.y, 'watching', ceil.colour);
                         if (ceil.colour === WHITE) {
                             depth_stack.push(ceil);
                             usage_array.push(ceil);
-                            ceil.colour = GREY;
                         }
                     })
+                } else {
+                    console.log(depth_stack.top().x, depth_stack.top().y, 'popped');
+                    depth_stack.top().colour = BLACK;
+                    rightOrderedUPD.push(depth_stack.pop());
                 }
             }
 
@@ -291,16 +346,33 @@ class Table {
                 y: curCeil.y
             });
         }
-        console.log(res);
+        console.log('res:', res);
         return res;
     }
 
+    undo() {
+        let change = this.actions.undo();
+        if (change) {
+            this.setCeil(change.x, change.y, change.oldText, true);
+        }
+        return change;
+    }
+
+    redo() {
+        let change = this.actions.redo();
+        if (change) {
+            this.setCeil(change.x, change.y, change.newText, true);
+        }
+        return change;
+    }
 
 }
 
-const POSSIBLE_FUNCTIONS = new Set(["SUM", "MUL", "ABS"]);
 
-function OPERATOR(first, oper, second) { //TODO: bigNums
+
+const POSSIBLE_FUNCTIONS = new Set(["SUM", "MUL"]);
+
+const OPERATOR = (first, oper, second) => {//TODO: bigNums
     if (oper === undefined && second === undefined) {
         return first;
     }
@@ -335,13 +407,94 @@ function OPERATOR(first, oper, second) { //TODO: bigNums
     }
 }
 
-function SUM(...args) {
+const SUM = (...args) => {
     let sum = 0;
     for (let i = 0; i < args.length; i++) {
         sum = OPERATOR(sum, '+', args[i]);
     }
     return sum;
 }
+
+const MUL = (...args) => {
+    let mul = 1;
+    for (let i = 0; i < args.length; i++) {
+        mul = OPERATOR(mul, '*', args[i]);
+    }
+    return mul;
+}
+
+
+const funcConstructor = (func, funcName, min_arg, max_arg) => {
+    POSSIBLE_FUNCTIONS.add(funcName);
+    return (...args) => {
+        if (args.length < min_arg) {
+            throw new FormulaError(
+                WRONG_ARGS_AMOUNT,
+                'expected more then ' + min_arg + ' arguments',
+            );
+        }
+
+        if (max_arg !== undefined && args.length < max_arg) {
+            throw new FormulaError(
+                WRONG_ARGS_AMOUNT,
+                'expected less then ' + max_arg + ' arguments',
+            );
+        }
+
+        for (let arg in args) {
+            if (isNaN(arg)) {
+                throw new FormulaError(
+                    NAN,
+                    arg + ' is not a number'
+                );
+            }
+        }
+
+        let res = func(...args);
+        if (isNaN(res)) {
+            throw new FormulaError(
+                UNDEFINED,
+                funcName + ' result undefined',
+            );
+        }
+        return res;
+    }
+}
+
+const ABS = funcConstructor(Math.abs, 'ABS', 1, 1);
+
+const POWER = funcConstructor(Math.pow, 'POWER', 2, 2);
+
+const LOG = funcConstructor(Math.log, 'LOG', 1, 1);
+
+const SQRT = funcConstructor(Math.sqrt, 'SQRT', 1, 1);
+
+const KOPEH = funcConstructor(Math.sqrt, 'KOPEH', 1, 1);
+
+const ROUND = funcConstructor(Math.round, 'ROUND', 1, 1);
+
+const FLOOR = funcConstructor(Math.floor, 'FLOOR', 1, 1);
+
+const COS = funcConstructor(Math.cos, 'COS', 1, 1);
+
+const SIN = funcConstructor(Math.sin, 'SIN', 1, 1);
+
+const ACOS = funcConstructor(Math.acos, 'ACOS', 1, 1);
+
+const ASIN = funcConstructor(Math.asin, 'ASIN', 1, 1);
+
+const EXP = funcConstructor(Math.exp, 'EXP', 1, 1);
+
+const PI = funcConstructor(() => Math.PI, 'PI', 0, 0);
+
+const MAX = funcConstructor(Math.max, 'MAX', 1);
+
+const MIN = funcConstructor(Math.min, 'MIN', 1);
+
+const SIGN = funcConstructor(Math.sign, 'SIGN', 1, 1);
+
+const RAND = funcConstructor(Math.random, 'RAND', 1, 1);
+
 
 const isCircDepend = (startCeil) => {
     let depth_stack = new Stack();
@@ -444,7 +597,7 @@ const tokenize = (formula) => {
                 temp += formula[ptL];
                 ptL++;
             }
-            if (!POSSIBLE_FUNCTIONS.has(temp))
+            if (!POSSIBLE_FUNCTIONS.has(temp)) {
                 try {
                     convCoord(temp);
                 } catch (e) {
@@ -454,6 +607,7 @@ const tokenize = (formula) => {
                         beg,
                     )
                 }
+            }
             tokens.push(temp);
         } else {
             console.log("kek lol kek lol")
@@ -518,7 +672,8 @@ class Tokens {
 //<T>  ::= <F> <T’>. 
 //<T’> ::= * <F> <T’> | / <F> <T’> | . 
 //<F>  ::= <number> | <ceil> | ( <E> ) | - <F> | + <F> |  <func> ( <B> ).
-//<B>  ::= <E> ; <B> | <E> | .
+//<B>  ::= <E> ; <B> | <E> | .  
+//TODO: update scheme
 
 const mustBe = (tokens, token) => {
     console.log("MUSTBE " + "empty: " + tokens.isEmpty())
@@ -560,7 +715,7 @@ const parseAddEnd = (table, ceil, tokens, funcStr) => {
             funcStr = 'OPERATOR(' + funcStr + ', \'' + tokens.next().token + '\', ';
             funcStr += parseMulBeg(table, ceil, tokens) + ')';
             return parseAddEnd(table, ceil, tokens, funcStr);
-        } else if (tokens.peek().token === ')' || tokens.peek().token === ';') {
+        } else if (tokens.peek().token === ')' || tokens.peek().token === ';' || tokens.peek().token === ':') {
             return funcStr;
         }
     } else {
@@ -655,12 +810,54 @@ const parseElem = (table, ceil, tokens) => {
 
 const parseArgs = (table, ceil, tokens) => {
     console.log('parseArgs')
+    let cur = '';
     let funcStr = '';
+    let temp = '';
+    let next1 = '';
+    let next2 = '';
     if (tokens.peek().token === ')') {
         return funcStr;
     }
     while (!tokens.isEmpty()) {
-        funcStr += parseAddBeg(table, ceil, tokens);
+        cur = tokens.peek().token;
+        next1 = parseAddBeg(table, ceil, tokens)
+        if (tokens.peek().token !== ':')
+            funcStr += next1;
+        else {
+            tokens.next();
+            temp = tokens.peek().token;
+            next2 = parseAddBeg(table, ceil, tokens);
+
+            try {
+                if (next1.indexOf('()') !== next1.lastIndexOf('()') || next2.indexOf('()') !== next2.lastIndexOf('()'))
+                    throw 'err';
+                let firstCoord = convCoord(cur);
+                let secondCoord = convCoord(temp);
+                let s1 = Math.min(firstCoord.x, secondCoord.x);
+                let s2 = Math.min(firstCoord.y, secondCoord.y);
+                let f1 = Math.max(firstCoord.x, secondCoord.x);
+                let f2 = Math.max(firstCoord.y, secondCoord.y);
+                console.log('KKKEEEKKK', s1, s2, f1, f2);
+                for (; s1 <= f1; s1++) {
+                    for (let i = s2; i <= f2; i++) {
+                        funcStr += 'table.getInnerCeil(' + s1 + ',' + i + ').get()';
+
+                        ceil.dependencies.add(table.getInnerCeil(s1, i));
+                        table.getInnerCeil(s1, i).receivers.add(ceil);
+                        if (s1 != f1 || i != f2) {
+                            funcStr += ',';
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+                console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+                throw new FormulaError(
+                    EXPECTED_CELL,
+                    'expected: *cell*:*cell*, found: ' + next1 + ':' + next2,
+                )
+            }
+        }
         if (tokens.peek().token === ')') {
             return funcStr;
         }
@@ -689,6 +886,7 @@ let ROWS = 0,
     COLS = 0;
 let letters = [65];
 let currentLet = [];
+let focusID = '';
 let innerTable = new Table(DEFAULT_COLS, DEFAULT_ROWS);
 
 const clear = (index) => {
@@ -717,11 +915,9 @@ const getYCoord = (elem) => elem.getBoundingClientRect().top + pageYOffset;
 
 const addExpansion = (letter, j) => {
     const newDiv = document.createElement('div');
-    //newDiv.innerHTML = '';
     newDiv['id'] = letter;
     newDiv['className'] = 'modSymb';
     upTable.rows[0].cells[j].appendChild(newDiv);
-    //table.rows[0].cells[j].appendChild(newDiv); //old
 
     const movableLine = document.getElementById(letter);
 
@@ -729,13 +925,11 @@ const addExpansion = (letter, j) => {
         const oldParams = {
             height: getComputedStyle(element).height,
             backgroundColor: getComputedStyle(element).backgroundColor,
-            //color: getComputedStyle(movableLine).color,
             width: getComputedStyle(element).width,
         }
 
         element.style.height = getComputedStyle(mainTable).height;
         element.style.backgroundColor = '#808080';
-        //movableLine.style.color = '#808080';
         element.style.width = '2px';
 
         return oldParams;
@@ -744,8 +938,8 @@ const addExpansion = (letter, j) => {
     movableLine.onmousedown = (e) => {
         const shiftX = e.pageX - getXCoord(movableLine);
         const params = changeParams(movableLine);
-        //global_shit
         let helpDiv;
+
         if (document.getElementById(letter + 'helper') === null) {
             helpDiv = document.createElement('div');
             helpDiv['id'] = letter + 'helper';
@@ -755,16 +949,16 @@ const addExpansion = (letter, j) => {
         } else {
             helpDiv = document.getElementById(letter + 'helper');
         }
+
         const params2 = changeParams(helpDiv);
-        //end_shit
         let coords = 'no move';
 
-        const goExpansion = (delta1, delta2, padSize) => {
+        const goExpansion = (delta1, delta2, padSize1, padSize2) => {
             document.getElementById(letter + '0').style.width = coords + delta1 + 'px';
-            for (let i = 1; i < ROWS; i++) {
-                //document.getElementById(letter + i).style.padding = (document.getElementById('Cell_undefined' + i).isZeroPad)?
-                //                                                                                      '0px ' + padSize + 'px' : '2px ' + padSize + 'px';
-                document.getElementById(letter + i).style.padding = '2px ' + padSize + 'px';
+            for (let i = 1; i <= ROWS; i++) {
+                const flag = document.getElementById('Cell_' + i).isZeroPad;
+                document.getElementById(letter + i).style.padding = (flag) ? '0px ' + padSize1 + 'px' : '2px ' + padSize1 + 'px';
+                document.getElementById('Cell_' + letter + i).style.padding = (flag) ? '0px ' + padSize2 + 'px' : '1px ' + padSize2 + 'px';
                 document.getElementById(letter + i).style.width = coords + delta2 + 'px';
             }
         }
@@ -772,7 +966,7 @@ const addExpansion = (letter, j) => {
         document.onmousemove = (e) => {
             const newLeft = e.pageX - shiftX - getXCoord(movableLine.parentNode);
             movableLine.style.left = (newLeft > 0) ? newLeft + 'px' : '0px';
-            helpDiv.style.left = (newLeft > 0) ? newLeft + 'px' : '0px'; //new
+            helpDiv.style.left = (newLeft > 0) ? newLeft + 'px' : '0px';
             coords = newLeft;
         }
 
@@ -783,30 +977,29 @@ const addExpansion = (letter, j) => {
                     mainCell.style.padding = '0px';
                     mainCell.isZeroPad = true;
                     if (coords < 3) {
-                        goExpansion(-coords, -coords, 0);
+                        goExpansion(-coords, -coords, 0, 0);
                         movableLine.style.left = '-1px';
+                        helpDiv.style.left = '-1px';
                         movableLine.style.cursor = 'col-resize';
                     } else {
                         movableLine.style.cursor = 'ew-resize';
-                        goExpansion(0, 1, 0);
+                        goExpansion(0, 0, 0, 0);
                     }
                 } else {
                     mainCell.style.padding = '1px 3px';
                     mainCell.isZeroPad = false;
                     movableLine.style.cursor = 'ew-resize';
-                    goExpansion(-6, -6, 2); //new
+                    goExpansion(-6, -6, 2, 1);
                 }
             }
 
             movableLine.style.height = params.height;
             movableLine.style.width = params.width;
             movableLine.style.backgroundColor = params.backgroundColor;
-            //new1!!!1
+
             helpDiv.style.height = params2.height;
             helpDiv.style.width = params2.width;
             helpDiv.style.backgroundColor = params2.backgroundColor;
-            //movableLine.style.color = params.color;
-            //mainTable.rows[0].cells[j].removeChild(helpDiv);
 
             document.onmousemove = document.onmouseup = null;
         }
@@ -817,8 +1010,190 @@ const addExpansion = (letter, j) => {
     movableLine.ondragstart = () => false;
 }
 
+const addVerticalExpansion = (i) => {
+    const newDiv = document.createElement('div');
+    newDiv['id'] = (i + 1);
+    newDiv['className'] = 'modVertSymb';
+    leftTable.rows[i].cells[0].appendChild(newDiv);
 
-const addCells = (rows, cols) => {
+    const movableLine = document.getElementById(i + 1);
+
+    const changeParams = (element) => {
+        const oldParams = {
+            height: getComputedStyle(element).height,
+            backgroundColor: getComputedStyle(element).backgroundColor,
+            width: getComputedStyle(element).width,
+        }
+
+        element.style.height = '2px';
+        element.style.backgroundColor = '#808080';
+        element.style.width = getComputedStyle(mainTable).width;
+
+        return oldParams;
+    }
+
+    movableLine.onmousedown = (e) => {
+        const shiftY = e.pageY - getYCoord(movableLine);
+        const params = changeParams(movableLine);
+        let helpDiv;
+
+        if (document.getElementById((i + 1) + 'helper') === null) {
+            helpDiv = document.createElement('div');
+            helpDiv['id'] = (i + 1) + 'helper';
+            helpDiv['className'] = 'modVertSymb';
+            helpDiv.style.cursor = 'cell';
+            mainTable.rows[i].cells[0].appendChild(helpDiv);
+        } else {
+            helpDiv = document.getElementById((i + 1) + 'helper');
+        }
+
+        const params2 = changeParams(helpDiv);
+        let coords = 'no move';
+
+        const goExpansion = (delta1, delta2, padSize1, padSize2) => {
+            document.getElementById('@' + (i + 1)).style.height = coords + delta1 + 'px';
+            mainTable.rows[i].style['line-height'] = coords + delta2 + 'px';
+            for (let j = 0; j <= COLS; j++) {
+                const flag = document.getElementById('Cell_' + currentLet[j]).isZeroPad;
+                document.getElementById(currentLet[j] + (i + 1)).style.padding =
+                    (flag) ? padSize1 + 'px 0px' : padSize1 + 'px 2px';
+                document.getElementById('Cell_' + currentLet[j] + (i + 1)).style.padding =
+                    (flag) ? padSize2 + 'px 0px' : padSize2 + 'px 1px';
+                document.getElementById(currentLet[j] + (i + 1)).style.height = coords + delta2 + 'px';
+            }
+        }
+
+        document.onmousemove = (e) => {
+            const newTop = e.pageY - shiftY - getYCoord(movableLine.parentNode);
+            movableLine.style.top = (newTop > 0) ? newTop + 'px' : '0px';
+            helpDiv.style.top = (newTop > 0) ? newTop + 'px' : '0px';
+            coords = newTop;
+        }
+
+        document.onmouseup = () => {
+            if (coords != 'no move') {
+                const mainCell = document.getElementById('Cell_' + (i + 1));
+                if (coords < 6) {
+                    mainCell.style.padding = '0px';
+                    mainCell.isZeroPad = true;
+                    if (coords < 3) {
+                        goExpansion(-coords, -coords, 0, 0);
+                        movableLine.style.top = '-1px';
+                        helpDiv.style.top = '-1px';
+                        movableLine.style.cursor = 'row-resize';
+                    } else {
+                        movableLine.style.cursor = 'ns-resize';
+                        goExpansion(0, -0.5, 0, 0);
+                    }
+                } else {
+                    mainCell.style.padding = '1px 3px';
+                    mainCell.isZeroPad = false;
+                    movableLine.style.cursor = 'ns-resize';
+                    goExpansion(-2, -6, 2, 1);
+                }
+            }
+
+            movableLine.style.height = params.height;
+            movableLine.style.width = params.width;
+            movableLine.style.backgroundColor = params.backgroundColor;
+
+            helpDiv.style.height = params2.height;
+            helpDiv.style.width = params2.width;
+            helpDiv.style.backgroundColor = params2.backgroundColor;
+
+            document.onmousemove = document.onmouseup = null;
+        }
+
+        return false;
+    }
+
+    movableLine.ondragstart = () => false;
+}
+
+/**
+ * Initialize cell events
+ * @param {String} id
+ */
+const initCell = (columnNumber, rowNumber) => {
+    const id = currentLet[columnNumber] + rowNumber;
+    const newInput = document.getElementById(id);
+    const newCell = document.getElementById('Cell_' + id);
+    newInput.onkeydown = (e) => {
+        let evtobj = window.event ? event : e
+        if (evtobj.code === 'KeyZ' && evtobj.ctrlKey && evtobj.shiftKey) {
+            console.log('REDO');
+            evtobj.preventDefault();
+        }
+        else if (evtobj.code === 'KeyZ' && evtobj.ctrlKey) {
+            console.log('UNDO');
+            evtobj.preventDefault();
+        }
+    };
+    newInput.addEventListener("keydown", function (elem) {
+        return (event) => {
+            console.log(newInput.id, 'code=', event.code, 'key=', event.key);
+            if (event.key == 'Enter') {
+                elem.blur();
+            }
+            if (event.key == 'Escape') {
+                console.log(elem.value);
+                elem.value = '';
+            }
+        }
+    }(newInput))
+    newInput.onfocus = function (elem) {
+        return () => {
+            console.log('onfocus')
+            let coord = convCoord(elem.id)
+            elem.value = innerTable.getCeil(coord.x, coord.y).realText;
+        };
+    }(newInput);
+    newInput.onblur = function (elem) {
+        return () => {
+            console.log('onblur')
+            let coord = convCoord(elem.id);
+            innerTable.setCeil(coord.x, coord.y, elem.value);
+            updateTables();
+            elem.value = innerTable.getCeil(coord.x, coord.y).toDisplay;
+        };
+    }(newInput);
+    newCell.onmousedown = (e) => {        //please delete this brah 
+        if (focusID) {
+            const oldInput = document.getElementById(focusID);
+            const oldCell = document.getElementById('Cell_' + focusID);
+
+            oldInput.style.textAlign = 'right';
+            oldCell.style.outline = '';
+        }
+
+        focusID = newInput.id;
+        newInput.style.textAlign = 'left';
+        newCell.style.outline = '3px solid #6bc961'
+    }
+
+    //При нажатии на Enter спускаемся вниз
+    newInput.addEventListener('keydown', (e) => {
+        let dx = 0;
+        let dy = 0;
+
+        if (e.key === 'Enter' || e.key === 'ArrowDown') { //Enter and down button
+            dy = 1;
+        } else if (e.key === 'ArrowUp') { //up
+            dy = (rowNumber ? -1 : 0);
+        } else if (e.key === 'ArrowLeft') { //left
+            dx = (columnNumber ? -1 : 0);
+        } else if (e.key === 'ArrowRight') { //right
+            dx = 1;
+        }
+
+        const low_cell = document.getElementById('Cell_' + currentLet[columnNumber + dx] + (rowNumber + dy))
+        const low_input = document.getElementById(currentLet[columnNumber + dx] + (rowNumber + dy))
+        low_cell.dispatchEvent(new Event('mousedown', { keyCode: 13 }));
+        low_input.focus();
+    });
+}
+
+const addCells = function (rows, cols) {
     if (rows === 0) {
         for (let i = COLS + 1; i <= COLS + cols; i++) {
 
@@ -827,73 +1202,40 @@ const addCells = (rows, cols) => {
             const letter = currentLet[currentLet.length - 1];
 
             const new_cell = upTable.rows[0].insertCell(-1);
-            new_cell.innerHTML = `<div align = "center" id = "${letter + 0}"> ${letter} </div>`;
-            new_cell.id = 'Cell_' + letter; //new
+            new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
+            new_cell.id = 'Cell_' + letter;
 
             for (let j = 0; j < ROWS; j++) {
-                mainTable.rows[j].insertCell(-1).innerHTML = "<input id = '" + letter + (j + 1) + "'/>";
-                let curCell = document.getElementById(letter + (j + 1));
-                curCell.addEventListener("keydown", function (elem) {
-                    return (event) => {
-                        console.log(curCell.id, 'code=', event.code, 'key=', event.key);
-                        if (event.key == 'Enter') {
-                            elem.blur();
-                        }
-                        if (event.key == 'Escape') {
-                            console.log(elem.value);
-                            elem.value = '';
-                        }
-                    }
-                }(curCell))
-                curCell.onfocus = function (elem) {
-                    return () => {
-                        console.log('onfocus')
-                        let coord = convCoord(elem.id)
-                        elem.value = innerTable.getCeil(coord.x, coord.y).realText;
-                    };
-                }(curCell);
-                curCell.onblur = function (elem) {
-                    return () => {
-                        console.log('onblur')
-                        let coord = convCoord(elem.id);
-                        innerTable.setCeil(coord.x, coord.y, elem.value);
-                        updateTables();
-                        elem.value = innerTable.getCeil(coord.x, coord.y).toDisplay;
-                    };
-                }(curCell);
-                if (i && j) {
-                    document.getElementById(letter + j).style.height = document.getElementById(currentLet[i - 2] + j).style.height;
-                }
+
+                const cell = mainTable.rows[j].insertCell(-1);
+                cell.innerHTML = "<input id = '" + letter + (j + 1) + "'/>";
+                cell.id = 'Cell_' + letter + (j + 1);
+                initCell(currentLet.length - 1, j + 1);
+
+                const inp = document.getElementById(letter + (j + 1));
+                const preInp = document.getElementById(currentLet[currentLet.length - 2] + (j + 1));
+                inp.style.height = preInp.style.height;
+                inp.style.padding = preInp.style.padding;
+                cell.style.padding = document.getElementById('Cell_' + currentLet[currentLet.length - 2] + (j + 1)).style.padding;
             }
 
-            //addExpansion(letter, i);
+            addExpansion(letter, i);
         }
     } else {
 
         if (ROWS === 0) {
             const row = upTable.insertRow(-1);
+
             for (let j = 0; j <= COLS + cols; j++) {
-                //if (j >= currentLet.length) {//chng
+
                 currentLet.push(String.fromCharCode.apply(null, letters));
                 updateLetters(letters.length - 1);
-                //}
-
-                //const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
                 const letter = currentLet[j];
-                //if (letter === '') continue;
+
                 const new_cell = row.insertCell(-1);
-                new_cell.innerHTML = `<div align = "center" id = "${letter + 0}"> ${letter} </div>`;
+                new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
                 new_cell.id = 'Cell_' + letter;
-                //addExpansion(letter, j); //control_them!11!
-                /*
-                            if (!i && j) {
-                                addExpansion(letter, j);
-                            } else if ((i && j) && (i >= DEFAULT_ROWS)) {
-                                document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
-                            } else if (i && !j) {
-                                addVerticalExpansion(i);
-                            }
-                            */
+                addExpansion(letter, j);
             }
         }
 
@@ -901,56 +1243,31 @@ const addCells = (rows, cols) => {
             const row = mainTable.insertRow(-1);
             const leftRow = leftTable.insertRow(-1);
 
-            leftRow.insertCell(-1).innerHTML = `<div align = "center"> ${i + 1} </div>`;
+            const left_cell = leftRow.insertCell(-1);
+            left_cell.innerHTML = `<div align = "center" id = "${'@' + (i + 1)}" class = "left"> ${i + 1} </div>`;
+            left_cell.id = 'Cell_' + (i + 1);
+            addVerticalExpansion(i);
 
             for (let j = 0; j <= COLS + cols; j++) {
+
                 if (j > currentLet.length) {
                     currentLet.push(String.fromCharCode.apply(null, letters));
                     updateLetters(letters.length - 1);
                 }
-
-                //const letter = (currentLet.length === 0)? '' : currentLet[j - 1];
                 const letter = currentLet[j];
-                //if (letter === '') continue;
-                row.insertCell(-1).innerHTML = "<input id = '" + letter + (i + 1) + "'/>";
-                let curCell = document.getElementById(letter + (i + 1));
-                curCell.addEventListener("keydown", function (elem) {
-                    return (event) => {
-                        console.log(curCell.id, 'code=', event.code, 'key=', event.key);
-                        if (event.key == 'Enter') {
-                            elem.blur();
-                        }
-                        if (event.key == 'Escape') {
-                            console.log(elem.value);
-                            elem.value = '';
-                        }
-                    }
-                }(curCell))
-                curCell.onfocus = function (elem) {
-                    return () => {
-                        console.log('onfocus');
-                        let coord = convCoord(elem.id)
-                        elem.value = innerTable.getCeil(coord.x, coord.y).realText;
-                    };
-                }(curCell);
-                curCell.onblur = function (elem) {
-                    return () => {
-                        console.log('onblur');
-                        let coord = convCoord(elem.id);
-                        innerTable.setCeil(coord.x, coord.y, elem.value);
-                        updateTables();
-                        elem.value = innerTable.getCeil(coord.x, coord.y).toDisplay;
-                    };
-                }(curCell);
-                /*
-                            if (!i && j) {
-                                addExpansion(letter, j);
-                            } else if ((i && j) && (i >= DEFAULT_ROWS)) {
-                                document.getElementById(letter + i).style.width = document.getElementById(letter + (i - 1)).style.width;
-                            } else if (i && !j) {
-                                addVerticalExpansion(i);
-                            }
-                            */
+
+                const new_cell = row.insertCell(-1);
+                new_cell.innerHTML = "<input id = '" + letter + (i + 1) + "'/>";
+                new_cell.id = 'Cell_' + letter + (i + 1);
+                initCell(j, i + 1);
+
+                if (i >= DEFAULT_ROWS) {
+                    const inp = document.getElementById(letter + (i + 1));
+                    const preInp = document.getElementById(letter + i);
+                    inp.style.width = preInp.style.width;
+                    inp.style.padding = preInp.style.padding;
+                    new_cell.style.padding = document.getElementById('Cell_' + letter + i).style.padding;
+                }
             }
         }
     }
@@ -1032,11 +1349,15 @@ const convNumtoId = (x, y) => {
 
 const updateTables = () => {
     let upd = innerTable.update();
+
     console.log(upd);
     console.log('POKA OKEY')
     for (let i = 0; i < upd.length; i++) {
         let ceil = upd[i];
         console.log(ceil.x, ceil.y);
+        console.log(innerTable.getCeil(ceil.x, ceil.y).toDisplay);
+        console.log(innerTable.getCeil(ceil.x, ceil.y).realText);
+        console.log(innerTable.getCeil(ceil.x, ceil.y).error);
         document.getElementById(convNumtoId(ceil.x, ceil.y)).value = innerTable.getCeil(ceil.x, ceil.y).toDisplay;
     }
 }
@@ -1113,3 +1434,18 @@ if (cookie['token']) {
     ajax_auth_guest('/guest');
     addCells(DEFAULT_ROWS, DEFAULT_COLS);
 }
+
+
+document.onkeydown = (e) => {
+    let evtobj = window.event ? event : e
+    if (evtobj.code === 'KeyZ' && evtobj.ctrlKey && evtobj.shiftKey) {
+        console.log('REDO');
+        innerTable.redo();
+        updateTables();
+    }
+    else if (evtobj.code === 'KeyZ' && evtobj.ctrlKey) {
+        console.log('UNDO');
+        innerTable.undo();
+        updateTables();
+    }
+};

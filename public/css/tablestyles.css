@@ -6,11 +6,10 @@
 }
 
 .scroll-table td {
+  position: relative;
   border: 1px solid #000;
-}
-
-.great-table{
-  float: left;
+  cursor: cell;
+  outline-offset: -1px;
 }
 
 .left-div{
@@ -20,12 +19,6 @@
   float: left;
 }
 
-.up{
-  margin:0 auto;
-  width:100%;
-}
-
-
 .up-div{
   float: left;
   overflow: hidden;
@@ -33,11 +26,10 @@
 }
 
 .up-div table{
-  width: 100%
+  width: 100%;
 }
 
 .up-div td{
-   width: 100px;
    height: 18px;
    position: relative;
    background-color: #eee;
@@ -47,10 +39,11 @@
    text-align: center;
 }
 
-.up-div td:before {
-    content: '';
-    display: block;
-    width: 100px;
+.up {
+  width: 100px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .left-div table td{
@@ -60,6 +53,12 @@
    padding: 1px 3px;
    font-weight: bold;
    text-align: left;
+}
+
+.left {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .null-div {
@@ -74,21 +73,19 @@
   width: 100px;
 }
 
-
 input {
     border: none;
     cursor: cell;
     background-color: #fff;
+    color: #000;
     width: 100px;
     height: 16px;
     font-size: 14px;
     padding: 2px;
-    height: 16px;
-    color: #000;
 }
 
 input:focus {
-    outline: 2px solid #000;
+    outline: none;
 }
 
 input:not(:focus) {
@@ -103,7 +100,6 @@ td {
   font-size: 17px;
 }
 
-/*
 .modSymb {
     cursor: ew-resize;
     position: absolute;
@@ -112,8 +108,9 @@ td {
     -ms-user-select: none;
     z-index: 666;
     height: 100%;
+    width: 3px;
     top: 0px;
-    left: 102.75px;
+    left: 105px;
 }
 
 .modVertSymb {
@@ -123,9 +120,8 @@ td {
     -moz-user-select: none;
     -ms-user-select: none;
     z-index: 666;
-    height: 3.5px;
+    height: 3px;
     width: 100%;
-    top: 19.5px;
+    top: 21px;
     left: 0px;
 }
-*/
