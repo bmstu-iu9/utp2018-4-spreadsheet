@@ -111,11 +111,11 @@ const coordFromLetters = (str) => {
     str = str.toUpperCase();
     let res = 0;
     let mul = 1;
-    for(let i = str.length - 1; i >= 0; i--){
+    for (let i = str.length - 1; i >= 0; i--) {
         res += mul * (str.charCodeAt(i) - 'A'.charCodeAt(0) + 1);
         mul *= 26;
     }
-    
+
     return res - 1;
 }
 
@@ -160,7 +160,10 @@ const convCoord = (str) => {
     let second = Number(str.substring(beg, end)) - 1;
 
 
-    return { x: first, y: second };
+    return {
+        x: first,
+        y: second
+    };
 }
 
 class Table {
@@ -218,7 +221,11 @@ class Table {
 
     getCeil(x, y) {
         this.createCeilIfNeed(x, y)
-        return { realText: this.field[x][y].realText, toDisplay: this.field[x][y].toDisplay, error: this.field[x][y].error }
+        return {
+            realText: this.field[x][y].realText,
+            toDisplay: this.field[x][y].toDisplay,
+            error: this.field[x][y].error
+        }
     }
 
     update() {
@@ -226,7 +233,7 @@ class Table {
         let depth_stack = new Stack();
         let usage_array = new Array();
         while (!this.toUpdate.isEmpty()) {
-            
+
 
             if (this.toUpdate.top().colour !== WHITE) {
                 this.toUpdate.pop();
@@ -271,8 +278,7 @@ class Table {
                 } catch (e) {
                     curCeil.error = new FormulaError(
                         ARG_ERROR,
-                        'some error in args',
-                        -1,
+                        'some error in args', -1,
                         e);
                     curCeil.toDisplay = curCeil.error.msg;
                 }
@@ -280,7 +286,10 @@ class Table {
                 curCeil.toDisplay = curCeil.error.msg;
             }
 
-            res.push({ x: curCeil.x, y: curCeil.y });
+            res.push({
+                x: curCeil.x,
+                y: curCeil.y
+            });
         }
         console.log(res);
         return res;
@@ -291,7 +300,7 @@ class Table {
 
 const POSSIBLE_FUNCTIONS = new Set(["SUM", "MUL", "ABS"]);
 
-function OPERATOR(first, oper, second) {//TODO: bigNums
+function OPERATOR(first, oper, second) { //TODO: bigNums
     if (oper === undefined && second === undefined) {
         return first;
     }
@@ -310,11 +319,11 @@ function OPERATOR(first, oper, second) {//TODO: bigNums
     }
     switch (oper) {
         case '+':
-            return -(- first - second);
+            return -(-first - second);
         case '-':
-            return + first - second;
+            return +first - second;
         case '*':
-            return + first * second;
+            return +first * second;
         case '/':
             if (second == 0) {
                 throw new FormulaError(
@@ -322,7 +331,7 @@ function OPERATOR(first, oper, second) {//TODO: bigNums
                     second + " equals zero",
                 );
             }
-            return + first / second;
+            return +first / second;
     }
 }
 
@@ -392,8 +401,7 @@ const ceilInsert = (table, ceil, text) => {
         ceil.dependencies.clear();
         ceil.error = new FormulaError(
             CIRC_DEPEND_ERR,
-            'circular dependency detected',
-            -2,
+            'circular dependency detected', -2,
         )
         ceil.func = null;
     }
@@ -481,7 +489,10 @@ class Tokens {
             );
         }
         this.cur++;
-        return { token: this.tokens[this.cur - 1], pos: this.positions[this.cur - 1] }
+        return {
+            token: this.tokens[this.cur - 1],
+            pos: this.positions[this.cur - 1]
+        }
     }
 
     peek() {
@@ -491,7 +502,10 @@ class Tokens {
                 'cant parse',
             );
         }
-        return { token: this.tokens[this.cur], pos: this.positions[this.cur] }
+        return {
+            token: this.tokens[this.cur],
+            pos: this.positions[this.cur]
+        }
     }
 
     clear() {
@@ -511,8 +525,7 @@ const mustBe = (tokens, token) => {
     if (tokens.isEmpty()) {
         throw new FormulaError(
             EXPECTED_EXACT,
-            'expected exact ' + token + ', but found nothing',
-            -2
+            'expected exact ' + token + ', but found nothing', -2
         );
     }
     if (tokens.peek().token != token) {
@@ -657,8 +670,7 @@ const parseArgs = (table, ceil, tokens) => {
 
     throw new FormulaError(
         EXPECTED_IDENTIFIER,
-        "expected identifier, found: nothing",
-        -1
+        "expected identifier, found: nothing", -1
     );
 
 }
@@ -671,12 +683,13 @@ const leftTable = document.getElementById('left-table');
 const upDiv = document.getElementById('up-div');
 const leftDiv = document.getElementById('left-div');
 
-let DEFAULT_ROWS = 50, DEFAULT_COLS = 26;
-let ROWS = 0, COLS = 0;
+let DEFAULT_ROWS = 50,
+    DEFAULT_COLS = 26;
+let ROWS = 0,
+    COLS = 0;
 let letters = [65];
 let currentLet = [];
-
-const innerTable = new Table(DEFAULT_COLS, DEFAULT_ROWS);
+let innerTable = new Table(DEFAULT_COLS, DEFAULT_ROWS);
 
 const clear = (index) => {
     for (let i = index; i < letters.length; i++) {
@@ -815,7 +828,7 @@ const addCells = (rows, cols) => {
 
             const new_cell = upTable.rows[0].insertCell(-1);
             new_cell.innerHTML = `<div align = "center" id = "${letter + 0}"> ${letter} </div>`;
-            new_cell.id = 'Cell_' + letter;//new
+            new_cell.id = 'Cell_' + letter; //new
 
             for (let j = 0; j < ROWS; j++) {
                 mainTable.rows[j].insertCell(-1).innerHTML = "<input id = '" + letter + (j + 1) + "'/>";
@@ -823,10 +836,10 @@ const addCells = (rows, cols) => {
                 curCell.addEventListener("keydown", function (elem) {
                     return (event) => {
                         console.log(curCell.id, 'code=', event.code, 'key=', event.key);
-                        if(event.key == 'Enter'){
+                        if (event.key == 'Enter') {
                             elem.blur();
                         }
-                        if(event.key == 'Escape'){
+                        if (event.key == 'Escape') {
                             console.log(elem.value);
                             elem.value = '';
                         }
@@ -904,10 +917,10 @@ const addCells = (rows, cols) => {
                 curCell.addEventListener("keydown", function (elem) {
                     return (event) => {
                         console.log(curCell.id, 'code=', event.code, 'key=', event.key);
-                        if(event.key == 'Enter'){
+                        if (event.key == 'Enter') {
                             elem.blur();
                         }
-                        if(event.key == 'Escape'){
+                        if (event.key == 'Escape') {
                             console.log(elem.value);
                             elem.value = '';
                         }
@@ -947,37 +960,37 @@ const addCells = (rows, cols) => {
 }
 
 const removeTable = () => {
-  ROWS = COLS = 0;
-  letters = [65];
-  currentLet = [];
-  focusID = '';
-  mainTable.innerHTML = upTable.innerHTML = leftTable.innerHTML = '';
-  document.getElementsByClassName('null-div')[0].innerHTML = '';
+    ROWS = COLS = 0;
+    letters = [65];
+    currentLet = [];
+    mainTable.innerHTML = upTable.innerHTML = leftTable.innerHTML = '';
+    document.getElementsByClassName('null-div')[0].innerHTML = '';
 }
 
 const addRemoveButton = () => {
-  const bttn = document.createElement('button');
-  bttn.innerHTML = 'remove';
-  document.body.insertBefore(bttn, document.getElementsByClassName('null-div')[0]);
-  bttn.style.position = 'absolute';
-  bttn.style.top = '35px';
-  bttn.style.left = '500px';
-  bttn.onclick = (e) => {
-    removeTable();
-  }
+    const bttn = document.createElement('button');
+    bttn.innerHTML = 'remove';
+    document.body.insertBefore(bttn, document.getElementsByClassName('null-div')[0]);
+    bttn.style.position = 'absolute';
+    bttn.style.top = '35px';
+    bttn.style.left = '500px';
+    bttn.onclick = (e) => {
+        removeTable();
+    }
 }
 
 const addCreateButton = () => {
-  const bttn = document.createElement('button');
-  bttn.innerHTML = 'create';
-  document.body.insertBefore(bttn, document.getElementsByClassName('null-div')[0]);
-  bttn.style.position = 'absolute';
-  bttn.style.top = '35px';
-  bttn.style.left = '600px';
-  bttn.onclick = (e) => {
-    document.getElementsByClassName('null-div')[0].innerHTML = `<table><tr><td></td></tr></table>`;
-    addCells(DEFAULT_ROWS, DEFAULT_COLS);
-  }
+    const bttn = document.createElement('button');
+    bttn.innerHTML = 'create';
+    document.body.insertBefore(bttn, document.getElementsByClassName('null-div')[0]);
+    bttn.style.position = 'absolute';
+    bttn.style.top = '35px';
+    bttn.style.left = '600px';
+    bttn.onclick = (e) => {
+        document.getElementsByClassName('null-div')[0].innerHTML = `<table><tr><td></td></tr></table>`;
+        innerTable = new Table(DEFAULT_COLS, DEFAULT_ROWS);
+        addCells(DEFAULT_ROWS, DEFAULT_COLS);
+    }
 }
 
 addCells(DEFAULT_ROWS, DEFAULT_COLS);
@@ -1030,7 +1043,7 @@ const updateTables = () => {
 
 const loadUserTable = (title) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://' + config.host_main + ':' + config.port_main + '/load_user_data?title='+title);
+    xhr.open('GET', 'http://' + config.host_main + ':' + config.port_main + '/load_user_data?title=' + title);
     xhr.send();
     xhr.onload = () => {
         let dataINFO = null;
@@ -1039,12 +1052,14 @@ const loadUserTable = (title) => {
         } catch {
             return;
         }
-        
+
         if (dataINFO.error) {
             return;
         }
-        
-        ajax_remove({session : parseCookies(document.cookie)['token']});
+
+        ajax_remove({
+            session: parseCookies(document.cookie)['token']
+        });
         console.log(dataINFO.data);
     };
 }
@@ -1052,7 +1067,7 @@ const loadUserTable = (title) => {
 const loadTableGuest = (token) => {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', 'http://' + config.host_save + ':' + config.port_save + '/load_guest');
-    xhr.send('session='+token);
+    xhr.send('session=' + token);
     xhr.onload = () => {
         let data = null;
         try {
@@ -1084,8 +1099,10 @@ const loadTableGuest = (token) => {
 //Сохраняем перед закрытием
 window.onbeforeunload = () => {
     const cookie = parseCookies(document.cookie);
-    navigator.sendBeacon('http://' + config.host_save + ':' + config.port_save + '/save', 'session='+cookie['token'] +
-     '&data='+JSON.stringify(Object.assign({}, {'size':[ROWS, COLS]}, innerTable.activeCeils)));
+    navigator.sendBeacon('http://' + config.host_save + ':' + config.port_save + '/save', 'session=' + cookie['token'] +
+        '&data=' + JSON.stringify(Object.assign({}, {
+            'size': [ROWS, COLS]
+        }, innerTable.activeCeils)));
     //ajax_save({session: parseCookies(document.cookie)['token'], data: JSON.stringify(prepareText(innerTable.collectData()))});
 }
 
