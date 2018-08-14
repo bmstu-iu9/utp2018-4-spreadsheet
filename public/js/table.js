@@ -644,12 +644,12 @@ class Tokens {
     }
 }
 
-//<E>  ::= <T> <E’>. 
-//<E’> ::= + <T> <E’> | - <T> <E’> | . 
-//<T>  ::= <F> <T’>. 
-//<T’> ::= * <F> <T’> | / <F> <T’> | . 
+//<E>  ::= <T> <E’>.
+//<E’> ::= + <T> <E’> | - <T> <E’> | .
+//<T>  ::= <F> <T’>.
+//<T’> ::= * <F> <T’> | / <F> <T’> | .
 //<F>  ::= <number> | <ceil> | ( <E> ) | - <F> | + <F> |  <func> ( <B> ).
-//<B>  ::= <E> ; <B> | <E> | .  
+//<B>  ::= <E> ; <B> | <E> | .
 //TODO: update scheme
 
 const mustBe = (tokens, token) => {
@@ -1135,7 +1135,8 @@ const initCell = (columnNumber, rowNumber) => {
             elem.value = innerTable.getCeil(coord.x, coord.y).toDisplay;
         };
     }(newInput);
-    newCell.onmousedown = (e) => {        //please delete this brah 
+
+    newCell.onmousedown = (e) => {        //please delete this brah
         if (focusID) {
             const oldInput = document.getElementById(focusID);
             const oldCell = document.getElementById('Cell_' + focusID);
@@ -1161,6 +1162,9 @@ const initCell = (columnNumber, rowNumber) => {
         } else if (e.key === 'ArrowLeft') { //left
             dx = (columnNumber ? -1 : 0);
         } else if (e.key === 'ArrowRight') { //right
+            dx = 1;
+        } else if (e.key === 'Tab') {
+            e.preventDefault();
             dx = 1;
         }
 
