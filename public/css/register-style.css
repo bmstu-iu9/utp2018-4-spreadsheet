@@ -64,7 +64,7 @@ input {
     background-color: #ffffff
 }
 
-.inputs {
+.inputs, #password {
     outline: none;
     display: block;
     margin-left: 35px;
@@ -75,6 +75,11 @@ input {
     border-radius: 6px;
     padding-left: 27px;
     background-color: #ffffff
+}
+
+#password {
+    padding-right: 40px;
+    width: 265px;
 }
 
 #first_name:focus, #last_name:focus, #org:focus, #email:focus, #password:focus {
@@ -126,7 +131,6 @@ input {
 }
 
 #toLogin, #signup {
-    margin-bottom: 5px;
     margin-left: 10px;
     font-size: 18px;
     font-family: "Roboto", sans-serif;
@@ -165,4 +169,15 @@ input {
 	position: relative;
 	z-index: 1;
 	float: left;
+}
+
+#eye {
+    display: inline-block;
+    float: right;
+    margin-right: 50px;
+    margin-top: -45px;
+    margin-bottom: 0px;
+    width: 18px;
+    height: 18px;
+    color: #808080;
 }
