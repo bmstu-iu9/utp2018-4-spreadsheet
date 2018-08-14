@@ -946,6 +946,44 @@ const addCells = (rows, cols) => {
     COLS += cols;
 }
 
+const removeTable = () => {
+  ROWS = COLS = 0;
+  letters = [65];
+  currentLet = [];
+  focusID = '';
+  mainTable.innerHTML = upTable.innerHTML = leftTable.innerHTML = '';
+  document.getElementsByClassName('null-div')[0].innerHTML = '';
+}
+
+const addRemoveButton = () => {
+  const bttn = document.createElement('button');
+  bttn.innerHTML = 'remove';
+  document.body.insertBefore(bttn, document.getElementsByClassName('null-div')[0]);
+  bttn.style.position = 'absolute';
+  bttn.style.top = '35px';
+  bttn.style.left = '500px';
+  bttn.onclick = (e) => {
+    removeTable();
+  }
+}
+
+const addCreateButton = () => {
+  const bttn = document.createElement('button');
+  bttn.innerHTML = 'create';
+  document.body.insertBefore(bttn, document.getElementsByClassName('null-div')[0]);
+  bttn.style.position = 'absolute';
+  bttn.style.top = '35px';
+  bttn.style.left = '600px';
+  bttn.onclick = (e) => {
+    document.getElementsByClassName('null-div')[0].innerHTML = `<table><tr><td></td></tr></table>`;
+    addCells(DEFAULT_ROWS, DEFAULT_COLS);
+  }
+}
+
+addCells(DEFAULT_ROWS, DEFAULT_COLS);
+addRemoveButton();
+addCreateButton();
+
 mainDiv.onscroll = function () {
     upDiv.scrollLeft = this.scrollLeft;
     leftDiv.scrollTop = this.scrollTop;
