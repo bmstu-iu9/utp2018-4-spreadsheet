@@ -303,6 +303,17 @@ const addCells = function(rows, cols){
             inp.style.height = preInp.style.height;
             inp.style.padding = preInp.style.padding;
             cell.style.padding = document.getElementById('Cell_' + currentLet[currentLet.length - 2] + (j + 1)).style.padding;
+
+            cell.onkeydown = function(e) {
+              if (e.ctrlKey && e.keyCode === 67){
+                e.preventDefault();
+                tryToSmthToClipboard(cell.firstChild, 'copy');
+              }
+              else if (e.ctrlKey && e.keyCode === 88){
+                e.preventDefault();
+                tryToSmthToClipboard(cell.firstChild, 'cut');
+              }
+            };
         }
 
         addExpansion(letter, i);
@@ -321,6 +332,7 @@ const addCells = function(rows, cols){
           const new_cell = row.insertCell(-1);
           new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
           new_cell.id = 'Cell_' + letter;
+
           addExpansion(letter, j);
         }
       }
@@ -347,6 +359,16 @@ const addCells = function(rows, cols){
             new_cell.id = 'Cell_' + letter + (i + 1);
             initCell(j, i + 1);
 
+            new_cell.onkeydown = function(e) {
+              if (e.ctrlKey && e.keyCode === 67){
+                e.preventDefault();
+                tryToSmthToClipboard(new_cell.firstChild, 'copy');
+              }
+              else if (e.ctrlKey && e.keyCode === 88){
+                e.preventDefault();
+                tryToSmthToClipboard(new_cell.firstChild, 'cut');
+              }
+            };
 
             if (i >= DEFAULT_ROWS) {
                 const inp = document.getElementById(letter + (i + 1));
@@ -365,6 +387,8 @@ const addCells = function(rows, cols){
 }
 
 addCells(DEFAULT_ROWS, DEFAULT_COLS);
+
+// CONTEXT MENU
 
 initContextMenu();
 
@@ -490,42 +514,47 @@ function PasteFromClipboard(el)
     PastedText.execCommand("Paste");
 }
 
+const tryToPasteFromClipboard = cell => {
+  if (navigator.clipboard) {
+    navigator.clipboard.readText()
+      .then(text => {
+        cell.value = text;
+      })
+      .catch(err => {
+        alert('Failed to read clipboard contents: ' + err);
+      });
+  } else {
+    alert("Only for Chromium 66+");
+  }
+}
+
+const tryToSmthToClipboard = (cell, command) => {
+  cell.focus();
+  cell.select();
+  try {
+    document.execCommand(command);
+  } catch (err) {
+      alert("Opa4ki!");
+  }
+  window.getSelection().removeAllRanges();
+}
+
+
+
 const menuItemListener = link => {
   //alert("Cell - " + itemInContext.id + ", Action - " + link.getAttribute("data-action"));
   let cell = itemInContext;
   let action = link.getAttribute("data-action");
   switch (action){
     case 'paste':
-      if (navigator.clipboard) {
-        navigator.clipboard.readText()
-          .then(text => {
-            cell.value = text;
-          })
-          .catch(err => {
-            alert('Failed to read clipboard contents: ' + err);
-          });
-      } else {
-        alert("Only for Chromium 66+");
-      }
+      tryToPasteFromClipboard(cell);
       break;
     case 'copy':
-      cell.focus();
-      cell.select();
-      try {
-        document.execCommand('copy');
-      } catch (err) {
-          alert("Opa4ki!");
-      }
-      window.getSelection().removeAllRanges();
+      tryToSmthToClipboard(cell, 'copy');
       break;
     case 'cut':
-      cell.focus();
-      cell.select();
-      try {
-        document.execCommand('copy');
-      } catch (err) {
-          alert("Opa4ki!");
-      }
+      tryToSmthToClipboard(cell, 'cut');
+      break;
     case 'delete':
       cell.value = null;
     }

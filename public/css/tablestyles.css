@@ -77,12 +77,14 @@ textarea {
     border: none;
     cursor: cell;
     background-color: #fff;
-    width: 100px;
+    width: 96px;
     height: 11px;
     overflow: hidden;
     resize: none;
     font-size: 14px;
-    padding: 2px;
+    padding: 4px;
+    wrap: none;
+    vertical-align: top;
 }
 
 textarea:focus {
@@ -90,7 +92,7 @@ textarea:focus {
 }
 
 textarea:not(:focus) {
-    text-align: right;
+    text-align: left;
 }
 
 table {
