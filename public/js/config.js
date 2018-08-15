@@ -18,3 +18,9 @@ const ERROR_MESSAGES = {
     5 : 'The authorization server has a rest :)',
     6 : 'The save server has a rest :)',
 };
+
+const USER_STATUS = {
+    GUEST : 0,
+    USER : 1,
+    ADMIN : 666,
+}

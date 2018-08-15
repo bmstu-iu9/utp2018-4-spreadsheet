@@ -44,6 +44,7 @@ const checkUserTitle = (req, res) => {
                         return returnError(res, checkINFO.error);
                     }
 
+                    logs.log('\x1b[34mCHECK USER TITLE\x1b[0m \x1b[32mSUCCESS\x1b[0m');
                     res.writeHead(200, {
                         'Content-Type': 'application/json',
                     });
@@ -63,4 +64,4 @@ const checkUserTitle = (req, res) => {
         });    
 }
 
-module.exports.loadUserData = loadUserData;
+module.exports.checkUserTitle = checkUserTitle;

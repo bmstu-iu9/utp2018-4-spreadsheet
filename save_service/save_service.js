@@ -74,11 +74,13 @@ const saveGuestHandle = (body, response) => {
     new Promise((resolve, reject) => {
         if (body.session === 'undefined') {
             reject(new Error('Session undefined'));
+            return;
         }
 
         saveClient.run(`REPLACE INTO saves_guest(Token, Data, SaveTime) VALUES(?, ?, ?)`, [body.session, body.data, Math.round(currDate.getTime() / 1000)], (err) => {
             if (err) {
                 reject(err);
+                return;
             }
 
             resolve();
@@ -109,7 +111,7 @@ const saveGuestHandle = (body, response) => {
 const saveUserHandle = (body, response) => {
     const currDate = new Date();
     new Promise((resolve, reject) => {
-        saveClient.run(`REPLACE INTO saves_users(Title, Email, Data, SaveTime) VALUES(?, ?, ?, ?)`,
+        saveClient.run(`REPLACE INTO saves_user(Title, Email, Data, SaveTime) VALUES(?, ?, ?, ?)`,
             [body.title, body.email, body.data, Math.round(currDate.getTime() / 1000)], (err) => {
             if (err) {
                 reject(err);
@@ -156,7 +158,7 @@ const checkTitleHandle = (body, response) => {
         }
 
         if (!row) {
-            logs.log(`Check title file \x1b[31mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
+            logs.log(`Check title file \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*',
@@ -171,7 +173,7 @@ const checkTitleHandle = (body, response) => {
                 'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
-                error: ERROR_MESSAGES.SQLITE3_ERROR_UNIQUE
+                error: ERRORS.SQLITE3_ERROR_UNIQUE
             }));
         }
     });
@@ -186,11 +188,13 @@ const removeGuestHandle = (body, response) => {
     new Promise((resolve, reject) => {
         if (body.session === 'undefined') {
             reject(new Error('Session undefined'));
+            return;
         }
 
         saveClient.run(`DELETE FROM saves_guest WHERE Token=?`, [body.session], (err) => {
             if (err) {
                 reject(err);
+                return;
             }
 
             resolve();
@@ -208,6 +212,39 @@ const removeGuestHandle = (body, response) => {
         },
         (err) => {
             logs.log(`Remove \x1b[31mFAILED\x1b[0m: ${body.session} ${err}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            });
+            return response.end(JSON.stringify({
+                error: ERRORS.SQLITE3_ERROR
+            }));
+        });
+}
+
+const removeUserHandle = (body, response) => {
+    new Promise((resolve, reject) => {
+        saveClient.run(`DELETE FROM saves_user WHERE Title=? AND Email=?`, [body.title, body.email], (err) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+
+            resolve();
+        });
+    }).then(
+        () => {
+            logs.log(`Remove USER FILE \x1b[32mSUCCESS\x1b[0m: Title: ${body.title}, Email: ${body.email}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            });
+            response.end(JSON.stringify({
+                error: null
+            }));
+        },
+        (err) => {
+            logs.log(`Remove USER FILE \x1b[31mFAILED\x1b[0m: Title: ${body.title}, Email: ${body.email}, Error: ${err}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*',
@@ -294,6 +331,8 @@ http.createServer((req, res) => {
                     checkTitleHandle(qs.parse(body), res); //чтобы не гонять данные с таблицы несколько раз.
                 } else if (path.path === '/remove_guest') {
                     removeGuestHandle(qs.parse(body), res);
+                } else if (path.path === '/remove_user') {
+                    removeUserHandle(qs.parse(body), res);
                 } else if (path.path === '/load_guest') {
                     loadGuestHandle(qs.parse(body), res);
                 } else if (path.path === '/load_user') {

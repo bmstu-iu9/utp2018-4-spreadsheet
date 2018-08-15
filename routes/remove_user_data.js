@@ -1,17 +1,18 @@
 'use strict';
 
 const qs = require('querystring');
+const url = require('url');
 const sendAuthRequest = require('../app/auth_request').sendAuthRequest;
 const sendSaveRequest = require('../app/auth_request').sendSaveRequest;
+const parseCookies = require('../app/parse_cookies').parseCookies;
 const logs = require('../app/logs');
 const SAVE_CONFIG = require('../config/save_config.json');
 
 const ERRORS = {
     AUTH_ERROR: 0,
-    AUTH_SERVER_ERROR: 2,
-
-    SAVE_ERROR: 4,
-    SAVE_SERVER_ERROR: 5,
+    LOAD_ERROR: 1,
+    LOAD_SERVER_ERROR: 2,
+    AUTH_SERVER_ERROR: 3,
 }
 
 const returnError = (res, code) => {
@@ -19,48 +20,51 @@ const returnError = (res, code) => {
         'Content-Type': 'application/json',
     });
     return res.end(JSON.stringify({
+        data: null,
         error: code
     }));
 }
 
-const saveUserData = (body, res) => {
+const removeUserData = (req, res) => {
+    logs.log('\x1b[34mREMOVE DATA\x1b[0m Method: ' + req.method);
+
+    const cookies = parseCookies(req.headers.cookie);
     const postAuthData = qs.stringify({
-        "session": body.session
+        "session": cookies['token']
     });
+
     sendAuthRequest('/check_session', postAuthData).then(
         authINFO => {
             if (authINFO.error) {
                 return returnError(res, ERRORS.AUTH_ERROR);
             }
 
+            const parsedURL = url.parse(req.url, true);
             let postSaveData = null;
             let adress = null;
 
-            if (body.status == SAVE_CONFIG.GUEST) { //string&int
+            if (parsedURL.query['status'] == SAVE_CONFIG.GUEST) { //string&int
                 postSaveData = qs.stringify({
-                    'session': body.session,
-                    'data': body.data,
+                    'session': cookies['token'],
                 });
 
-                adress = '/save_guest';
-                logs.log('\x1b[34mSAVE FOR GUEST\x1b[0m');
-            } else if (body.status == SAVE_CONFIG.USER && authINFO.status === SAVE_CONFIG.USER){
+                adress = '/remove_guest';
+                logs.log('\x1b[34mREMOVE FOR GUEST\x1b[0m');
+            } else if (parsedURL.query['status'] == SAVE_CONFIG.USER && authINFO.status === SAVE_CONFIG.USER) {
                 postSaveData = qs.stringify({
-                    'title': body.title,
-                    'email': authINFO.email,
-                    'data': body.data
+                    'title': parsedURL.query['title'],
+                    'email': authINFO.email
                 });
-
-                adress = '/save_user';
-                logs.log(`\x1b[34mSAVE USER DATA\x1b[0m: Email: ${authINFO.email}, Title: ${body.title}`);
+                adress = '/remove_user';
+                logs.log('\x1b[34mREMOVE FOR USER\x1b[0m');
             } else {
                 return returnError(res, ERRORS.AUTH_ERROR);
             }
 
             sendSaveRequest(adress, postSaveData).then(
-                saveINFO => {
-                    if (saveINFO.error) {
-                        return returnError(res, ERRORS.SAVE_ERROR);
+                loadINFO => {
+                    if (loadINFO.error) {
+                        return returnError(res, ERRORS.LOAD_ERROR);
                     }
 
                     res.writeHead(200, {
@@ -72,7 +76,7 @@ const saveUserData = (body, res) => {
                 },
 
                 () => {
-                    return returnError(res, ERRORS.SAVE_SERVER_ERROR);
+                    return returnError(res, ERRORS.LOAD_SERVER_ERROR);
                 }
             )
         },
@@ -82,4 +86,4 @@ const saveUserData = (body, res) => {
         });
 }
 
-module.exports.saveUserData = saveUserData;
+module.exports.removeUserData = removeUserData;

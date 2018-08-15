@@ -8,16 +8,16 @@ const logs = require('../app/logs');
 const CONFIG = require('./config.json');
 
 const ERRORS = {
-    CHECK_SESSION_ERROR : 1,
-    SQLITE3_ERROR_NO_USER : 2,
-    SQLITE3_ERROR_UNIQUE : 3,
-    SQLITE3_ERROR_UNKNOWN : 4,
+    CHECK_SESSION_ERROR: 1,
+    SQLITE3_ERROR_NO_USER: 2,
+    SQLITE3_ERROR_UNIQUE: 3,
+    SQLITE3_ERROR_UNKNOWN: 4,
 };
 
 const STATUS = {
-    GUEST : 0,
-    USER : 1,
-    ADMIN : 666,
+    GUEST: 0,
+    USER: 1,
+    ADMIN: 666,
 }
 
 //Connection with database (users info)
@@ -30,7 +30,7 @@ const usersClient = new sqlite3.Database(CONFIG.dbAdress, sqlite3.OPEN_READWRITE
 });
 
 //To generate a session token
-const ID = () => '_' + Math.random().toString(36).substr(2, 9);
+const ID = () => Math.random().toString(36).substr(2, 9);
 
 /**
  * Finds user's session token in token key-value store
@@ -40,18 +40,29 @@ const ID = () => '_' + Math.random().toString(36).substr(2, 9);
 const checkSession = (body, response) => {
     usersClient.get(`SELECT Email email, Status status
                     FROM sessions
-                    WHERE Token = ?`,
-                    [body.session], (err, row) => {
+                    WHERE Token = ?`, [body.session], (err, row) => {
         if (err || !row) {
             logs.log(`Check \x1b[31mFAILED\x1b[0m: sessionID: ${body.session}`);
-            response.writeHead(200, { 'Content-Type' : 'application/json' });
-            return response.end(JSON.stringify({email : null, status: null, error : ERRORS.CHECK_SESSION_ERROR}));
+            response.writeHead(200, {
+                'Content-Type': 'application/json'
+            });
+            return response.end(JSON.stringify({
+                email: null,
+                status: null,
+                error: ERRORS.CHECK_SESSION_ERROR
+            }));
         }
 
         logs.log(`Check \x1b[32mSUCCESS\x1b[0m: sessionID: ${body.session}, user: ${row.email}, status: ${row.status}`);
 
-        response.writeHead(200, { 'Content-Type' : 'application/json' });
-        return response.end(JSON.stringify({email : row.email, status: row.status, error : null}));
+        response.writeHead(200, {
+            'Content-Type': 'application/json'
+        });
+        return response.end(JSON.stringify({
+            email: row.email,
+            status: row.status,
+            error: null
+        }));
     });
 }
 
@@ -60,34 +71,40 @@ const checkSession = (body, response) => {
  * @param {Object} body 
  * @param {http.ServerResponse} response
  */
-const addGuest = (body, response) => {
+const addGuest = (body, response) => { //можно убрать body
     const sessionID = ID();
     const currDate = new Date();
     new Promise((resolve, reject) => {
-        usersClient.run(`INSERT INTO sessions(Token, Status, LoginTime) VALUES(?, ?, ?)`,
-                    [sessionID, STATUS.GUEST, Math.round(currDate.getTime() / 1000)], (err) => {
+        usersClient.run(`INSERT INTO sessions(Token, Status, LoginTime) VALUES(?, ?, ?)`, [sessionID, STATUS.GUEST, Math.round(currDate.getTime() / 1000)], (err) => {
             if (err) {
                 reject(err);
+                return;
             }
             resolve();
         });
     }).then(
         () => {
-            logs.log(`Login GUEST \x1b[32mSUCCESS\x1b[0m: user: ${body.email}, sessionID: ${sessionID}, Date: ${currDate.toLocaleString()}`);
-            response.writeHead(200, { 
-                'Content-Type' : 'application/json',
-                'Access-Control-Allow-Origin' : '*',
+            logs.log(`Login GUEST \x1b[32mSUCCESS\x1b[0m: sessionID: ${sessionID}, Date: ${currDate.toLocaleString()}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
             });
-            response.end(JSON.stringify({session_id : sessionID, error : null})); 
-    },
+            response.end(JSON.stringify({
+                session_id: sessionID,
+                error: null
+            }));
+        },
         (err) => {
             logs.log(`Set sessionID GUEST \x1b[31mFAILED\x1b[0m: ${sessionID} ${err}`);
-            response.writeHead(200, { 
-                'Content-Type' : 'application/json',
-                'Access-Control-Allow-Origin' : '*',
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
             });
-            return response.end(JSON.stringify({session_id : null, error : ERRORS.SQLITE3_ERROR}));
-    }); //да, немного копипаста;
+            return response.end(JSON.stringify({
+                session_id: null,
+                error: ERRORS.SQLITE3_ERROR
+            }));
+        }); //да, немного копипаста;
 }
 
 /**
@@ -99,16 +116,18 @@ const loginHandle = (body, response) => {
     usersClient.get(`SELECT Email email,
                             Pass pass
                     FROM login_data
-                    WHERE Email = ?`,
-                    [body.email], (err, row) => {
+                    WHERE Email = ?`, [body.email], (err, row) => {
         if (err || !row || row.pass != body.password) {
             logs.log(`Login USER \x1b[31mFAILED\x1b[0m: user: ${body.email} ${err}`);
-            response.writeHead(200, { 
-                'Content-Type' : 'application/json',
-                'Access-Control-Allow-Origin' : '*',
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
             });
-            return response.end(JSON.stringify({session_id : null, error : (err) ?
-                 ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_NO_USER}));
+            return response.end(JSON.stringify({
+                session_id: null,
+                error: (err) ?
+                    ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_NO_USER
+            }));
         }
 
 
@@ -117,9 +136,10 @@ const loginHandle = (body, response) => {
         const currDate = new Date();
         new Promise((resolve, reject) => {
             usersClient.run(`REPLACE INTO sessions(Token, Email, Status, LoginTime) VALUES(?, ?, ?, ?)`,
-                        [sessionID, body.email, STATUS.USER,  Math.round(currDate.getTime() / 1000)], (err) => {
+             [sessionID, body.email, STATUS.USER, Math.round(currDate.getTime() / 1000)], (err) => {
                 if (err) {
                     reject(err);
+                    return;
                 }
 
                 resolve();
@@ -127,20 +147,26 @@ const loginHandle = (body, response) => {
         }).then(
             () => {
                 logs.log(`Login USER \x1b[32mSUCCESS\x1b[0m: user: ${body.email}, sessionID: ${sessionID}, Date: ${currDate.toLocaleString()}`);
-                response.writeHead(200, { 
-                    'Content-Type' : 'application/json',
-                    'Access-Control-Allow-Origin' : '*',
+                response.writeHead(200, {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
                 });
-                response.end(JSON.stringify({session_id : sessionID, error : null})); 
-        },
+                response.end(JSON.stringify({
+                    session_id: sessionID,
+                    error: null
+                }));
+            },
             (err) => {
                 logs.log(`Set sessionID USER \x1b[31mFAILED\x1b[0m: ${sessionID} ${err}`);
-                response.writeHead(200, { 
-                    'Content-Type' : 'application/json',
-                    'Access-Control-Allow-Origin' : '*',
+                response.writeHead(200, {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
                 });
-                return response.end(JSON.stringify({session_id : null, error : ERRORS.SQLITE3_ERROR}));
-        });
+                return response.end(JSON.stringify({
+                    session_id: null,
+                    error: ERRORS.SQLITE3_ERROR
+                }));
+            });
     });
 }
 
@@ -150,27 +176,38 @@ const loginHandle = (body, response) => {
  * @param {http.ServerResponse} response 
  */
 const logoutHandle = (body, response) => {
+    const currDate = new Date();
     new Promise((resolve, reject) => {
-        usersClient.run(`DELETE FROM sessions WHERE Token=?`,
-                    [body.session],(err) => {
+        usersClient.run(`REPLACE INTO sessions(Token, Email, Status, LoginTime) VALUES(?, ?, ?, ?)`, [body.session, ' ', STATUS.GUEST, Math.round(currDate.getTime() / 1000)], (err) => {
             if (err) {
                 reject(err);
+                return;
             }
 
             resolve();
         });
     }).then(
         () => {
-            logs.log(`Logout \x1b[32mSUCCESS\x1b[0m: user: ${body.session}`);
-            response.writeHead(200, { 'Content-Type' : 'application/json' });
-            response.end(JSON.stringify({error : null}));
-    },
+            logs.log(`Logout USER \x1b[32mSUCCESS\x1b[0m: sessionID: ${body.session}, Date: ${currDate.toLocaleString()}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            });
+            response.end(JSON.stringify({
+                error: null
+            }));
+        },
         (err) => {
-            logs.log(`Logout \x1b[31mFAILED\x1b[0m: ${body.session} ${err}`);
-            response.writeHead(200, { 'Content-Type' : 'application/json' });
-            return response.end(JSON.stringify({error : ERRORS.SQLITE3_ERROR}));
-    });
-} 
+            logs.log(`Logout USER \x1b[31mFAILED\x1b[0m: sessionID: ${body.session}, Date: ${currDate.toLocaleString()}`);
+            response.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            });
+            return response.end(JSON.stringify({
+                error: ERRORS.SQLITE3_ERROR
+            }));
+        });
+}
 
 /**
  * Inserts new user data in database
@@ -180,60 +217,71 @@ const logoutHandle = (body, response) => {
 const registerHandle = (body, response) => {
     new Promise((resolve, reject) => {
         usersClient.run(`INSERT INTO login_data(First_name, Last_name, Organization, Email, Pass)
-                    VALUES(?, ?, ?, ?, ?)`,
-                    [body.first_name, body.last_name, body.organization, body.email, body.password],
-                    (err) => {
-            if (err) {
-                reject(err);
-            }
+                    VALUES(?, ?, ?, ?, ?)`, [body.first_name, body.last_name, body.organization, body.email, body.password],
+            (err) => {
+                if (err) {
+                    reject(err);
+                }
 
-            resolve();
-        });
+                resolve();
+            });
     }).then(
         () => {
             logs.log(`Register \x1b[32mSUCCESS\x1b[0m: user: ${body.email}`);
-            response.writeHead(200, { 'Content-Type' : 'application/json' });
-            response.end(JSON.stringify({error : null}));
-    },
+            response.writeHead(200, {
+                'Content-Type': 'application/json'
+            });
+            response.end(JSON.stringify({
+                error: null
+            }));
+        },
         (err) => {
             logs.log(`Register \x1b[31mFAILED\x1b[0m: ${body.email} ${err}`);
-            response.writeHead(200, { 'Content-Type' : 'application/json' });
-            return response.end(JSON.stringify({error : err.message.indexOf('UNIQUE') === -1 ?
-                    ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_UNIQUE})); 
-    });
+            response.writeHead(200, {
+                'Content-Type': 'application/json'
+            });
+            return response.end(JSON.stringify({
+                error: err.message.indexOf('UNIQUE') === -1 ?
+                    ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_UNIQUE
+            }));
+        });
 }
 
 //Starts server, which works only with POST requests
 http.createServer((req, res) => {
-    const path = url.parse(req.url, true)
-    if (req.method === 'POST') {
-        let body = '';
-        req.on('data', (data) => {
-            body += data;
-        });
+        const path = url.parse(req.url, true)
+        if (req.method === 'POST') {
+            let body = '';
+            req.on('data', (data) => {
+                body += data;
+            });
 
-        req.on('end', () => {
-            if (path.path === '/check_session') {
-                checkSession(qs.parse(body), res);
-            } else if (path.path === '/login') {
-                loginHandle(qs.parse(body), res);
-            } else if (path.path === '/guest') {
-                addGuest(qs.parse(body), res);
-            } else if (path.path === '/register') {
-                registerHandle(qs.parse(body), res);
-            } else if (path.path === '/logout') {
-                logoutHandle(qs.parse(body), res);
-            } else {
-                res.writeHead(404, { 'Content-Type' : 'text/plain' });
-                res.end(); 
-            }
-        }); 
-    } else {
-        res.writeHead(404, { 'Content-Type' : 'text/plain' });
-        res.end(); 
-    }
+            req.on('end', () => {
+                if (path.path === '/check_session') {
+                    checkSession(qs.parse(body), res);
+                } else if (path.path === '/login') {
+                    loginHandle(qs.parse(body), res);
+                } else if (path.path === '/guest') {
+                    addGuest(qs.parse(body), res);
+                } else if (path.path === '/register') {
+                    registerHandle(qs.parse(body), res);
+                } else if (path.path === '/logout') {
+                    logoutHandle(qs.parse(body), res);
+                } else {
+                    res.writeHead(404, {
+                        'Content-Type': 'text/plain'
+                    });
+                    res.end();
+                }
+            });
+        } else {
+            res.writeHead(404, {
+                'Content-Type': 'text/plain'
+            });
+            res.end();
+        }
 
-}).listen(CONFIG.port,() => 
+    }).listen(CONFIG.port, () =>
         logs.log(`\x1b[35mAuth service\x1b[0m successfully \x1b[32mstarted\x1b[0m at ${CONFIG.port}`))
     .on('close', () => {
         usersClient.close((err) => {

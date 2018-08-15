@@ -246,7 +246,12 @@ class Table {
         }
 
         if (!undo_or_redo)
-            this.actions.do({ x: x, y: y, newText: text, oldText: this.field[x][y].realText });
+            this.actions.do({
+                x: x,
+                y: y,
+                newText: text,
+                oldText: this.field[x][y].realText
+            });
 
         this.field[x][y].realText = text;
         if (this.field[x][y].realText) { //Обновляем в активных
@@ -372,7 +377,7 @@ class Table {
 
 const POSSIBLE_FUNCTIONS = new Set(["SUM", "MUL"]);
 
-const OPERATOR = (first, oper, second) => {//TODO: bigNums
+const OPERATOR = (first, oper, second) => { //TODO: bigNums
     if (oper === undefined && second === undefined) {
         return first;
     }
@@ -887,7 +892,8 @@ let ROWS = 0,
 let letters = [65];
 let currentLet = [];
 let focusID = '';
-let innerTable = new Table(DEFAULT_COLS, DEFAULT_ROWS);
+let innerTable = null;
+let tableTitle = '';
 
 const clear = (index) => {
     for (let i = index; i < letters.length; i++) {
@@ -1123,8 +1129,7 @@ const initCell = (columnNumber, rowNumber) => {
         if (evtobj.code === 'KeyZ' && evtobj.ctrlKey && evtobj.shiftKey) {
             console.log('REDO');
             evtobj.preventDefault();
-        }
-        else if (evtobj.code === 'KeyZ' && evtobj.ctrlKey) {
+        } else if (evtobj.code === 'KeyZ' && evtobj.ctrlKey) {
             console.log('UNDO');
             evtobj.preventDefault();
         }
@@ -1157,7 +1162,7 @@ const initCell = (columnNumber, rowNumber) => {
             elem.value = innerTable.getCeil(coord.x, coord.y).toDisplay;
         };
     }(newInput);
-    newCell.onmousedown = (e) => {        //please delete this brah 
+    newCell.onmousedown = (e) => { //please delete this brah 
         if (focusID) {
             const oldInput = document.getElementById(focusID);
             const oldCell = document.getElementById('Cell_' + focusID);
@@ -1188,7 +1193,9 @@ const initCell = (columnNumber, rowNumber) => {
 
         const low_cell = document.getElementById('Cell_' + currentLet[columnNumber + dx] + (rowNumber + dy))
         const low_input = document.getElementById(currentLet[columnNumber + dx] + (rowNumber + dy))
-        low_cell.dispatchEvent(new Event('mousedown', { keyCode: 13 }));
+        low_cell.dispatchEvent(new Event('mousedown', {
+            keyCode: 13
+        }));
         low_input.focus();
     });
 }
@@ -1284,36 +1291,6 @@ const removeTable = () => {
     document.getElementsByClassName('null-div')[0].innerHTML = '';
 }
 
-const addRemoveButton = () => {
-    const bttn = document.createElement('button');
-    bttn.innerHTML = 'remove';
-    document.body.insertBefore(bttn, document.getElementsByClassName('null-div')[0]);
-    bttn.style.position = 'absolute';
-    bttn.style.top = '35px';
-    bttn.style.left = '500px';
-    bttn.onclick = (e) => {
-        removeTable();
-    }
-}
-
-const addCreateButton = () => {
-    const bttn = document.createElement('button');
-    bttn.innerHTML = 'create';
-    document.body.insertBefore(bttn, document.getElementsByClassName('null-div')[0]);
-    bttn.style.position = 'absolute';
-    bttn.style.top = '35px';
-    bttn.style.left = '600px';
-    bttn.onclick = (e) => {
-        document.getElementsByClassName('null-div')[0].innerHTML = `<table><tr><td></td></tr></table>`;
-        innerTable = new Table(DEFAULT_COLS, DEFAULT_ROWS);
-        addCells(DEFAULT_ROWS, DEFAULT_COLS);
-    }
-}
-
-//addCells(DEFAULT_ROWS, DEFAULT_COLS);
-addRemoveButton();
-addCreateButton();
-
 mainDiv.onscroll = function () {
     upDiv.scrollLeft = this.scrollLeft;
     leftDiv.scrollTop = this.scrollTop;
@@ -1362,65 +1339,134 @@ const updateTables = () => {
     }
 }
 
-const loadUserTable = (title) => {
+const getSavedTable = (title, okCallback, errCallback) => {
+    let adress = title ? '/load_user_data?status=' + USER_STATUS.USER + '&title=' + title :
+        '/load_user_data?status=' + USER_STATUS.GUEST;
+
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://' + config.host_main + ':' + config.port_main + '/load_user_data?title=' + title);
+    xhr.open('GET', 'http://' + config.host_main + ':' + config.port_main + adress);
     xhr.send();
     xhr.onload = () => {
         let dataINFO = null;
         try {
-            dataINFO = JSON.parse(ajax.responseText);
+            dataINFO = JSON.parse(xhr.responseText);
         } catch {
+            errCallback();
             return;
         }
 
         if (dataINFO.error) {
+            errCallback(dataINFO.error);
             return;
         }
 
-        ajax_remove({
-            session: parseCookies(document.cookie)['token']
-        });
-        console.log(dataINFO.data);
+        okCallback(dataINFO);
     };
 }
 
-const loadTableGuest = (token) => {
+const tableFromObject = (tableData) => {
+    document.getElementsByClassName('null-div')[0].innerHTML = `<table><tr><td></td></tr></table>`;
+    innerTable = new Table(tableData['size'][0], tableData['size'][1]);
+    addCells(tableData['size'][0], tableData['size'][1]);
+    delete tableData['size'];
+    for (let coordStr in tableData) {
+        const coord = coordStr.split(',').map(e => parseInt(e, 10));
+        innerTable.setCeil(coord[0], coord[1], arr2str(tableData[coordStr]));
+    }
+    updateTables();
+}
+
+const createTable = (rows, cols) => {
+    innerTable = new Table(cols, rows);
+    addCells(rows, cols);
+}
+
+const loadTable = () => {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://' + config.host_save + ':' + config.port_save + '/load_guest');
-    xhr.send('session=' + token);
+    xhr.open('GET', 'http://' + config.host_main + ':' + config.port_main + '/start');
+    xhr.send();
     xhr.onload = () => {
         let data = null;
         try {
             data = JSON.parse(xhr.responseText);
         } catch {
-            addCells(DEFAULT_ROWS, DEFAULT_COLS);
+            createTable(DEFAULT_ROWS, DEFAULT_COLS);
             return;
         }
 
-        if (data.error) {
-            console.log(data.error);
-            addCells(DEFAULT_ROWS, DEFAULT_COLS);
+
+        if (data.error === 'check_error') {
+            console.log(data.error)
+
+            document.getElementById('userINFO').textContent = 'Auth server прилёг';
+            createTable(DEFAULT_ROWS, DEFAULT_COLS);
             return;
         }
 
-        const tableData = JSON.parse(data.data);
-        addCells(parseInt(tableData['size'][0]), parseInt(tableData['size'][1]));
-        delete tableData['size'];
+        if (data.status === 'new_guest') {
+            document.getElementById('userINFO').textContent = 'GUEST';
+            document.getElementById('log').innerHTML = '<a href="/login">Войти</a>';
+            createTable(DEFAULT_ROWS, DEFAULT_COLS);
+        } else if (data.status === 'user') {
+            document.getElementById('userINFO').textContent = data.email;
+            document.getElementById('log').innerHTML = '<a href="/logout">Выйти</a>';
 
-        for (let coordStr in tableData) {
-            const coord = coordStr.split(',').map(e => parseInt(e, 10));
-            innerTable.setCeil(coord[0], coord[1], arr2str(tableData[coordStr]));
+            const newButton = document.createElement('button');
+            newButton.onclick = () => new_table(0, () => {
+                createTable(DEFAULT_ROWS, DEFAULT_COLS);
+            }); //!!!
+            newButton.innerText = 'New';
+            document.getElementById('titles').appendChild(newButton);
+
+            if (!data.error) {
+                data.titles.forEach((title) => {
+                    const button = document.createElement('button');
+                    button.onclick = () => getSavedTable(title, (dataINFO) => {
+                        ajax_remove_guest(() => {
+                            removeTable();
+
+                            const tableData = JSON.parse(dataINFO.data);
+                            tableFromObject(tableData);
+                            tableTitle = title;
+                        }, (error) => console.log(error));
+                    }, (error) => console.log(error));
+                    button.innerText = title;
+                    document.getElementById('titles').appendChild(button);
+                })
+            } else {
+                console.log(data.error)
+            }
+
+            getSavedTable(null, (dataINFO) => {
+                const tableData = JSON.parse(dataINFO.data);
+                tableFromObject(tableData);
+                const newButton = document.createElement('button');
+                newButton.onclick = () => stay(0);
+                newButton.innerText = 'Stay';
+                document.getElementById('titles').appendChild(newButton);
+            }, () => {
+                console.log('No guest saves');
+            });
+
+            //заблокировать таблицу
+        } else if (data.status === 'guest') {
+            document.getElementById('userINFO').textContent = 'GUEST';
+            document.getElementById('log').innerHTML = '<a href="/login">Войти</a>';
+            getSavedTable(null, (dataINFO) => {
+                const tableData = JSON.parse(dataINFO.data);
+                tableFromObject(tableData);
+            }, () => {
+                createTable(DEFAULT_ROWS, DEFAULT_COLS)
+            });
         }
-
-        updateTables();
     }
 }
 
 //Сохраняем перед закрытием
-window.onbeforeunload = function() {
+window.onbeforeunload = function () {
     const cookie = parseCookies(document.cookie);
-    navigator.sendBeacon('http://' + config.host_save + ':' + config.port_save + '/save_guest', 'session=' + cookie['token'] +
+    navigator.sendBeacon('http://' + config.host_main + ':' + config.port_main + '/save_user_data',
+        'status=' + cookie['status'] + '&title=' + tableTitle + '&session=' + cookie['token'] +
         '&data=' + JSON.stringify(Object.assign({}, {
             'size': [ROWS, COLS]
         }, innerTable.activeCeils)));
@@ -1428,25 +1474,17 @@ window.onbeforeunload = function() {
     //ajax_save({session: parseCookies(document.cookie)['token'], data: JSON.stringify(prepareText(innerTable.collectData()))});
 }
 
-const cookie = parseCookies(document.cookie);
-if (cookie['token']) {
-    loadTableGuest(cookie['token']);
-} else {
-    ajax_auth_guest('/guest');
-    addCells(DEFAULT_ROWS, DEFAULT_COLS);
-}
-
-
 document.onkeydown = (e) => {
     let evtobj = window.event ? event : e
     if (evtobj.code === 'KeyZ' && evtobj.ctrlKey && evtobj.shiftKey) {
         console.log('REDO');
         innerTable.redo();
         updateTables();
-    }
-    else if (evtobj.code === 'KeyZ' && evtobj.ctrlKey) {
+    } else if (evtobj.code === 'KeyZ' && evtobj.ctrlKey) {
         console.log('UNDO');
         innerTable.undo();
         updateTables();
     }
 };
+
+loadTable();

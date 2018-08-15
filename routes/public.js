@@ -10,6 +10,7 @@ const contentTypes = {
     '.js' : 'text/javascript',
     '.png' : 'image/png',
     '.jpg' : 'image/jpg',
+    '.svg' : 'image/svg+xml',
 }
 
 
