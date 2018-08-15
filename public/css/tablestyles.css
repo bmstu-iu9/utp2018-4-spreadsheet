@@ -73,6 +73,10 @@
   width: 100px;
 }
 
+.table{
+    margin-left: 20px;
+}
+
 input {
     border: none;
     cursor: cell;
@@ -125,3 +129,4 @@ td {
     top: 21px;
     left: 0px;
 }
+
