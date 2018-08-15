@@ -864,6 +864,8 @@ let ROWS = 0, COLS = 0;
 let letters = [65];
 let currentLet = [];
 let focusID = '';
+let curColNum = -1;
+let curRowNum = -1;
 
 const innerTable = new Table(DEFAULT_COLS, DEFAULT_ROWS);
 
@@ -1096,6 +1098,7 @@ const initCell = (columnNumber, rowNumber) => {
     const id = currentLet[columnNumber] + rowNumber;
     const newInput = document.getElementById(id);
     const newCell = document.getElementById('Cell_' + id);
+
     newInput.onkeydown = (e) => {
         let evtobj = window.event ? event : e
         if (evtobj.code === 'KeyZ' && evtobj.ctrlKey && evtobj.shiftKey) {
@@ -1140,12 +1143,27 @@ const initCell = (columnNumber, rowNumber) => {
         if (focusID) {
             const oldInput = document.getElementById(focusID);
             const oldCell = document.getElementById('Cell_' + focusID);
+            const upCell = upTable.rows[0].cells[curColNum];
+            const leftCell = leftTable.rows[curRowNum - 1].cells[0];
 
+            upCell.style.backgroundColor = '#eee';
+            upCell.style['border-bottom'] = '1px solid #555';
+            leftCell.style.backgroundColor = '#eee';
+            leftCell.style['border-right'] = '1px solid #555';
             oldInput.style.textAlign = 'right';
             oldCell.style.outline = '';
         }
 
         focusID = newInput.id;
+        curColNum = columnNumber;
+        curRowNum = rowNumber;
+        const upCell = upTable.rows[0].cells[columnNumber];
+        const leftCell = leftTable.rows[rowNumber - 1].cells[0];
+
+        upCell.style.backgroundColor = '#c3c3c3';
+        upCell.style['border-bottom'] = '3px solid #6bc961';
+        leftCell.style.backgroundColor = '#c3c3c3';
+        leftCell.style['border-right'] = '3px solid #6bc961';
         newInput.style.textAlign = 'left';
         newCell.style.outline = '3px solid #6bc961'
     }
