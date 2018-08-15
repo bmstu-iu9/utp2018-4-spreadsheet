@@ -293,7 +293,7 @@ const addCells = function(rows, cols){
         for (let j = 0; j < ROWS; j++) {
 
             const cell = mainTable.rows[j].insertCell(-1);
-            cell.innerHTML = "<input id = '"+ letter + (j + 1) +"' class = 'cell'/>";
+            cell.innerHTML = "<textarea id = '"+ letter + (j + 1) +"' class = 'cell_input_area'/>";
             cell.id = 'Cell_' + letter + (j + 1);
             initCell(currentLet.length - 1, j + 1);
             //contextMenuListener(document.getElementById("" + letter + (j + 1)));
@@ -343,7 +343,7 @@ const addCells = function(rows, cols){
             const letter = currentLet[j];
 
             const new_cell = row.insertCell(-1);
-            new_cell.innerHTML = "<input id = '"+ letter + (i + 1) +"' class = 'cell-input'/>";
+            new_cell.innerHTML = "<textarea id = '"+ letter + (i + 1) +"' class = 'cell_input_area'/>";
             new_cell.id = 'Cell_' + letter + (i + 1);
             initCell(j, i + 1);
 
@@ -534,7 +534,7 @@ const menuItemListener = link => {
 
 function contextMenuListener() {
   document.addEventListener("contextmenu", e => {
-    itemInContext = clickInsideElement(e, 'cell-input');
+    itemInContext = clickInsideElement(e, 'cell_input_area');
 
     if (itemInContext) {
       e.preventDefault();

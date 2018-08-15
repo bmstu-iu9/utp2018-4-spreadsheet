@@ -73,21 +73,23 @@
   width: 100px;
 }
 
-input {
+textarea {
     border: none;
     cursor: cell;
     background-color: #fff;
     width: 100px;
-    height: 16px;
+    height: 11px;
+    overflow: hidden;
+    resize: none;
     font-size: 14px;
     padding: 2px;
 }
 
-input:focus {
+textarea:focus {
     outline: none;
 }
 
-input:not(:focus) {
+textarea:not(:focus) {
     text-align: right;
 }
 
