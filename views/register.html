@@ -8,6 +8,7 @@
         <title>Register in Data</title>
         <!-- make background picture-->
         <link rel="stylesheet" href="/css/register-style.css" type="text/css">
+        <script src="/js/ShowPassword.js"></script>
     	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
     </head>
     
@@ -45,8 +46,8 @@
                     <i class="fas fa-lock" id="pass_icon"></i>
                     <input type="password" placeholder="Create a password" id="password" name="password" class="inputs"><br>
                 </label>
-                
-                    <input type="button" value="Sign up" id="btn"/>
+                <a href="#" onclick="forPassword('password', 'eye-icon', 'Create a password')" id="eye"><img src="/img/eye-regular.svg" id="eye-icon"></a>
+                <input type="button" value="Sign up" id="btn"/>
             </form>
             
             <p id="toLogin"><font color="#73738c">Already have an account?</font></p>

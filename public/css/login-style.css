@@ -5,8 +5,6 @@ body {
     position: fixed;
     width: auto;
     height: auto;
-/*    background-color: aliceblue;*/
-/*    background-color: */
     background-size: cover;
     -webkit-filter: blur(0px);
 }
@@ -59,6 +57,8 @@ input {
 #pswrd {
     margin-top: 15px;
     border: 0.5px transparent;
+    padding-right: 31px;
+    width: 290px;
 }
 
 #email:focus, #pswrd:focus {
@@ -90,7 +90,7 @@ input {
     padding: 7px;
     margin-left: 28px;
     height: 35px;
-    width: 346px;
+    width: 350px;
     background: #d6d6d6;
     border: 0;
     border-radius: 6px;
@@ -155,4 +155,14 @@ i.fas.fa-lock {
 	position: relative;
 	z-index: 1;
 	float: left;
+}
+
+#eye {
+    display: inline-block;
+    float: right;
+    margin-right: 20px;
+    margin-top: -27px;
+    width: 18px;
+    height: 18px;
+    color: #808080;
 }
