@@ -1263,6 +1263,14 @@ addCells(DEFAULT_ROWS, DEFAULT_COLS);
 mainDiv.onscroll = function () {
     upDiv.scrollLeft = this.scrollLeft;
     leftDiv.scrollTop = this.scrollTop;
+
+    if (mainDiv.scrollLeft - upDiv.scrollLeft === 16) {
+        mainDiv.scrollLeft -= 16;
+    }
+    if (mainDiv.scrollTop - leftDiv.scrollTop === 16) {
+        mainDiv.scrollTop -= 16;
+    }
+
     const moreCellsOnY = mainDiv.scrollHeight - mainDiv.clientHeight;
     const moreCellsOnX = mainDiv.scrollWidth - mainDiv.clientWidth;
     const percentY = (mainDiv.scrollTop / moreCellsOnY) * 100;
