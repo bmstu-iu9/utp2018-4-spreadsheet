@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>LogIn in Data!</title>
+        <!-- make background picture-->
+        <script src="/js/config.js"></script>
+		<script src="/js/utils.js"></script>
+        <script src="/js/login.js"></script>
+        <script src="/js/changeForm.js"></script>
+        <script src="/js/ShowPassword.js"></script>
+        <link rel="stylesheet" href="/css/auth-style.css" type="text/css">
+    	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    </head>
+    
+    
+    <body onload="toLogin()">
+        <div class="container">
+        <div class="log_form" id="log_form">
+            <img src="/img/whiteLogoSmall.png" id="logo"> <!-- make transparent-->
+
+            <form id="loginform" action="" method="POST">
+                <h1 id="formHead">Sign in</h1>
+                <fieldset id="loginFields">
+                    <label>
+						<i class="fas fa-envelope"></i>
+                        <input type="email" placeholder="Email" name="email" id="email">
+                    </label>
+
+                    <label>
+						<i class="fas fa-lock"></i>
+                        <input type="password" placeholder="Password" name="password" id="pswrd" >
+                    </label>
+                    <a href="#" onclick="forPassword('pswrd', 'eye-icon', 'Password')" id="eye"><img src="/img/eye-regular.svg" id="eye-icon"></a>
+                </fieldset>
+                <p id="loginError"></p>
+                <input type="button" value="Sign in" id="btn" onclick="ajax_auth(this.form)"/>
+
+            </form>
+
+            <p id="toRegister"><font color="#73738c">Don`t have an account?</font></p>
+            <a href="#" onclick="toRegister()" id="signup">Sign up</a>
+
+        </div>
+        
+        <div id="reg_form">
+            
+            <img src="/img/whiteLogoSmall.png" id="logo">
+            
+            <form id="regform" action="" method="POST">
+                    <h1 id="regHead">Create an account</h1>
+                <label>
+                    <p class="textfields" id="firstP">First name</p>
+                    <p class="textfields" id="lastP">Last name</p>
+                    <input type="text" placeholder="Sergey" id="first_name" name="first_name">
+                    <i class="fas fa-user" id="fn_icon"></i>
+                    <i class="fas fa-user" id="ln_icon"></i>
+                    <input type="text" placeholder="Priyma" id="last_name" name="last_name">
+                </label>
+                
+                <label>
+                    <p class="textfields">Organisation</p>
+                    <i class="fas fa-building" id="org_icon"></i>
+                    <input type="text" placeholder="BMSTU" id="org" name="org" class="inputs">
+                </label>
+                
+                <label>
+                    <p id="emailtext" class="textfields">Email</p>
+                    <i class="fas fa-envelope" id="email_icon"></i>
+                    <input type="text" placeholder="vampir666@bmstu.ru" id="email_reg" name="email" class="inputs">
+                </label>
+                
+                <label>
+                    <p id="passwordltext" class="textfields">Password</p>
+                    <i class="fas fa-lock" id="pass_icon"></i>
+                    <input type="password" placeholder="Create a password" id="password" name="password" class="inputs"><br>
+                </label>
+                <a href="#" onclick="forPassword('password', 'eye-icon_reg', 'Create a password')" id="eye_reg"><img src="/img/eye-regular.svg" id="eye-icon_reg"></a>
+                <input type="button" value="Sign up" id="btn_reg"/>
+            </form>
+            
+            <p id="toLogin"><font color="#73738c">Already have an account?</font></p>
+            <a href="#" onclick="toLogin()" id="signup">Sign in</a> 
+        </div>
+        </div>
+    </body>
+    
+</html>
