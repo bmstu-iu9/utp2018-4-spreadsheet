@@ -1090,6 +1090,20 @@ const addVerticalExpansion = (i) => {
     movableLine.ondragstart = () => false;
 }
 
+const addDecorUpDiv = (colNum) => {
+    const upDiv = document.createElement('div');
+    upDiv.id = 'up_' + colNum;
+    upDiv.className = 'decorUp';
+    upTable.rows[0].cells[colNum].appendChild(upDiv);
+}
+
+const addDecorLeftDiv = (rowNum) => {
+    const leftDiv = document.createElement('div');
+    leftDiv.id = 'left_' + (rowNum + 1);
+    leftDiv.className = 'decorLeft';
+    leftTable.rows[rowNum].cells[0].appendChild(leftDiv);
+}
+
 /**
  * Initialize cell events
  * @param {String} id
@@ -1147,9 +1161,9 @@ const initCell = (columnNumber, rowNumber) => {
             const leftCell = leftTable.rows[curRowNum - 1].cells[0];
 
             upCell.style.backgroundColor = '#eee';
-            upCell.style['border-bottom'] = '1px solid #555';
+            document.getElementById('up_' + curColNum).style.backgroundColor = 'transparent';
             leftCell.style.backgroundColor = '#eee';
-            leftCell.style['border-right'] = '1px solid #555';
+            document.getElementById('left_' + curRowNum).style.backgroundColor = 'transparent';
             oldInput.style.textAlign = 'right';
             oldCell.style.outline = '';
         }
@@ -1161,9 +1175,9 @@ const initCell = (columnNumber, rowNumber) => {
         const leftCell = leftTable.rows[rowNumber - 1].cells[0];
 
         upCell.style.backgroundColor = '#c3c3c3';
-        upCell.style['border-bottom'] = '3px solid #6bc961';
+        document.getElementById('up_' + curColNum).style.backgroundColor = '#6bc961';
         leftCell.style.backgroundColor = '#c3c3c3';
-        leftCell.style['border-right'] = '3px solid #6bc961';
+        document.getElementById('left_' + curRowNum).style.backgroundColor = '#6bc961';
         newInput.style.textAlign = 'left';
         newCell.style.outline = '3px solid #6bc961'
     }
@@ -1204,6 +1218,7 @@ const addCells = function (rows, cols) {
             const new_cell = upTable.rows[0].insertCell(-1);
             new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
             new_cell.id = 'Cell_' + letter;
+            addDecorUpDiv(currentLet.length - 1);
 
             for (let j = 0; j < ROWS; j++) {
 
@@ -1235,6 +1250,7 @@ const addCells = function (rows, cols) {
                 const new_cell = row.insertCell(-1);
                 new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
                 new_cell.id = 'Cell_' + letter;
+                addDecorUpDiv(j);
                 addExpansion(letter, j);
             }
         }
@@ -1246,6 +1262,7 @@ const addCells = function (rows, cols) {
             const left_cell = leftRow.insertCell(-1);
             left_cell.innerHTML = `<div align = "center" id = "${'@' + (i + 1)}" class = "left"> ${i + 1} </div>`;
             left_cell.id = 'Cell_' + (i + 1);
+            addDecorLeftDiv(i);
             addVerticalExpansion(i);
 
             for (let j = 0; j <= COLS + cols; j++) {
