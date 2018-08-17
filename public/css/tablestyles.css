@@ -170,3 +170,27 @@ td {
   color: #fff;
   background-color: #35b729;
 }
+
+.decorUp {
+    position: absolute;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    z-index: 666;
+    height: 3px;
+    width: 100%;
+    left: 0px;
+    top: 20px;
+}
+
+.decorLeft {
+    position: absolute;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    z-index: 666;
+    height: 100%;
+    width: 3px;
+    top: 0px;
+    left: 35px;
+}
