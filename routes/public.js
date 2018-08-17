@@ -6,7 +6,7 @@ const public = (req, res) => {
     logs.log('\x1b[34mPUBLIC\x1b[0m Method: ' + req.method);
 
     const extension = path.extname(req.url);
-    let contentType = '';
+    var contentType = '';
 
     switch (extension) {
         case '.html':

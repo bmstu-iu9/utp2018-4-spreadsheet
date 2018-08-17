@@ -9,7 +9,7 @@ function render (templateName, data) {
             return this.end('internal server error');
         }
         
-        let html = template;
+        var html = template;
         if (data) {
             html = template.replace(/{{([^{}]*)}}/g, (placeholder, property) => {
                 return data[property] || placeholder;

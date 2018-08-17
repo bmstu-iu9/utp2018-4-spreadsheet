@@ -11,10 +11,44 @@
   <!--
   <img src="/img/teamlogo.png" alt="Our TEAM" id = "img">
   <-->
-
-  <div id = "table-div" class = "scroll-table">
-    <table id = "table"></table>
+  <div class = "null-div">
+    <table><tr><td></td></tr></table>  <!-- для общности сделаем таблицей -->
   </div>
+  <div class = "up-div" id = "up-div">
+    <table id = "up-table"></table>
+  </div>
+  <!-- <div class = "great-table"> -->
+  <div class = "left-div" id = "left-div">
+    <table id = "left-table" width = 100%></table>
+  </div>
+  <div id = "main-div" class = "scroll-table">
+    <table id = "main-table"></table>
+  </div>
+
+  <nav id = "context-menu" class="context-menu">
+    <ul class="context-menu_items">
+      <li class="context-menu_item">
+        <a href="DanyaLy4schiy" class="context-menu_link" data-action="cut">
+          <i class="fa fa-chechnya"></i> Вырезать
+        </a>
+      </li>
+      <li class="context-menu_item">
+        <a href="DanyaLy4schiy" class="context-menu_link" data-action="copy">
+          <i class="fa fa-copy"></i> Копировать
+        </a>
+      </li>
+      <li class="context-menu_item">
+        <a href="DanyaLy4schiy" class="context-menu_link" data-action="paste">
+          <i class="fa fa-paste"></i> Вставить
+        </a>
+      </li>
+      <li class="context-menu_item">
+        <a href="DanyaLy4schiy" class="context-menu_link" data-action="delete">
+          <i class="fa fa-delete"></i> Удалить
+        </a>
+      </li>
+    </ul>
+  </nav>
 
   <script src="/js/table.js"></script>
  </body>
