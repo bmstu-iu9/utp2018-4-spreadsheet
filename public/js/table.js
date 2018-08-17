@@ -1153,7 +1153,7 @@ const initCell = (columnNumber, rowNumber) => {
         };
     }(newInput);
 
-    newCell.onmousedown = (e) => {        //please delete this brah
+    newCell.onmousedown = (e) => {
         if (focusID) {
             const oldInput = document.getElementById(focusID);
             const oldCell = document.getElementById('Cell_' + focusID);
@@ -1219,73 +1219,97 @@ const addCells = function (rows, cols) {
             new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
             new_cell.id = 'Cell_' + letter;
             addDecorUpDiv(currentLet.length - 1);
-
+          
             for (let j = 0; j < ROWS; j++) {
 
-                const cell = mainTable.rows[j].insertCell(-1);
-                cell.innerHTML = "<input id = '" + letter + (j + 1) + "'/>";
-                cell.id = 'Cell_' + letter + (j + 1);
-                initCell(currentLet.length - 1, j + 1);
+              const cell = mainTable.rows[j].insertCell(-1);
+              cell.innerHTML = "<textarea id = '"+ letter + (j + 1) +"' class = 'cell_input_area'/>";
+              cell.id = 'Cell_' + letter + (j + 1);
+              initCell(currentLet.length - 1, j + 1);
+              //contextMenuListener(document.getElementById("" + letter + (j + 1)));
 
-                const inp = document.getElementById(letter + (j + 1));
-                const preInp = document.getElementById(currentLet[currentLet.length - 2] + (j + 1));
-                inp.style.height = preInp.style.height;
-                inp.style.padding = preInp.style.padding;
-                cell.style.padding = document.getElementById('Cell_' + currentLet[currentLet.length - 2] + (j + 1)).style.padding;
+              const inp = document.getElementById(letter + (j + 1));
+              const preInp = document.getElementById(currentLet[currentLet.length - 2] + (j + 1));
+              inp.style.height = preInp.style.height;
+              inp.style.padding = preInp.style.padding;
+              cell.style.padding = document.getElementById('Cell_' + currentLet[currentLet.length - 2] + (j + 1)).style.padding;
+
+              cell.onkeydown = function(e) {
+                if (e.ctrlKey && e.keyCode === 67){
+                  e.preventDefault();
+                  tryToSmthToClipboard(cell.firstChild, 'copy');
+                }
+                else if (e.ctrlKey && e.keyCode === 88){
+                  e.preventDefault();
+                  tryToSmthToClipboard(cell.firstChild, 'cut');
+                }
+              };
             }
 
-            addExpansion(letter, i);
+        addExpansion(letter, i);
+    }
+  } else {
+
+    if (ROWS === 0){
+      const row = upTable.insertRow(-1);
+
+      for (let j = 0; j <= COLS + cols; j++) {
+
+          currentLet.push(String.fromCharCode.apply(null, letters));
+          updateLetters(letters.length - 1);
+          const letter = currentLet[j];
+
+          const new_cell = row.insertCell(-1);
+          new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
+          new_cell.id = 'Cell_' + letter;
+          addDecorUpDiv(j);
+          addExpansion(letter, j);
         }
-    } else {
-
-        if (ROWS === 0) {
-            const row = upTable.insertRow(-1);
-
-            for (let j = 0; j <= COLS + cols; j++) {
-
-                currentLet.push(String.fromCharCode.apply(null, letters));
-                updateLetters(letters.length - 1);
-                const letter = currentLet[j];
-
-                const new_cell = row.insertCell(-1);
-                new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
-                new_cell.id = 'Cell_' + letter;
-                addDecorUpDiv(j);
-                addExpansion(letter, j);
-            }
-        }
+      }
 
         for (let i = ROWS; i < ROWS + rows; i++) {
-            const row = mainTable.insertRow(-1);
-            const leftRow = leftTable.insertRow(-1);
+          const row = mainTable.insertRow(-1);
+          const leftRow = leftTable.insertRow(-1);
 
-            const left_cell = leftRow.insertCell(-1);
-            left_cell.innerHTML = `<div align = "center" id = "${'@' + (i + 1)}" class = "left"> ${i + 1} </div>`;
-            left_cell.id = 'Cell_' + (i + 1);
-            addDecorLeftDiv(i);
-            addVerticalExpansion(i);
+          const left_cell = leftRow.insertCell(-1);
+          left_cell.innerHTML = `<div align = "center" id = "${'@' + (i + 1)}" class = "left"> ${i+1} </div>`;
+          left_cell.id = 'Cell_' + (i + 1);
+          addDecorLeftDiv(i);
+          addVerticalExpansion(i);
 
-            for (let j = 0; j <= COLS + cols; j++) {
+          for (let j = 0; j <= COLS + cols; j++) {
 
-                if (j > currentLet.length) {
-                    currentLet.push(String.fromCharCode.apply(null, letters));
-                    updateLetters(letters.length - 1);
-                }
-                const letter = currentLet[j];
-
-                const new_cell = row.insertCell(-1);
-                new_cell.innerHTML = "<input id = '" + letter + (i + 1) + "'/>";
-                new_cell.id = 'Cell_' + letter + (i + 1);
-                initCell(j, i + 1);
-
-                if (i >= DEFAULT_ROWS) {
-                    const inp = document.getElementById(letter + (i + 1));
-                    const preInp = document.getElementById(letter + i);
-                    inp.style.width = preInp.style.width;
-                    inp.style.padding = preInp.style.padding;
-                    new_cell.style.padding = document.getElementById('Cell_' + letter + i).style.padding;
-                }
+            if (j > currentLet.length) {
+              currentLet.push(String.fromCharCode.apply(null, letters));
+              updateLetters(letters.length - 1);
             }
+            const letter = currentLet[j];
+
+            const new_cell = row.insertCell(-1);
+            new_cell.innerHTML = "<textarea id = '"+ letter + (i + 1) +"' class = 'cell_input_area'/>";
+            new_cell.id = 'Cell_' + letter + (i + 1);
+            initCell(j, i + 1);
+
+            new_cell.onkeydown = function(e) {
+              if (e.ctrlKey && e.keyCode === 67){
+                e.preventDefault();
+                tryToSmthToClipboard(new_cell.firstChild, 'copy');
+              }
+              else if (e.ctrlKey && e.keyCode === 88){
+                e.preventDefault();
+                tryToSmthToClipboard(new_cell.firstChild, 'cut');
+              }
+            };
+
+            if (i >= DEFAULT_ROWS) {
+                const inp = document.getElementById(letter + (i + 1));
+                const preInp = document.getElementById(letter + i);
+                inp.style.width = preInp.style.width;
+                inp.style.padding = preInp.style.padding;
+                new_cell.style.padding = document.getElementById('Cell_' + letter + i).style.padding;
+            }
+            //contextMenuListener(document.getElementById("" + letter + (i + 1)));
+          }
         }
     }
 
@@ -1295,7 +1319,11 @@ const addCells = function (rows, cols) {
 
 addCells(DEFAULT_ROWS, DEFAULT_COLS);
 
-mainDiv.onscroll = function () {
+// CONTEXT MENU
+
+initContextMenu();
+
+mainDiv.onscroll = function() {
     upDiv.scrollLeft = this.scrollLeft;
     leftDiv.scrollTop = this.scrollTop;
 
@@ -1318,6 +1346,208 @@ mainDiv.onscroll = function () {
     }
 }
 
+const clickInsideElement = (e, className) => {
+  let el = e.srcElement || e.target;
+
+  if (el.classList.contains(className)) {
+    return el;
+  } else {
+    while (el = el.parentNode) {
+      if (el.classList && el.classList.contains(className)) {
+        return el;
+      }
+    }
+  }
+  return false;
+}
+
+const getPosition = e => {
+  let posX = 0;
+  let posY = 0;
+
+  if (!e)
+    e = window.event;
+
+  if (e.pageX || e.pageY) {
+    posX = e.pageX;
+    posY = e.pageY;
+  } else if (e.clientX || e.clientY) {
+    posX = e.clientX + document.body.scrollLeft +
+                       document.documentElement.scrollLeft;
+    posY = e.clientY + document.body.scrollTop +
+                       document.documentElement.scrollTop;
+  }
+
+  return {
+    x: posX,
+    y: posY
+  }
+}
+
+const menu = document.getElementById("context-menu");
+let menuState = 0;
+var menuPosition;
+var menuPositionX;
+var menuPositionY;
+
+let menuWidth = menu.offsetWidth;
+let menuHeight = menu.offsetHeight;
+let windowWidth = window.innerWidth;
+let windowHeight = window.innerHeight;
+
+var clickCoords;
+var clickCoordsX;
+var clickCoordsY;
+
+var itemInContext;
+
+const positionMenu = e => {
+  clickCoords = getPosition(e);
+  clickCoordsX = clickCoords.x;
+  clickCoordsY = clickCoords.y;
+
+  menuWidth = menu.offsetWidth + 15;
+  menuHeight = menu.offsetHeight + 15;
+
+  windowWidth = window.innerWidth;
+  windowHeight = window.innerHeight;
+
+  if ((windowWidth - clickCoordsX) < menuWidth) {
+    menu.style.left = windowWidth - menuWidth + "px";
+  } else {
+    menu.style.left = clickCoordsX + "px";
+  }
+
+  if ((windowHeight - clickCoordsY) < menuHeight) {
+    menu.style.top = windowHeight - menuHeight + "px";
+  } else {
+    menu.style.top = clickCoordsY + "px";
+  }
+}
+
+function contextMenuOn() {
+  if (menuState !== 1) {
+    menuState = 1;
+    menu.classList.add("context-menu--active");
+  }
+}
+
+function contextMenuOff() {
+  if (menuState !== 0) {
+    menuState = 0;
+    menu.classList.remove("context-menu--active");
+  }
+}
+
+function triggerPasteEvent(element) {
+    var pasteEvent = document.createEvent('ClipboardEvent')
+    pasteEvent.initEvent('paste', true, true)
+    element.dispatchEvent(pasteEvent)
+}
+
+function PasteFromClipboard(el)
+{
+    el.focus();
+    //var PastedText = el.createTextRange();
+    PastedText.execCommand("Paste");
+}
+
+const tryToPasteFromClipboard = cell => {
+  if (navigator.clipboard) {
+    navigator.clipboard.readText()
+      .then(text => {
+        cell.value = text;
+      })
+      .catch(err => {
+        alert('Failed to read clipboard contents: ' + err);
+      });
+  } else {
+    alert("Only for Chromium 66+");
+  }
+}
+
+const tryToSmthToClipboard = (cell, command) => {
+  cell.focus();
+  cell.select();
+  try {
+    document.execCommand(command);
+  } catch (err) {
+      alert("Opa4ki!");
+  }
+  window.getSelection().removeAllRanges();
+}
+
+const menuItemListener = link => {
+  //alert("Cell - " + itemInContext.id + ", Action - " + link.getAttribute("data-action"));
+  let cell = itemInContext;
+  let action = link.getAttribute("data-action");
+  switch (action){
+    case 'paste':
+      tryToPasteFromClipboard(cell);
+      break;
+    case 'copy':
+      tryToSmthToClipboard(cell, 'copy');
+      break;
+    case 'cut':
+      tryToSmthToClipboard(cell, 'cut');
+      break;
+    case 'delete':
+      cell.value = null;
+    }
+  contextMenuOff();
+}
+
+function contextMenuListener() {
+  document.addEventListener("contextmenu", e => {
+    itemInContext = clickInsideElement(e, 'cell_input_area');
+
+    if (itemInContext) {
+      e.preventDefault();
+      contextMenuOn();
+      positionMenu(e);
+    } else {
+      itemInContext = null;
+      contextMenuOff();
+    }
+  });
+}
+
+function clickListener() {
+  document.addEventListener("click", e => {
+    let clickeElIsLink = clickInsideElement(e, 'context-menu_link');
+
+    if (clickeElIsLink) {
+      e.preventDefault();
+      menuItemListener(clickeElIsLink);
+    } else {
+      let button = e.which || e.button;
+      if (button === 1) {
+        contextMenuOff();
+      }
+    }
+  });
+}
+
+function keyupListener() {
+  window.onkeyup = e => {
+    if (e.keyCode === 27) {
+      contextMenuOff();
+    }
+  }
+}
+
+function resizeListener() {
+  window.onresize = function(e) {
+    contextMenuOff();
+  };
+}
+
+function initContextMenu(){
+  contextMenuListener();
+  clickListener();
+  keyupListener();
+  resizeListener();
+}
 
 function colName(n) {
     let ordA = 'A'.charCodeAt(0);
@@ -1336,7 +1566,6 @@ const convNumtoId = (x, y) => {
     return colName(x) + String(y + 1);
 }
 
-
 const updateTables = () => {
     let upd = innerTable.update();
 
@@ -1351,8 +1580,6 @@ const updateTables = () => {
         document.getElementById(convNumtoId(ceil.x, ceil.y)).value = innerTable.getCeil(ceil.x, ceil.y).toDisplay;
     }
 }
-
-
 
 document.onkeydown = (e) => {
     let evtobj = window.event ? event : e
