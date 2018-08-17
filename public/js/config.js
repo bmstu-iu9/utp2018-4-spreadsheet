@@ -17,6 +17,7 @@ const ERROR_MESSAGES = {
     4 : 'Something goes wrong',
     5 : 'The authorization server has a rest :)',
     6 : 'The save server has a rest :)',
+    7 : 'Email is already used',
 };
 
 const USER_STATUS = {

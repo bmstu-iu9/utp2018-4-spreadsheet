@@ -40,7 +40,6 @@ const loadUserTitlesHandle = (body, response) => {
             logs.log(`Load user titles \x1b[31mFAILED\x1b[0m: ${err}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
                 titles: null,
@@ -55,7 +54,6 @@ const loadUserTitlesHandle = (body, response) => {
 
         response.writeHead(200, {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
         });
         return response.end(JSON.stringify({
             titles: titles,
@@ -90,7 +88,6 @@ const saveGuestHandle = (body, response) => {
             logs.log(`Save GUEST \x1b[32mSUCCESS\x1b[0m: sessionID: ${body.session}, ${currDate.toLocaleTimeString()}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             response.end(JSON.stringify({
                 error: null
@@ -100,7 +97,6 @@ const saveGuestHandle = (body, response) => {
             logs.log(`Save GUEST \x1b[31mFAILED\x1b[0m: ${err}, ${currDate.toLocaleTimeString()}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
                 error: ERRORS.SQLITE3_ERROR
@@ -124,7 +120,6 @@ const saveUserHandle = (body, response) => {
             logs.log(`Save USER \x1b[32mSUCCESS\x1b[0m: Title: ${body.title}, Email: ${body.email}, Time: ${currDate.toLocaleTimeString()}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             response.end(JSON.stringify({
                 error: null
@@ -134,7 +129,6 @@ const saveUserHandle = (body, response) => {
             logs.log(`Save USER \x1b[31mFAILED\x1b[0m: Title: ${body.title}, Email: ${body.email}, Time: ${currDate.toLocaleTimeString()}, ERROR: ${err}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
                 error: ERRORS.SQLITE3_ERROR
@@ -150,7 +144,6 @@ const checkTitleHandle = (body, response) => {
             logs.log(`Check title file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
                 error: ERRORS.SQLITE3_ERROR_UNKNOWN
@@ -161,7 +154,6 @@ const checkTitleHandle = (body, response) => {
             logs.log(`Check title file \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
                 error: null
@@ -170,7 +162,6 @@ const checkTitleHandle = (body, response) => {
             logs.log(`Check title file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: Title is already used`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
                 error: ERRORS.SQLITE3_ERROR_UNIQUE
@@ -204,7 +195,6 @@ const removeGuestHandle = (body, response) => {
             logs.log(`Remove \x1b[32mSUCCESS\x1b[0m: ${body.session}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             response.end(JSON.stringify({
                 error: null
@@ -214,7 +204,6 @@ const removeGuestHandle = (body, response) => {
             logs.log(`Remove \x1b[31mFAILED\x1b[0m: ${body.session} ${err}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
                 error: ERRORS.SQLITE3_ERROR
@@ -237,7 +226,6 @@ const removeUserHandle = (body, response) => {
             logs.log(`Remove USER FILE \x1b[32mSUCCESS\x1b[0m: Title: ${body.title}, Email: ${body.email}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             response.end(JSON.stringify({
                 error: null
@@ -247,7 +235,6 @@ const removeUserHandle = (body, response) => {
             logs.log(`Remove USER FILE \x1b[31mFAILED\x1b[0m: Title: ${body.title}, Email: ${body.email}, Error: ${err}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
                 error: ERRORS.SQLITE3_ERROR
@@ -263,7 +250,6 @@ const loadGuestHandle = (body, response) => {
             logs.log(`Load \x1b[31mFAILED\x1b[0m: ${err}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
                 data: null,
@@ -275,7 +261,6 @@ const loadGuestHandle = (body, response) => {
         logs.log(`Load \x1b[32mSUCCESS\x1b[0m: ${body.session} ${row.time}`);
         response.writeHead(200, {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
         });
         return response.end(JSON.stringify({
             data: row.data,
@@ -292,7 +277,6 @@ const loadUserHandle = (body, response) => {
             logs.log(`Load user file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
                 data: null,
@@ -304,7 +288,6 @@ const loadUserHandle = (body, response) => {
         logs.log(`Load user file \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
         response.writeHead(200, {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
         });
         return response.end(JSON.stringify({
             data: row.data,

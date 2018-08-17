@@ -10,7 +10,7 @@ const CONFIG = require('./config.json');
 const ERRORS = {
     CHECK_SESSION_ERROR: 1,
     SQLITE3_ERROR_NO_USER: 2,
-    SQLITE3_ERROR_UNIQUE: 3,
+    SQLITE3_ERROR_UNIQUE: 7,
     SQLITE3_ERROR_UNKNOWN: 4,
 };
 
@@ -87,7 +87,6 @@ const addGuest = (body, response) => { //можно убрать body
             logs.log(`Login GUEST \x1b[32mSUCCESS\x1b[0m: sessionID: ${sessionID}, Date: ${currDate.toLocaleString()}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             response.end(JSON.stringify({
                 session_id: sessionID,
@@ -98,7 +97,6 @@ const addGuest = (body, response) => { //можно убрать body
             logs.log(`Set sessionID GUEST \x1b[31mFAILED\x1b[0m: ${sessionID} ${err}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
                 session_id: null,
@@ -121,7 +119,6 @@ const loginHandle = (body, response) => {
             logs.log(`Login USER \x1b[31mFAILED\x1b[0m: user: ${body.email} ${err}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
                 session_id: null,
@@ -149,7 +146,6 @@ const loginHandle = (body, response) => {
                 logs.log(`Login USER \x1b[32mSUCCESS\x1b[0m: user: ${body.email}, sessionID: ${sessionID}, Date: ${currDate.toLocaleString()}`);
                 response.writeHead(200, {
                     'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*',
                 });
                 response.end(JSON.stringify({
                     session_id: sessionID,
@@ -160,7 +156,6 @@ const loginHandle = (body, response) => {
                 logs.log(`Set sessionID USER \x1b[31mFAILED\x1b[0m: ${sessionID} ${err}`);
                 response.writeHead(200, {
                     'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*',
                 });
                 return response.end(JSON.stringify({
                     session_id: null,
@@ -191,7 +186,6 @@ const logoutHandle = (body, response) => {
             logs.log(`Logout USER \x1b[32mSUCCESS\x1b[0m: sessionID: ${body.session}, Date: ${currDate.toLocaleString()}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             response.end(JSON.stringify({
                 error: null
@@ -201,7 +195,6 @@ const logoutHandle = (body, response) => {
             logs.log(`Logout USER \x1b[31mFAILED\x1b[0m: sessionID: ${body.session}, Date: ${currDate.toLocaleString()}`);
             response.writeHead(200, {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
             });
             return response.end(JSON.stringify({
                 error: ERRORS.SQLITE3_ERROR
@@ -221,6 +214,7 @@ const registerHandle = (body, response) => {
             (err) => {
                 if (err) {
                     reject(err);
+                    return;
                 }
 
                 resolve();

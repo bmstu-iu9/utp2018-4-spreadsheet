@@ -29,10 +29,8 @@ http.createServer((req, res) => {
         start(req, res);
     } else if (parsedURL.pathname === '/auth' && req.method == 'GET') {
         auth(req, res);
-    } else if (parsedURL.pathname === '/login' && req.method == 'GET') {
+    } else if (parsedURL.pathname === '/authentication' && req.method == 'GET') {
         login(req, res);
-    } else if (parsedURL.pathname === '/register' && req.method == 'GET') {
-        register(req, res);
     } else if (parsedURL.pathname === '/logout' && req.method == 'GET') {
         logout(req, res);
     } else if (parsedURL.pathname === '/check_user_title' && req.method == 'GET') {
@@ -48,6 +46,14 @@ http.createServer((req, res) => {
         });
         req.on('end', () => {
             saveUserData(qs.parse(body), res);
+        });
+    } else if (parsedURL.pathname === '/register' && req.method == 'POST') {
+        let body = '';
+        req.on('data', (data) => {
+            body += data;
+        });
+        req.on('end', () => {
+            register(qs.parse(body), res);
         });
     } else if (parsedURL.pathname.match(/\.(html|css|js|png|jpg|svg)$/)) {
         publicResource(req, res);

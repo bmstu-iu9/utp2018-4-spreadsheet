@@ -34,10 +34,8 @@ const auth = (req, res) => {
         },
 
         () => {
-            res.render('error.html', {
-                "code": 500,
-                "message": '500 Internal server error!'
-            });
+            res.writeHead(500, {'Content-Type' : 'text/plain'});
+            res.end('500 Internal server error!');
         });
 }
 
@@ -59,7 +57,7 @@ const login = (req, res) => {
                 return res.end();
             }
 
-            res.render('login.html', null);
+            res.render('authentication.html', null);
         },
 
         () => {

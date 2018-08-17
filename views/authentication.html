@@ -8,7 +8,7 @@
         <!-- make background picture-->
         <script src="/js/config.js"></script>
 		<script src="/js/utils.js"></script>
-        <script src="/js/login.js"></script>
+        <script src="/js/authentication.js"></script>
         <script src="/js/changeForm.js"></script>
         <script src="/js/ShowPassword.js"></script>
         <link rel="stylesheet" href="/css/auth-style.css" type="text/css">
@@ -36,7 +36,7 @@
                     <a href="#" onclick="forPassword('pswrd', 'eye-icon', 'Password')" id="eye"><img src="/img/eye-regular.svg" id="eye-icon"></a>
                 </fieldset>
                 <p id="loginError"></p>
-                <input type="button" value="Sign in" id="btn" onclick="ajax_auth(this.form)"/>
+                <input type="button" value="Sign in" id="btn" onclick="ajax_auth(document.forms['loginform'])"/>
 
             </form>
 
@@ -78,7 +78,8 @@
                     <input type="password" placeholder="Create a password" id="password" name="password" class="inputs"><br>
                 </label>
                 <a href="#" onclick="forPassword('password', 'eye-icon_reg', 'Create a password')" id="eye_reg"><img src="/img/eye-regular.svg" id="eye-icon_reg"></a>
-                <input type="button" value="Sign up" id="btn_reg"/>
+                <p id="regError"></p>
+                <input type="button" value="Sign up" id="btn_reg" onclick="ajax_register(document.forms['regform'])"/>
             </form>
             
             <p id="toLogin"><font color="#73738c">Already have an account?</font></p>

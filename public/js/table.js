@@ -1405,7 +1405,7 @@ const loadTable = () => {
 
         if (data.status === 'new_guest') {
             document.getElementById('userINFO').textContent = 'GUEST';
-            document.getElementById('log').innerHTML = '<a href="/login">Войти</a>';
+            document.getElementById('log').innerHTML = '<a href="/authentication">Войти</a>';
             createTable(DEFAULT_ROWS, DEFAULT_COLS);
         } else if (data.status === 'user') {
             document.getElementById('userINFO').textContent = data.email;
@@ -1451,7 +1451,7 @@ const loadTable = () => {
             //заблокировать таблицу
         } else if (data.status === 'guest') {
             document.getElementById('userINFO').textContent = 'GUEST';
-            document.getElementById('log').innerHTML = '<a href="/login">Войти</a>';
+            document.getElementById('log').innerHTML = '<a href="/authentication">Войти</a>';
             getSavedTable(null, (dataINFO) => {
                 const tableData = JSON.parse(dataINFO.data);
                 tableFromObject(tableData);
