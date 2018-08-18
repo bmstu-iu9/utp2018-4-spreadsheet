@@ -851,7 +851,6 @@ const parseArgs = (table, ceil, tokens) => {
 
 }
 
-
 const mainDiv = document.getElementById('main-div');
 const mainTable = document.getElementById('main-table');
 const upTable = document.getElementById('up-table');
@@ -867,6 +866,7 @@ let focusID = '';
 let isMultiHL = false;
 let curCell = null;
 let grayCells = [];
+let borderCells = [];
 
 const innerTable = new Table(DEFAULT_COLS, DEFAULT_ROWS);
 
@@ -941,6 +941,7 @@ const addExpansion = (letter, j) => {
                 document.getElementById(letter + i).style.padding = (flag) ? '0px ' + padSize1 + 'px' : '2px ' + padSize1 + 'px';
                 document.getElementById('Cell_' + letter + i).style.padding = (flag) ? '0px ' + padSize2 + 'px' : '1px ' + padSize2 + 'px';
                 document.getElementById(letter + i).style.width = coords + delta2 + 'px';
+                document.getElementById('main_right_' + letter + i).style.left = (coords > 0)? coords - 3 + 'px' : '0px';
             }
         }
 
@@ -1041,6 +1042,7 @@ const addVerticalExpansion = (i) => {
                 document.getElementById('Cell_' + currentLet[j] + (i + 1)).style.padding =
                     (flag) ? padSize2 + 'px 0px' : padSize2 + 'px 1px';
                 document.getElementById(currentLet[j] + (i + 1)).style.height = coords + delta2 + 'px';
+                document.getElementById('main_bottom_' + currentLet[j] + (i + 1)).style.top = (coords > 0)? coords - 3 + 'px' : '0px';
             }
         }
 
@@ -1139,7 +1141,7 @@ const initCell = (columnNumber, rowNumber) => {
     const newInput = document.getElementById(id);
     const newCell = document.getElementById('Cell_' + id);
 
-    //addDecor(columnNumber, rowNumber - 1); !will be improved later!
+    addDecor(columnNumber, rowNumber - 1);
     newCell.colNum = columnNumber;
     newCell.rowNum = rowNumber - 1;
 
@@ -1200,6 +1202,73 @@ const initCell = (columnNumber, rowNumber) => {
                 leftCell.style.backgroundColor = '#eee';
                 document.getElementById('left_' + (cell.rowNum + 1)).style.backgroundColor = 'transparent';
             }
+
+            while (borderCells.length !== 0) {
+                const id = borderCells.pop();
+
+                document.getElementById('main_top_' + id).style.backgroundColor = 'transparent';
+                document.getElementById('main_left_' + id).style.backgroundColor = 'transparent';
+                document.getElementById('main_right_' + id).style.backgroundColor = 'transparent';
+                document.getElementById('main_bottom_' + id).style.backgroundColor = 'transparent';
+            }
+        }
+
+        const paintCells = () => {
+            const rowFlag = newCell.rowNum > curCell.rowNum;
+            const colFlag = newCell.colNum > curCell.colNum;
+            const start_i = (rowFlag)? curCell.rowNum : newCell.rowNum;
+            const start_j = (colFlag)? curCell.colNum : newCell.colNum;
+            const end_i = (rowFlag)? newCell.rowNum : curCell.rowNum;
+            const end_j = (colFlag)? newCell.colNum : curCell.colNum;
+
+            for (let i = start_i; i <= end_i; i++) {
+                for (let j = start_j; j<= end_j; j++) {
+                    const id = currentLet[j] + (i + 1);
+
+                    if ((i !== newCell.rowNum) || (j !== newCell.colNum)) {
+                        grayCells.push({cell : mainTable.rows[i].cells[j], id : id});
+                        mainTable.rows[i].cells[j].style.backgroundColor = '#c3c3c3';
+                        document.getElementById(id).style.backgroundColor = '#c3c3c3';
+                    }
+
+                    if (i === start_i) {
+                        paintBorders(currentLet[j] + (i + 1), true, false, false, false);
+                        borderCells.push(id);
+                    }
+                    if (j === start_j) {
+                        paintBorders(currentLet[j] + (i + 1), false, true, false, false);
+                        borderCells.push(id);
+                    }
+                    if (j === end_j) {
+                        paintBorders(currentLet[j] + (i + 1), false, false, true, false);
+                        borderCells.push(id);
+                    }
+                    if (i === end_i) {
+                        paintBorders(currentLet[j] + (i + 1), false, false, false, true);
+                        borderCells.push(id);
+                    }
+
+                    upTable.rows[0].cells[j].style.backgroundColor = '#c3c3c3';
+                    document.getElementById('up_' + j).style.backgroundColor = '#6bc961';
+                    leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
+                    document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
+                }
+            }
+        }
+
+        const paintBorders = (id, top, left, right, bottom) => {
+            if (top) {
+              document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
+            }
+            if (left) {
+              document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
+            }
+            if (right) {
+              document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
+            }
+            if (bottom) {
+              document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
+            }
         }
 
         bleachCells();
@@ -1215,7 +1284,6 @@ const initCell = (columnNumber, rowNumber) => {
             leftCell.style.backgroundColor = '#eee';
             document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
             oldInput.style.textAlign = 'right';
-            oldCell.style.outline = '';
         }
 
         focusID = newInput.id;
@@ -1227,39 +1295,13 @@ const initCell = (columnNumber, rowNumber) => {
         leftCell.style.backgroundColor = '#c3c3c3';
         document.getElementById('left_' + rowNumber).style.backgroundColor = '#6bc961';
         newInput.style.textAlign = 'left';
-        newCell.style.outline = '3px solid #6bc961';
-
-        const paintCells = () => {
-            const rowFlag = newCell.rowNum > curCell.rowNum;
-            const colFlag = newCell.colNum > curCell.colNum;
-            const start_i = (rowFlag)? curCell.rowNum : newCell.rowNum;
-            const start_j = (colFlag)? curCell.colNum : newCell.colNum;
-            const end_i = (rowFlag)? newCell.rowNum : curCell.rowNum;
-            const end_j = (colFlag)? newCell.colNum : curCell.colNum;
-
-            for (let i = start_i; i <= end_i; i++) {
-                for (let j = start_j; j<= end_j; j++) {
-                    if ((i !== newCell.rowNum) || (j !== newCell.colNum)) {
-                        const id = currentLet[j] + (i + 1);
-                        grayCells.push({cell : mainTable.rows[i].cells[j], id : id});
-                        mainTable.rows[i].cells[j].style.backgroundColor = '#c3c3c3';
-                        document.getElementById(id).style.backgroundColor = '#c3c3c3';
-                    }
-
-                    upTable.rows[0].cells[j].style.backgroundColor = '#c3c3c3';
-                    document.getElementById('up_' + j).style.backgroundColor = '#6bc961';
-                    leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
-                    document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
-                }
-            }
-        }
+        paintBorders(id, true, true, true, true);
+        borderCells.push(id);
 
         document.onmousemove = (e) => {
             if (curCell !== null) {
                 bleachCells();
                 paintCells();
-                //curCell.style.backgroundColor = '#c3c3c3';
-                //document.getElementById(curCell.id.split('Cell_')[1]).style.backgroundColor = '#c3c3c3';
             }
         }
 
@@ -1303,6 +1345,17 @@ const initCell = (columnNumber, rowNumber) => {
 }
 
 const addCells = function (rows, cols) {
+
+    const correctMainDiv = (curId, prevId) => {
+        const curRight = document.getElementById('main_right_' + curId);
+        const curBot = document.getElementById('main_bottom_' + curId);
+        const prevRight = document.getElementById('main_right_' + prevId);
+        const prevBot = document.getElementById('main_bottom_' + prevId);
+
+        curRight.style.left = prevRight.style.left;
+        curBot.style.top = prevBot.style.top;
+    }
+
     if (rows === 0) {
         for (let i = COLS + 1; i <= COLS + cols; i++) {
 
@@ -1323,11 +1376,15 @@ const addCells = function (rows, cols) {
               initCell(currentLet.length - 1, j + 1);
               //contextMenuListener(document.getElementById("" + letter + (j + 1)));
 
-              const inp = document.getElementById(letter + (j + 1));
-              const preInp = document.getElementById(currentLet[currentLet.length - 2] + (j + 1));
+              const curId = letter + (j + 1);
+              const prevId = currentLet[currentLet.length - 2] + (j + 1);
+              const inp = document.getElementById(curId);
+              const preInp = document.getElementById(prevId);
+
+              correctMainDiv(curId, prevId);
               inp.style.height = preInp.style.height;
               inp.style.padding = preInp.style.padding;
-              cell.style.padding = document.getElementById('Cell_' + currentLet[currentLet.length - 2] + (j + 1)).style.padding;
+              cell.style.padding = document.getElementById('Cell_' + prevId).style.padding;
 
               cell.onkeydown = function(e) {
                 if (e.ctrlKey && e.keyCode === 67){
@@ -1397,11 +1454,15 @@ const addCells = function (rows, cols) {
             };
 
             if (i >= DEFAULT_ROWS) {
-                const inp = document.getElementById(letter + (i + 1));
-                const preInp = document.getElementById(letter + i);
+                const curId = letter + (i + 1);
+                const prevId = letter + i;
+                const inp = document.getElementById(curId);
+                const preInp = document.getElementById(prevId);
+
+                correctMainDiv(curId, prevId);
                 inp.style.width = preInp.style.width;
                 inp.style.padding = preInp.style.padding;
-                new_cell.style.padding = document.getElementById('Cell_' + letter + i).style.padding;
+                new_cell.style.padding = document.getElementById('Cell_' + prevId).style.padding;
             }
             //contextMenuListener(document.getElementById("" + letter + (i + 1)));
           }
