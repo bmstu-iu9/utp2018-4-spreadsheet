@@ -12,8 +12,19 @@
 
     </form>
 
+    <div class = "TopBarContainer">
+      <div id="topbar" class="TopBarState">
+        <div class = "flexitems" style="height: 48px">
+          <button class="toMainPage"></button>
+        </div>
+
+      </div>
+    </div>
+
 
   </head>
+
+
 
   <div id="tab/three" class="abs tabs block">
     <p class="abs">
@@ -55,20 +66,25 @@
   </div>
 
   <div id="two" class="abs block">
-    <nav>
-      <ul class="top-menu">
-        <li><a href="#">File</a>
-          <ul class="submenu">
-            <li><a href="#">New</a></li>
-            <li><a href="#">Open</a></li>
-            <li><a href="#">Create copy</a></li>
-          </ul>
-        </li>
-        <li><a href="#one">Edit</a></li>
 
-        <li><a href="#two">Format</a></li>
-      </ul>
-    </nav>
+
+    <div>
+      <nav>
+        <ul class="top-menu">
+          <li><a href="#">File</a>
+            <ul class="submenu">
+              <li><a href="#">New</a></li>
+              <li><a href="#">Open</a></li>
+              <li><a href="#">Create copy</a></li>
+            </ul>
+          </li>
+          <li><a href="#one">Edit</a></li>
+
+          <li><a href="#two">Format</a></li>
+        </ul>
+      </nav>
+    </div>
+
 
   <section class="format">
     <div class="transformtext">
@@ -82,17 +98,31 @@
         </div>
       </div>
       <div class="font">
-        <h2>Font:</h2>
+        <h2>Font settings:</h2>
         <div class="font-settings">
           <button class='left' title="bold"></button>
           <button class='center'title="italics"></button>
           <button class='right' title="color"></button>
         </div>
       </div>
+      <div class="font-family">
+        <h2>Font family:</h2>
+        <div class="font-selecter">
+        <select>
+          <option selected disabled>Font family</option>
+          <option value="">Default</option>
+          <option value="">Arial</option>
+          <option value="">Courier</option>
+          <option value="">Verdana</option>
+        </select>
+        </div>
+      </div>
     </div>
-    <div class="textinput"></div>
 
-    <textarea class="example-text">Example</textarea>
+    <div class="example_text">
+    <div style="width:100px;height:100px;overflow:hidden;border:1px solid black;background-color:#EEE;padding:6px;">   <table cellspacing="0" cellpadding="0"><tbody><tr>    <td id="sample-text" style="height: 100px; width: 100px; background-color: rgb(255, 255, 255); font-size: small; padding: 2px 2px 1px; vertical-align: top; text-align: left;"><div>Это<br>пример</div><div style="text-align: right;">9.8765<br>-1234.5</div></td>   </tr></tbody></table>  </div>
+    </div>
+
   </section>
 
   </div>
