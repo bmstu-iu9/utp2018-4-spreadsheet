@@ -864,8 +864,9 @@ let ROWS = 0, COLS = 0;
 let letters = [65];
 let currentLet = [];
 let focusID = '';
-let curColNum = -1;
-let curRowNum = -1;
+let isMultiHL = false;
+let curCell = null;
+let grayCells = [];
 
 const innerTable = new Table(DEFAULT_COLS, DEFAULT_ROWS);
 
@@ -1104,14 +1105,43 @@ const addDecorLeftDiv = (rowNum) => {
     leftTable.rows[rowNum].cells[0].appendChild(leftDiv);
 }
 
+const addDecor = (colNum, rowNum) => {
+    const letter = currentLet[colNum];
+
+    const top = document.createElement('div');
+    top.id = 'main_top_' + letter + (rowNum + 1);
+    top.className = 'main_top';
+    mainTable.rows[rowNum].cells[colNum].appendChild(top);
+
+    const left = document.createElement('div');
+    left.id = 'main_left_' + letter + (rowNum + 1);
+    left.className = 'main_left';
+    mainTable.rows[rowNum].cells[colNum].appendChild(left);
+
+    const right = document.createElement('div');
+    right.id = 'main_right_' + letter + (rowNum + 1);
+    right.className = 'main_right';
+    mainTable.rows[rowNum].cells[colNum].appendChild(right);
+
+    const bottom = document.createElement('div');
+    bottom.id = 'main_bottom_' + letter + (rowNum + 1);
+    bottom.className = 'main_bottom';
+    mainTable.rows[rowNum].cells[colNum].appendChild(bottom);
+}
+
 /**
  * Initialize cell events
  * @param {String} id
  */
+
 const initCell = (columnNumber, rowNumber) => {
     const id = currentLet[columnNumber] + rowNumber;
     const newInput = document.getElementById(id);
     const newCell = document.getElementById('Cell_' + id);
+
+    //addDecor(columnNumber, rowNumber - 1); !will be improved later!
+    newCell.colNum = columnNumber;
+    newCell.rowNum = rowNumber - 1;
 
     newInput.onkeydown = (e) => {
         let evtobj = window.event ? event : e
@@ -1154,32 +1184,97 @@ const initCell = (columnNumber, rowNumber) => {
     }(newInput);
 
     newCell.onmousedown = (e) => {
+        isMultiHL = true;
+
+        const bleachCells = () => {
+            while (grayCells.length !== 0) {
+                const obj = grayCells.pop();
+                const cell = obj.cell;
+                const upCell = upTable.rows[0].cells[cell.colNum];
+                const leftCell = leftTable.rows[cell.rowNum].cells[0];
+
+                cell.style.backgroundColor = 'transparent';
+                document.getElementById(obj.id).style.backgroundColor = 'transparent';
+                upCell.style.backgroundColor = '#eee';
+                document.getElementById('up_' + cell.colNum).style.backgroundColor = 'transparent';
+                leftCell.style.backgroundColor = '#eee';
+                document.getElementById('left_' + (cell.rowNum + 1)).style.backgroundColor = 'transparent';
+            }
+        }
+
+        bleachCells();
+
         if (focusID) {
             const oldInput = document.getElementById(focusID);
             const oldCell = document.getElementById('Cell_' + focusID);
-            const upCell = upTable.rows[0].cells[curColNum];
-            const leftCell = leftTable.rows[curRowNum - 1].cells[0];
+            const upCell = upTable.rows[0].cells[oldCell.colNum];
+            const leftCell = leftTable.rows[oldCell.rowNum].cells[0];
 
             upCell.style.backgroundColor = '#eee';
-            document.getElementById('up_' + curColNum).style.backgroundColor = 'transparent';
+            document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
             leftCell.style.backgroundColor = '#eee';
-            document.getElementById('left_' + curRowNum).style.backgroundColor = 'transparent';
+            document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
             oldInput.style.textAlign = 'right';
             oldCell.style.outline = '';
         }
 
         focusID = newInput.id;
-        curColNum = columnNumber;
-        curRowNum = rowNumber;
         const upCell = upTable.rows[0].cells[columnNumber];
         const leftCell = leftTable.rows[rowNumber - 1].cells[0];
 
         upCell.style.backgroundColor = '#c3c3c3';
-        document.getElementById('up_' + curColNum).style.backgroundColor = '#6bc961';
+        document.getElementById('up_' + columnNumber).style.backgroundColor = '#6bc961';
         leftCell.style.backgroundColor = '#c3c3c3';
-        document.getElementById('left_' + curRowNum).style.backgroundColor = '#6bc961';
+        document.getElementById('left_' + rowNumber).style.backgroundColor = '#6bc961';
         newInput.style.textAlign = 'left';
-        newCell.style.outline = '3px solid #6bc961'
+        newCell.style.outline = '3px solid #6bc961';
+
+        const paintCells = () => {
+            const rowFlag = newCell.rowNum > curCell.rowNum;
+            const colFlag = newCell.colNum > curCell.colNum;
+            const start_i = (rowFlag)? curCell.rowNum : newCell.rowNum;
+            const start_j = (colFlag)? curCell.colNum : newCell.colNum;
+            const end_i = (rowFlag)? newCell.rowNum : curCell.rowNum;
+            const end_j = (colFlag)? newCell.colNum : curCell.colNum;
+
+            for (let i = start_i; i <= end_i; i++) {
+                for (let j = start_j; j<= end_j; j++) {
+                    if ((i !== newCell.rowNum) || (j !== newCell.colNum)) {
+                        const id = currentLet[j] + (i + 1);
+                        grayCells.push({cell : mainTable.rows[i].cells[j], id : id});
+                        mainTable.rows[i].cells[j].style.backgroundColor = '#c3c3c3';
+                        document.getElementById(id).style.backgroundColor = '#c3c3c3';
+                    }
+
+                    upTable.rows[0].cells[j].style.backgroundColor = '#c3c3c3';
+                    document.getElementById('up_' + j).style.backgroundColor = '#6bc961';
+                    leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
+                    document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
+                }
+            }
+        }
+
+        document.onmousemove = (e) => {
+            if (curCell !== null) {
+                bleachCells();
+                paintCells();
+                //curCell.style.backgroundColor = '#c3c3c3';
+                //document.getElementById(curCell.id.split('Cell_')[1]).style.backgroundColor = '#c3c3c3';
+            }
+        }
+
+        document.onmouseup = () => {
+            isMultiHL = false;
+            curCell = null;
+            document.onmousemove = document.onmouseup = null;
+        }
+
+    }
+
+    newCell.onmouseenter = (e) => {
+        if (isMultiHL) {
+            curCell = e.target;
+        }
     }
 
     //При нажатии на Enter спускаемся вниз
@@ -1219,7 +1314,7 @@ const addCells = function (rows, cols) {
             new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
             new_cell.id = 'Cell_' + letter;
             addDecorUpDiv(currentLet.length - 1);
-          
+
             for (let j = 0; j < ROWS; j++) {
 
               const cell = mainTable.rows[j].insertCell(-1);
