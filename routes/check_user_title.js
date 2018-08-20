@@ -2,66 +2,62 @@
 
 const qs = require('querystring');
 const url = require('url');
-const sendAuthRequest = require('../app/auth_request').sendAuthRequest;
-const sendSaveRequest = require('../app/auth_request').sendSaveRequest;
+const sendAuthRequest = require('../app/server_request').sendAuthRequest;
+const sendSaveRequest = require('../app/server_request').sendSaveRequest;
 const parseCookies = require('../app/parse_cookies').parseCookies;
 const logs = require('../app/logs');
-const SAVE_CONFIG = require('../config/save_config.json');
-
-const ERRORS = {
-    AUTH_ERROR : 0,
-    LOAD_ERROR : 1,
-    SAVE_SERVER_ERROR : 4,
-    AUTH_SERVER_ERROR : 5,
-}
-
-const returnError = (res, code) => {
-    res.writeHead(200, {
-        'Content-Type': 'application/json',
-    });
-    return res.end(JSON.stringify({
-        data: null,
-        error: code
-    }));
-}
+const CONFIG = require('../config/main_config.json');
+const ERRORS = require('../config/errors.json');
+const ERROR_MESSAGES = require('../config/error_messages.json');
+const returnError = require('../app/server_responses').returnError;
+const returnJSON = require('../app/server_responses').returnJSON;
 
 const checkUserTitle = (req, res) => {
-    logs.log('\x1b[34mCHECK USER TITLE\x1b[0m Method: ' + req.method);
-
     const parsedURL = url.parse(req.url, true);
     const cookies = parseCookies(req.headers.cookie);
-    const postAuthData = qs.stringify({"session" : cookies['token']});
+    const postAuthData = qs.stringify({
+        "session": cookies['token']
+    });
     sendAuthRequest('/check_session', postAuthData).then(
         authINFO => {
-            if (authINFO.error || authINFO.status === SAVE_CONFIG.GUEST) {
-                return returnError(res, ERRORS.AUTH_ERROR);
+            if (authINFO.error) {
+                logs.log(`\x1b[34mCHECK USER TITLE\x1b[0m \x1b[31mFAILED\x1b[0m: User: ${cookies['token']}, Error: ${ERROR_MESSAGES[authINFO.error]}`);
+                return returnError(authINFO.error, res);
+            } else if (authINFO.status === CONFIG.GUEST) {
+                logs.log(`\x1b[34mCHECK USER TITLE\x1b[0m \x1b[31mFAILED\x1b[0m: User: ${cookies['token']} have no permission to get titles.`);
+                return returnError(ERRORS.PERMISSION_DENIED, res);
             }
 
-            const postSaveData = qs.stringify({'title' : parsedURL.query['title'], 'email' : authINFO.email});
+            const postSaveData = qs.stringify({
+                'title': parsedURL.query['title'],
+                'email': authINFO.email
+            });
             sendSaveRequest('/check_title', postSaveData).then(
                 checkINFO => {
                     if (checkINFO.error) {
-                        return returnError(res, checkINFO.error);
+                        logs.log('\x1b[34mCHECK USER TITLE\x1b[0m \x1b[31mFAILED\x1b[0m:' +
+                            `Title: ${parsedURL.query['title']}, Email: ${authINFO.email}, Error: ${ERROR_MESSAGES[checkINFO.error]}`);
+                        return returnError(checkINFO.error, res);
                     }
 
-                    logs.log('\x1b[34mCHECK USER TITLE\x1b[0m \x1b[32mSUCCESS\x1b[0m');
-                    res.writeHead(200, {
-                        'Content-Type': 'application/json',
-                    });
-                    return res.end(JSON.stringify({
+                    logs.log(`\x1b[34mCHECK USER TITLE\x1b[0m \x1b[32mSUCCESS\x1b[0m: Title: ${parsedURL.query['title']}, Email: ${authINFO.email}`);
+                    return returnJSON({
                         error: null
-                    }));
+                    }, res);
                 },
 
-                () => {
-                    return returnError(res, ERRORS.SAVE_SERVER_ERROR);
+                (err) => {
+                    logs.log('\x1b[34mCHECK USER TITLE\x1b[0m \x1b[31mFAILED\x1b[0m:' +
+                        `Title: ${parsedURL.query['title']}, Email: ${authINFO.email}, Server Error: ${err.message}`);
+                    return returnError(ERRORS.SAVE_SERVER_ERROR, res);
                 }
             )
         },
 
-        () => {
-            return returnError(res, ERRORS.AUTH_SERVER_ERROR);
-        });    
+        (err) => {
+            logs.log(`\x1b[34mCHECK USER TITLE\x1b[0m \x1b[31mFAILED\x1b[0m: User: ${cookies['token']}, Error: ${err.message}`);
+            return returnError(ERRORS.AUTH_SERVER_ERROR, res);
+        });
 }
 
 module.exports.checkUserTitle = checkUserTitle;

@@ -1,9 +1,7 @@
 'use strict';
 
 const http = require('http');
-const logs = require('../app/logs');
-const AUTH_CONFIG = require('../config/auth_config.json');
-const SAVE_CONFIG = require('../config/save_config.json')
+const CONFIG = require('../config/main_config.json');
 
 
 /**
@@ -13,7 +11,7 @@ const SAVE_CONFIG = require('../config/save_config.json')
  * @returns {Promise}
  */
 const sendAuthRequest = (adress, postData) => {
-    return sendPostRequest(adress, postData, AUTH_CONFIG.host, AUTH_CONFIG.port);
+    return sendPostRequest(adress, postData, CONFIG.host_auth, CONFIG.port_auth);
 }
 
 /**
@@ -23,17 +21,9 @@ const sendAuthRequest = (adress, postData) => {
  * @returns {Promise}
  */
 const sendSaveRequest = (adress, postData) => {
-    return sendPostRequest(adress, postData, SAVE_CONFIG.host, SAVE_CONFIG.port);
+    return sendPostRequest(adress, postData, CONFIG.host_save, CONFIG.port_save);
 }
 
-/**
- * Sends request to server
- * @param {String} adress Server path
- * @param {String} postData Data for http.ClientRequest
- * @param {String} hostname
- * @param {String} port
- * @returns {Promise}
- */
 const sendPostRequest = (adress, postData, hostname, port) => {
     return new Promise((resolve, reject) => {
         const postRequest = http.request({ //Ждём проверку токена
@@ -56,8 +46,7 @@ const sendPostRequest = (adress, postData, hostname, port) => {
         });
     
         postRequest.on('error', (error) => {
-            const message = `${adress} request error: ${error.message}`;
-            logs.log(message);
+            const message = `${hostname}:${port}${adress} request \x1b[31mFAILED\x1b[0m: Error: ${error.message}`;
             reject(new Error(message));
         });
     

@@ -19,7 +19,7 @@ const ajax_save = (postData, okCallback, errorCallback) => {
                 }
 
                 if (saveINFO.error) {
-                    errorCallback(saveINFO.error)
+                    errorCallback(saveINFO.error);
                     return;
                 }
 
@@ -52,12 +52,11 @@ const ajax_remove_guest = (okCallback, errorCallback) => {
                 }
 
                 if (saveINFO.error) {
-                    errorCallback(saveINFO.error)
+                    errorCallback(saveINFO.error);
                     return;
                 }
 
-                okCallback(saveINFO)
-                //document.getElementById('saveINFO').textContent = 'No autosave';
+                okCallback(saveINFO);
             }
         }
     };

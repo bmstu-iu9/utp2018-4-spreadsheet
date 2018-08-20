@@ -1,12 +1,8 @@
 'use strict';
 
 const http = require('http');
-const qs = require('querystring');
 const logs = require('../app/logs');
-const sendAuthRequest = require('../app/auth_request').sendAuthRequest;
-const sendSaveRequest = require('../app/auth_request').sendSaveRequest;
 const parseCookies = require('../app/parse_cookies').parseCookies;
-const SAVE_CONFIG = require('../config/save_config.json');
 
 /**
  * Checks client's token,
@@ -16,7 +12,7 @@ const SAVE_CONFIG = require('../config/save_config.json');
  * @param {http.ServerResponse} res 
  */
 const index = (req, res) => {
-    logs.log(`\x1b[34mINDEX\x1b[0m Method: ${req.method}`);
+    logs.log(`\x1b[34mINDEX PAGE\x1b[0m. User: ${parseCookies(req.headers.cookie)['token']}`);
     res.render('index.html', null);
 }
 

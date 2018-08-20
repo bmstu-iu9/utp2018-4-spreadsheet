@@ -7,297 +7,210 @@ const qs = require('querystring');
 const logs = require('../app/logs');
 const CONFIG = require('./config.json');
 
-const ERRORS = {
-    CHECK_SESSION_ERROR: 1,
-    SQLITE3_ERROR_NO_USER: 2,
-    SQLITE3_ERROR_UNIQUE: 3,
-    SQLITE3_ERROR_UNKNOWN: 4,
-};
-
 //Connection with database
 const saveClient = new sqlite3.Database(CONFIG.dbAdress, sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
-        console.error('something went wrong: ' + err.message); //сделать нормально;
+        logs.log('\x1b[35mSave service\x1b[0m database connection error: ' + err.message);
     }
 
     logs.log('\x1b[35msqlite3\x1b[0m client connected \x1b[32msuccessfully\x1b[0m');
 });
 
-const removeToken = (token) => {
-    saveClient.run(`DELETE FROM saves WHERE Token=?`, [token], (err) => {
-        if (err) {
-            console.log(`Planned remove \x1b[31mFAILED\x1b[0m: ${err}, ${token}`)
-        }
-
-        console.log(`Planned remove \x1b[32mSUCCESS\x1b[0m: ${token}`)
+const returnJSON = (obj, response) => {
+    response.writeHead(200, {
+        'Content-Type': 'application/json'
     });
+    return response.end(JSON.stringify(obj));
 }
 
+const returnError = (errorCode, response) => {
+    return returnJSON({
+        error: errorCode
+    }, response);
+}
+
+/**
+ * Loads user titles ordered by savetime DESC.
+ * @param {Object} body //Object with email property for load.
+ * @param {http.ServerResponse} response 
+ */
 const loadUserTitlesHandle = (body, response) => {
     saveClient.all(`SELECT Title title FROM saves_user
                     WHERE Email=? ORDER BY SaveTime DESC`, [body.email], (err, rows) => {
-        if (err || !rows) {
-            logs.log(`Load user titles \x1b[31mFAILED\x1b[0m: ${err}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            return response.end(JSON.stringify({
-                titles: null,
-                error: (err) ?
-                    ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_NO_USER
-            }));
+        if (err) {
+            logs.log(`Load user titles \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Database error: ${err.message}`);
+            return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
         }
 
-        const titles = rows.map(e => e.title)
-        logs.log(`Load user titles \x1b[32mSUCCESS\x1b[0m: ${body.email}`);
-
-
-        response.writeHead(200, {
-            'Content-Type': 'application/json',
-        });
-        return response.end(JSON.stringify({
+        const titles = rows.map(e => e.title);
+        logs.log(`Load user titles \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}`);
+        return returnJSON({
             titles: titles,
             error: null
-        }));
+        }, response);
     });
 }
 
 /**
- * Saves user's data
- * @param {Object} body 
+ * Saves guests data
+ * @param {Object} body //Object with token and data info
  * @param {http.ServerResponse} response 
  */
 const saveGuestHandle = (body, response) => {
-    const currDate = new Date();
-    new Promise((resolve, reject) => {
-        if (body.session === 'undefined') {
-            reject(new Error('Session undefined'));
-            return;
-        }
+    if (body.session === 'undefined') {
+        logs.log(`Save GUEST \x1b[31mFAILED\x1b[0m: Session token is undefined.`);
+        return returnError(CONFIG.TOKEN_UNDEFINED, response);
+    }
 
-        saveClient.run(`REPLACE INTO saves_guest(Token, Data, SaveTime) VALUES(?, ?, ?)`, [body.session, body.data, Math.round(currDate.getTime() / 1000)], (err) => {
+    const currDate = new Date();
+    saveClient.run(`REPLACE INTO saves_guest(Token, Data, SaveTime) VALUES(?, ?, ?)`, [body.session, body.data, Math.round(currDate.getTime() / 1000)],
+        (err) => {
             if (err) {
-                reject(err);
-                return;
+                logs.log(`Save GUEST \x1b[31mFAILED\x1b[0m: SessionID: ${body.session}, Database error: ${err.message}`);
+                return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
             }
 
-            resolve();
-        });
-    }).then(
-        () => {
-            logs.log(`Save GUEST \x1b[32mSUCCESS\x1b[0m: sessionID: ${body.session}, ${currDate.toLocaleTimeString()}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            response.end(JSON.stringify({
+            logs.log(`Save GUEST \x1b[32mSUCCESS\x1b[0m: SessionID: ${body.session}`);
+            return returnJSON({
                 error: null
-            }));
-        },
-        (err) => {
-            logs.log(`Save GUEST \x1b[31mFAILED\x1b[0m: ${err}, ${currDate.toLocaleTimeString()}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            return response.end(JSON.stringify({
-                error: ERRORS.SQLITE3_ERROR
-            }));
+            }, response);
         });
 }
 
+/**
+ * Saves users data
+ * @param {Object} body //Object with title, email and data info.
+ * @param {http.ServerResponse} response 
+ */
 const saveUserHandle = (body, response) => {
     const currDate = new Date();
-    new Promise((resolve, reject) => {
-        saveClient.run(`REPLACE INTO saves_user(Title, Email, Data, SaveTime) VALUES(?, ?, ?, ?)`,
-            [body.title, body.email, body.data, Math.round(currDate.getTime() / 1000)], (err) => {
-            if (err) {
-                reject(err);
-            }
+    saveClient.run(`REPLACE INTO saves_user(Title, Email, Data, SaveTime) VALUES(?, ?, ?, ?)`, [body.title, body.email, body.data, Math.round(currDate.getTime() / 1000)], (err) => {
+        if (err) {
+            logs.log(`Save USER \x1b[31mFAILED\x1b[0m: Title: ${body.title}, Email: ${body.email}, Database error: ${err.message}`);
+            return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
+        }
 
-            resolve();
-        });
-    }).then(
-        () => {
-            logs.log(`Save USER \x1b[32mSUCCESS\x1b[0m: Title: ${body.title}, Email: ${body.email}, Time: ${currDate.toLocaleTimeString()}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            response.end(JSON.stringify({
-                error: null
-            }));
-        },
-        (err) => {
-            logs.log(`Save USER \x1b[31mFAILED\x1b[0m: Title: ${body.title}, Email: ${body.email}, Time: ${currDate.toLocaleTimeString()}, ERROR: ${err}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            return response.end(JSON.stringify({
-                error: ERRORS.SQLITE3_ERROR
-            }));
-        });
+        logs.log(`Save USER \x1b[32mSUCCESS\x1b[0m: Title: ${body.title}, Email: ${body.email}`);
+        return returnJSON({
+            error: null
+        }, response);
+    });
 }
 
-
+/**
+ * Checks the uniqueness of the title 
+ * @param {Object} body // Object with email and title info
+ * @param {http.ServerResponse} response 
+ */
 const checkTitleHandle = (body, response) => {
     saveClient.get(`SELECT 1 FROM saves_user
                     WHERE Email=? AND Title=?`, [body.email, body.title], (err, row) => {
         if (err) {
-            logs.log(`Check title file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            return response.end(JSON.stringify({
-                error: ERRORS.SQLITE3_ERROR_UNKNOWN
-            }));
+            logs.log(`Check title file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Database error: ${err.message}`);
+            return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
         }
 
         if (!row) {
-            logs.log(`Check title file \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            return response.end(JSON.stringify({
+            logs.log(`Check title file \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}`);
+            return returnJSON({
                 error: null
-            }));
+            }, response);
         } else {
             logs.log(`Check title file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: Title is already used`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            return response.end(JSON.stringify({
-                error: ERRORS.SQLITE3_ERROR_UNIQUE
-            }));
+            return returnError(CONFIG.NOT_UNIQUE_ERROR, response);
         }
     });
 }
 
 /**
- * Removes user's data
- * @param {Object} body 
+ * Removes guests's data
+ * @param {Object} body //Object with token
  * @param {http.ServerResponse} response 
  */
 const removeGuestHandle = (body, response) => {
-    new Promise((resolve, reject) => {
-        if (body.session === 'undefined') {
-            reject(new Error('Session undefined'));
-            return;
+    if (body.session === 'undefined') {
+        logs.log(`Remove GUEST FILE \x1b[31mFAILED\x1b[0m: Session token is undefined.`);
+        return returnError(CONFIG.TOKEN_UNDEFINED, response);
+    }
+
+    saveClient.run(`DELETE FROM saves_guest WHERE Token=?`, [body.session], (err) => {
+        if (err) {
+            logs.log(`Remove GUEST FILE \x1b[31mFAILED\x1b[0m: SessionID: ${body.session}, Database error: ${err.message}`);
+            return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
         }
 
-        saveClient.run(`DELETE FROM saves_guest WHERE Token=?`, [body.session], (err) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-
-            resolve();
-        });
-    }).then(
-        () => {
-            logs.log(`Remove \x1b[32mSUCCESS\x1b[0m: ${body.session}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            response.end(JSON.stringify({
-                error: null
-            }));
-        },
-        (err) => {
-            logs.log(`Remove \x1b[31mFAILED\x1b[0m: ${body.session} ${err}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            return response.end(JSON.stringify({
-                error: ERRORS.SQLITE3_ERROR
-            }));
-        });
+        logs.log(`Remove GUEST FILE \x1b[32mSUCCESS\x1b[0m: SessionID: ${body.session}`);
+        return returnJSON({
+            error: null
+        }, response);
+    });
 }
 
+/**
+ * Removes users's data
+ * @param {Object} body //Object with title and email info
+ * @param {http.ServerResponse} response 
+ */
 const removeUserHandle = (body, response) => {
-    new Promise((resolve, reject) => {
-        saveClient.run(`DELETE FROM saves_user WHERE Title=? AND Email=?`, [body.title, body.email], (err) => {
-            if (err) {
-                reject(err);
-                return;
-            }
+    saveClient.run(`DELETE FROM saves_user WHERE Title=? AND Email=?`, [body.title, body.email], (err) => {
+        if (err) {
+            logs.log(`Remove USER FILE \x1b[31mFAILED\x1b[0m: Title: ${body.title}, Email: ${body.email}, Database error: ${err.message}`);
+            return returnError(CONFIG.TOKEN_UNDEFINED, response);
+        }
 
-            resolve();
-        });
-    }).then(
-        () => {
-            logs.log(`Remove USER FILE \x1b[32mSUCCESS\x1b[0m: Title: ${body.title}, Email: ${body.email}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            response.end(JSON.stringify({
-                error: null
-            }));
-        },
-        (err) => {
-            logs.log(`Remove USER FILE \x1b[31mFAILED\x1b[0m: Title: ${body.title}, Email: ${body.email}, Error: ${err}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            return response.end(JSON.stringify({
-                error: ERRORS.SQLITE3_ERROR
-            }));
-        });
+        logs.log(`Remove USER FILE \x1b[32mSUCCESS\x1b[0m: Title: ${body.title}, Email: ${body.email}`);
+        return returnJSON({
+            error: null
+        }, response);
+    });
 }
 
+/**
+ * Loads guests's data
+ * @param {Object} body //Object with token
+ * @param {http.ServerResponse} response 
+ */
 const loadGuestHandle = (body, response) => {
     saveClient.get(`SELECT Data data, SaveTime time
                     FROM saves_guest
                     WHERE Token = ?`, [body.session], (err, row) => {
         if (err || !row) {
-            logs.log(`Load \x1b[31mFAILED\x1b[0m: ${err}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            return response.end(JSON.stringify({
-                data: null,
-                error: (err) ?
-                    ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_NO_USER
-            }));
+            logs.log(`Load GUEST FILE \x1b[31mFAILED\x1b[0m: SessionID: ${body.session}, ${(err) ? err.message : 'Error: No data for this token'}`);
+            return returnError((err) ? CONFIG.SQLITE3_DATABASE_ERROR : CONFIG.NO_TOKEN_ERROR, response);
         }
 
-        logs.log(`Load \x1b[32mSUCCESS\x1b[0m: ${body.session} ${row.time}`);
-        response.writeHead(200, {
-            'Content-Type': 'application/json',
-        });
-        return response.end(JSON.stringify({
+        logs.log(`Load GUEST FILE \x1b[32mSUCCESS\x1b[0m: SessionID: ${body.session}`);
+        return returnJSON({
             data: row.data,
             error: null
-        }));
+        }, response);
     });
 }
 
+/**
+ * Loads users's data
+ * @param {Object} body //Object with email & title for load
+ * @param {http.ServerResponse} response 
+ */
 const loadUserHandle = (body, response) => {
     saveClient.get(`SELECT Data data
                 FROM saves_user
                 WHERE Email=? AND Title=?`, [body.email, body.title], (err, row) => {
         if (err || !row) {
-            logs.log(`Load user file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            return response.end(JSON.stringify({
-                data: null,
-                error: (err) ?
-                    ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_NO_USER
-            }));
+            logs.log(`Load USER FILE \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, ${(err) ? err.message : 'Error: No data for this token'}`);
+            return returnError((err) ? CONFIG.SQLITE3_DATABASE_ERROR : CONFIG.NO_TOKEN_ERROR, response);
         }
 
-        logs.log(`Load user file \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: ${err}`);
-        response.writeHead(200, {
-            'Content-Type': 'application/json',
-        });
-        return response.end(JSON.stringify({
+        logs.log(`Load USER FILE \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}`);
+        return returnJSON({
             data: row.data,
             error: null
-        }));
+        }, response);
     });
 }
 
 //Starts server, which works only with POST requests
-http.createServer((req, res) => {
+const server = http.createServer((req, res) => {
         const path = url.parse(req.url, true)
         if (req.method === 'POST') {
             let body = '';
@@ -339,9 +252,9 @@ http.createServer((req, res) => {
     }).listen(CONFIG.port, () =>
         logs.log(`\x1b[35mSave service\x1b[0m successfully \x1b[32mstarted\x1b[0m at ${CONFIG.port}`))
     .on('close', () => {
-        usersClient.close((err) => {
+        saveClient.close((err) => {
             if (err) {
-                logs.log('something went wrong' + err.message); //сделать нормально;
+                logs.log('\x1b[35mSave service\x1b[0m database close connection error' + err.message); //сделать нормально;
             }
 
             logs.log('\x1b[35msqlite3\x1b[0m client connection closed \x1b[32msuccessfully\x1b[0m');
@@ -349,3 +262,6 @@ http.createServer((req, res) => {
 
         logs.log(`\x1b[35mSave service\x1b[0m successfully \x1b[32mstoped\x1b[0m at ${CONFIG.port}`);
     });
+
+//процесс закончится автоматически(иначе не успеваем закрыть быстро БД коннект)
+process.on('SIGINT', () => server.close());

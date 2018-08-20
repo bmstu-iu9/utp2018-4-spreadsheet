@@ -26,8 +26,10 @@ const publicResource = (req, res) => {
 
     stream.on('error', error => {
         if (error.code === 'ENOENT') {
+            logs.log(`\x1b[34mRESOURCE\x1b[0m \x1b[31mNOT FOUND\x1b[0m: ${p}`)
             res.render('error.html', {"code" : 404, "message" : '404 Not Found!'});
         } else {
+            logs.log(`\x1b[34mRESOURCE\x1b[0m \x1b[31mUNKNOWN ERROR\x1b[0m: ${p}`)
             res.render('error.html', {"code" : 500, "message" : 'Internal server error!'});
         }
     });

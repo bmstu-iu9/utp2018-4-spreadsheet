@@ -19,12 +19,12 @@ const ajax_auth = (postData) => {
 
                 location.replace('http://' + config.host_main + ':' + config.port_main);
             } else {
-                document.getElementById('loginError').textContent = ERROR_MESSAGES[5];
+                document.getElementById('loginError').textContent = ERROR_MESSAGES[404];
             }
         }
     };
 
-    ajax.open('GET', 'http://' + config.host_main + ':' + config.port_main + '/auth' + '?email=' + postData.email.value + '&password=' + postData.password.value);
+    ajax.open('GET', 'http://' + config.host_main + ':' + config.port_main + '/auth' + '?email=' + postData.email.value + '&password=' + postData.pswrd.value);
     ajax.send();
 }
 
@@ -42,7 +42,7 @@ const ajax_register = (postData) => {
 
                 location.replace('http://' + config.host_main + ':' + config.port_main + '/authentication');
             } else {
-                document.getElementById('refError').textContent = ERROR_MESSAGES[5];
+                document.getElementById('refError').textContent = ERROR_MESSAGES[404];
             }
         }
     };

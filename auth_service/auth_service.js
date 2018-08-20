@@ -7,23 +7,10 @@ const qs = require('querystring');
 const logs = require('../app/logs');
 const CONFIG = require('./config.json');
 
-const ERRORS = {
-    CHECK_SESSION_ERROR: 1,
-    SQLITE3_ERROR_NO_USER: 2,
-    SQLITE3_ERROR_UNIQUE: 7,
-    SQLITE3_ERROR_UNKNOWN: 4,
-};
-
-const STATUS = {
-    GUEST: 0,
-    USER: 1,
-    ADMIN: 666,
-}
-
 //Connection with database (users info)
 const usersClient = new sqlite3.Database(CONFIG.dbAdress, sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
-        console.error('something went wrong: ' + err.message); //сделать нормально;
+        logs.log('\x1b[35mAuth service\x1b[0m database connection error: ' + err.message);
     }
 
     logs.log('\x1b[35msqlite3\x1b[0m client connected \x1b[32msuccessfully\x1b[0m');
@@ -31,6 +18,19 @@ const usersClient = new sqlite3.Database(CONFIG.dbAdress, sqlite3.OPEN_READWRITE
 
 //To generate a session token
 const ID = () => Math.random().toString(36).substr(2, 9);
+
+const returnJSON = (obj, response) => {
+    response.writeHead(200, {
+        'Content-Type': 'application/json'
+    });
+    return response.end(JSON.stringify(obj));
+}
+
+const returnError = (errorCode, response) => {
+    return returnJSON({
+        error: errorCode
+    }, response);
+} 
 
 /**
  * Finds user's session token in token key-value store
@@ -42,27 +42,24 @@ const checkSession = (body, response) => {
                     FROM sessions
                     WHERE Token = ?`, [body.session], (err, row) => {
         if (err || !row) {
-            logs.log(`Check \x1b[31mFAILED\x1b[0m: sessionID: ${body.session}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json'
-            });
-            return response.end(JSON.stringify({
-                email: null,
-                status: null,
-                error: ERRORS.CHECK_SESSION_ERROR
-            }));
+            let errorType = 0;
+            if (err) {
+                errorType = CONFIG.SQLITE3_DATABASE_ERROR;
+                logs.log(`Check \x1b[31mFAILED\x1b[0m: SessionID: ${body.session}. Database error: ${err.message}`);
+            } else {
+                errorType = CONFIG.NO_TOKEN_ERROR;
+                logs.log(`Check \x1b[31mFAILED\x1b[0m: SessionID: ${body.session}. Token is not registered`);
+            }
+
+            return returnError(errorType, response);
         }
 
-        logs.log(`Check \x1b[32mSUCCESS\x1b[0m: sessionID: ${body.session}, user: ${row.email}, status: ${row.status}`);
-
-        response.writeHead(200, {
-            'Content-Type': 'application/json'
-        });
-        return response.end(JSON.stringify({
+        logs.log(`Check \x1b[32mSUCCESS\x1b[0m: SessionID: ${body.session}, Email: ${row.email}, Status: ${row.status}`);
+        return returnJSON({
             email: row.email,
             status: row.status,
             error: null
-        }));
+        }, response);
     });
 }
 
@@ -71,38 +68,24 @@ const checkSession = (body, response) => {
  * @param {Object} body 
  * @param {http.ServerResponse} response
  */
-const addGuest = (body, response) => { //можно убрать body
+const addGuest = (body, response) => { //body для общности
     const sessionID = ID();
     const currDate = new Date();
-    new Promise((resolve, reject) => {
-        usersClient.run(`INSERT INTO sessions(Token, Status, LoginTime) VALUES(?, ?, ?)`, [sessionID, STATUS.GUEST, Math.round(currDate.getTime() / 1000)], (err) => {
+
+    usersClient.run(`INSERT INTO sessions(Token, Status, LoginTime)
+                    VALUES(?, ?, ?)`, [sessionID, CONFIG.GUEST, Math.round(currDate.getTime() / 1000)],
+        (err) => {
             if (err) {
-                reject(err);
-                return;
+                logs.log(`Login GUEST \x1b[31mFAILED\x1b[0m: SessionID: ${sessionID}, Database error: ${err.message}`);
+                return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
             }
-            resolve();
-        });
-    }).then(
-        () => {
-            logs.log(`Login GUEST \x1b[32mSUCCESS\x1b[0m: sessionID: ${sessionID}, Date: ${currDate.toLocaleString()}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            response.end(JSON.stringify({
+
+            logs.log(`Login GUEST \x1b[32mSUCCESS\x1b[0m: SessionID: ${sessionID}`);
+            return returnJSON({
                 session_id: sessionID,
                 error: null
-            }));
-        },
-        (err) => {
-            logs.log(`Set sessionID GUEST \x1b[31mFAILED\x1b[0m: ${sessionID} ${err}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            return response.end(JSON.stringify({
-                session_id: null,
-                error: ERRORS.SQLITE3_ERROR
-            }));
-        }); //да, немного копипаста;
+            }, response);
+        });
 }
 
 /**
@@ -116,51 +99,39 @@ const loginHandle = (body, response) => {
                     FROM login_data
                     WHERE Email = ?`, [body.email], (err, row) => {
         if (err || !row || row.pass != body.password) {
-            logs.log(`Login USER \x1b[31mFAILED\x1b[0m: user: ${body.email} ${err}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            return response.end(JSON.stringify({
-                session_id: null,
-                error: (err) ?
-                    ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_NO_USER
-            }));
+            let errorType = 0;
+            if (err) {
+                errorType = CONFIG.SQLITE3_DATABASE_ERROR;
+                logs.log(`Login USER(check email) \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Database error: ${err.message}`);
+            } else if (!row) {
+                errorType = CONFIG.NO_USER_ERROR;
+                logs.log(`Login USER \x1b[31mFAILED\x1b[0m: Email: ${body.email}. User is not registered`);
+            } else {
+                errorType = CONFIG.INCORRECT_PASS_ERROR;
+                logs.log(`Login USER \x1b[31mFAILED\x1b[0m: Email: ${body.email}. Incorrect password`);
+            }
+
+            return returnError(errorType, response);
         }
 
 
         //Insert session token for this user
+        //на случай, если пользователь сразу попал на страницу логина
         const sessionID = (body.session === 'undefined' ? ID() : body.session);
         const currDate = new Date();
-        new Promise((resolve, reject) => {
-            usersClient.run(`REPLACE INTO sessions(Token, Email, Status, LoginTime) VALUES(?, ?, ?, ?)`,
-             [sessionID, body.email, STATUS.USER, Math.round(currDate.getTime() / 1000)], (err) => {
+        usersClient.run(`REPLACE INTO sessions(Token, Email, Status, LoginTime)
+                        VALUES(?, ?, ?, ?)`, [sessionID, body.email, CONFIG.USER, Math.round(currDate.getTime() / 1000)],
+            (err) => {
                 if (err) {
-                    reject(err);
-                    return;
+                    logs.log(`Login USER(replace token) \x1b[31mFAILED\x1b[0m: SessionID: ${sessionID} Email: ${body.email}, Database error: ${err.message}`);
+                    return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
                 }
 
-                resolve();
-            });
-        }).then(
-            () => {
-                logs.log(`Login USER \x1b[32mSUCCESS\x1b[0m: user: ${body.email}, sessionID: ${sessionID}, Date: ${currDate.toLocaleString()}`);
-                response.writeHead(200, {
-                    'Content-Type': 'application/json',
-                });
-                response.end(JSON.stringify({
+                logs.log(`Login USER \x1b[32mSUCCESS\x1b[0m: SessionID: ${sessionID}, Email: ${body.email}`);
+                return returnJSON({
                     session_id: sessionID,
                     error: null
-                }));
-            },
-            (err) => {
-                logs.log(`Set sessionID USER \x1b[31mFAILED\x1b[0m: ${sessionID} ${err}`);
-                response.writeHead(200, {
-                    'Content-Type': 'application/json',
-                });
-                return response.end(JSON.stringify({
-                    session_id: null,
-                    error: ERRORS.SQLITE3_ERROR
-                }));
+                }, response);
             });
     });
 }
@@ -172,33 +143,18 @@ const loginHandle = (body, response) => {
  */
 const logoutHandle = (body, response) => {
     const currDate = new Date();
-    new Promise((resolve, reject) => {
-        usersClient.run(`REPLACE INTO sessions(Token, Email, Status, LoginTime) VALUES(?, ?, ?, ?)`, [body.session, ' ', STATUS.GUEST, Math.round(currDate.getTime() / 1000)], (err) => {
+    usersClient.run(`REPLACE INTO sessions(Token, Email, Status, LoginTime)
+                    VALUES(?, ?, ?, ?)`, [body.session, ' ', CONFIG.GUEST, Math.round(currDate.getTime() / 1000)],
+        (err) => {
             if (err) {
-                reject(err);
-                return;
+                logs.log(`Logout USER \x1b[31mFAILED\x1b[0m: SessionID: ${body.session}, Database error: ${err.message}`);
+                return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
             }
 
-            resolve();
-        });
-    }).then(
-        () => {
-            logs.log(`Logout USER \x1b[32mSUCCESS\x1b[0m: sessionID: ${body.session}, Date: ${currDate.toLocaleString()}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            response.end(JSON.stringify({
+            logs.log(`Logout USER \x1b[32mSUCCESS\x1b[0m: SessionID: ${body.session}`);
+            return returnJSON({
                 error: null
-            }));
-        },
-        (err) => {
-            logs.log(`Logout USER \x1b[31mFAILED\x1b[0m: sessionID: ${body.session}, Date: ${currDate.toLocaleString()}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json',
-            });
-            return response.end(JSON.stringify({
-                error: ERRORS.SQLITE3_ERROR
-            }));
+            }, response);
         });
 }
 
@@ -208,41 +164,24 @@ const logoutHandle = (body, response) => {
  * @param {http.ServerResponse} response 
  */
 const registerHandle = (body, response) => {
-    new Promise((resolve, reject) => {
-        usersClient.run(`INSERT INTO login_data(First_name, Last_name, Organization, Email, Pass)
+    usersClient.run(`INSERT INTO login_data(First_name, Last_name, Organization, Email, Pass)
                     VALUES(?, ?, ?, ?, ?)`, [body.first_name, body.last_name, body.organization, body.email, body.password],
-            (err) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-
-                resolve();
-            });
-    }).then(
-        () => {
-            logs.log(`Register \x1b[32mSUCCESS\x1b[0m: user: ${body.email}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json'
-            });
-            response.end(JSON.stringify({
-                error: null
-            }));
-        },
         (err) => {
-            logs.log(`Register \x1b[31mFAILED\x1b[0m: ${body.email} ${err}`);
-            response.writeHead(200, {
-                'Content-Type': 'application/json'
-            });
-            return response.end(JSON.stringify({
-                error: err.message.indexOf('UNIQUE') === -1 ?
-                    ERRORS.SQLITE3_ERROR_UNKNOWN : ERRORS.SQLITE3_ERROR_UNIQUE
-            }));
+            if (err) {
+                logs.log(`Register \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Database error: ${err.message}`);
+                return returnError(err.message.indexOf('UNIQUE') === -1 ?
+                    CONFIG.SQLITE3_DATABASE_ERROR : CONFIG.NOT_UNIQUE_ERROR, response);
+            }
+
+            logs.log(`Register \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}`);
+            return returnJSON({
+                error: null
+            }, response);
         });
 }
 
 //Starts server, which works only with POST requests
-http.createServer((req, res) => {
+const server = http.createServer((req, res) => {
         const path = url.parse(req.url, true)
         if (req.method === 'POST') {
             let body = '';
@@ -280,7 +219,7 @@ http.createServer((req, res) => {
     .on('close', () => {
         usersClient.close((err) => {
             if (err) {
-                logs.log('something went wrong' + err.message); //сделать нормально;
+                logs.log('\x1b[35mAuth service\x1b[0m database close connection error' + err.message);
             }
 
             logs.log('\x1b[35msqlite3\x1b[0m client connection closed \x1b[32msuccessfully\x1b[0m');
@@ -288,3 +227,6 @@ http.createServer((req, res) => {
 
         logs.log(`\x1b[35mAuth service\x1b[0m successfully \x1b[32mstoped\x1b[0m at ${CONFIG.port}`);
     });
+
+//процесс закончится автоматически(иначе не успеваем закрыть быстро БД коннект)
+process.on('SIGINT', () => server.close());

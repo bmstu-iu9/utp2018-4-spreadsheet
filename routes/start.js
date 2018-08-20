@@ -3,10 +3,13 @@
 const http = require('http');
 const qs = require('querystring');
 const logs = require('../app/logs');
-const sendAuthRequest = require('../app/auth_request').sendAuthRequest;
-const sendSaveRequest = require('../app/auth_request').sendSaveRequest;
+const sendAuthRequest = require('../app/server_request').sendAuthRequest;
+const sendSaveRequest = require('../app/server_request').sendSaveRequest;
 const parseCookies = require('../app/parse_cookies').parseCookies;
-const SAVE_CONFIG = require('../config/save_config.json');
+const CONFIG = require('../config/main_config.json');
+const ERRORS = require('../config/errors.json');
+const ERROR_MESSAGES = require('../config/error_messages.json');
+const returnError = require('../app/server_responses').returnError;
 
 /**
  * Checks client's token,
@@ -16,7 +19,6 @@ const SAVE_CONFIG = require('../config/save_config.json');
  * @param {http.ServerResponse} res 
  */
 const start = (req, res) => {
-    logs.log(`\x1b[34mSTART\x1b[0m Method: ${req.method}`);
     const cookies = parseCookies(req.headers.cookie);
     const postData = qs.stringify({
         "session": cookies['token']
@@ -24,34 +26,36 @@ const start = (req, res) => {
     sendAuthRequest('/check_session', postData).then(
         authINFO => {
             if (authINFO.error) { //добавить код ошибки
+                logs.log(`\x1b[34mSTART USER CHECK\x1b[0m \x1b[31mFAILED\x1b[0m: User: ${cookies['token']}, Error: ${ERROR_MESSAGES[authINFO.error]}`);
                 //Новый юзер с незареганой кукой
                 //ставим гостя
                 sendAuthRequest('/guest', '').then(
                     sessionINFO => {
                         if (!sessionINFO.error) {
-                            logs.log(`\x1b[33mNEW GUEST\x1b[0m: sessionID: ${sessionINFO.session_id}`);
+                            logs.log(`\x1b[34mSTART FOR NEW GUEST\x1b[0m: SessionID: ${sessionINFO.session_id}`);
                             res.writeHead(200, {
                                 'Content-Type': 'application/json',
                                 'Set-Cookie': ['token=' + sessionINFO.session_id +
                                     ';expires=' + new Date(new Date().getTime() + 2592000000).toUTCString(),
-                                    'status=' + SAVE_CONFIG.GUEST + ';expires=' + new Date(new Date().getTime() + 2592000000).toUTCString()
+                                    'status=' + CONFIG.GUEST + ';expires=' + new Date(new Date().getTime() + 2592000000).toUTCString()
                                 ]
                             }); //на месяц
-                            res.end(JSON.stringify({
+                            return res.end(JSON.stringify({
                                 status: 'new_guest'
                             }));
                         } //повтор
                     }
                 );
-                return;
             }
 
             if (authINFO.status) {
+                logs.log(`\x1b[34mSTART FOR USER\x1b[0m: SessionID: ${cookies['token']}, Email: ${authINFO.email}`);
+
                 res.writeHead(200, {
                     'Content-Type': 'application/json',
                     'Set-Cookie': ['token=' + cookies['token'] +
                         ';expires=' + new Date(new Date().getTime() + 31556952000).toUTCString(),
-                        'status=' + SAVE_CONFIG.USER + ';expires=' + new Date(new Date().getTime() + 31556952000).toUTCString()
+                        'status=' + CONFIG.USER + ';expires=' + new Date(new Date().getTime() + 31556952000).toUTCString()
                     ]
                 }) //на год
 
@@ -59,8 +63,7 @@ const start = (req, res) => {
                     "email": authINFO.email
                 })).then(
                     titles => {
-                        logs.log(`\x1b[33mUSER\x1b[0m: Email: ${authINFO.email}, sessionID: ${cookies['token']}`);
-                        logs.log(`Titles \x1b[32mRECEIVED\x1b[0m: ${titles.titles}`);
+                        logs.log(`\x1b[34mTITLES\x1b[0m \x1b[32mRECEIVED\x1b[0m: SessionID: ${cookies['token']}, Email: ${authINFO.email}`);
                         res.end(JSON.stringify({
                             status: 'user',
                             email: authINFO.email,
@@ -68,22 +71,22 @@ const start = (req, res) => {
                         }));
                     },
 
-                    () => {
-                        logs.log(`\x1b[33mTITLES ERROR\x1b[0m: sessionID: ${cookies['token']}`);
+                    (err) => {
+                        logs.log(`\x1b[34mTITLES LOAD\x1b[0m \x1b[31mFAILED\x1b[0m: SessionID: ${cookies['token']}, Email: ${authINFO.email}, Error: ${err.message}`);
                         res.end(JSON.stringify({
                             status: 'user',
                             email: authINFO.email,
-                            error: 'titles_error'
+                            error: ERRORS.SAVE_SERVER_ERROR
                         }));
                     }
                 );
             } else {
-                logs.log(`\x1b[33mGUEST\x1b[0m: sessionID: ${cookies['token']}`);
+                logs.log(`\x1b[34mSTART FOR GUEST\x1b[0m: SessionID: ${cookies['token']}`);
                 res.writeHead(200, {
                     'Content-Type': 'application/json',
                     'Set-Cookie': ['token=' + cookies['token'] +
                         ';expires=' + new Date(new Date().getTime() + 2592000000).toUTCString(),
-                        'status=' + SAVE_CONFIG.GUEST + ';expires=' + new Date(new Date().getTime() + 2592000000).toUTCString()
+                        'status=' + CONFIG.GUEST + ';expires=' + new Date(new Date().getTime() + 2592000000).toUTCString()
                     ]
                 }); //на месяц
                 res.end(JSON.stringify({
@@ -92,14 +95,10 @@ const start = (req, res) => {
             }
         },
 
-        () => {
-            logs.log(`\x1b[33mCHECK STATUS ERROR\x1b[0m: sessionID: ${cookies['token']}`);
-            res.writeHead(200, {
-                'Content-Type': 'application/json',
-            }); //на месяц
-            res.end(JSON.stringify({
-                error: 'check_error'
-            }));
+        (err) => {
+            logs.log('\x1b[34mSTART CHECK STATUS\x1b[0m \x1b[31mFAILED\x1b[0m:' +
+                `SessionID ${cookies['token']}, Server Error: ${err.message}`);
+            return returnError(ERRORS.AUTH_SERVER_ERROR, res);
         });
 }
 

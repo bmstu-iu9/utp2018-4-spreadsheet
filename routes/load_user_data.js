@@ -2,88 +2,77 @@
 
 const qs = require('querystring');
 const url = require('url');
-const sendAuthRequest = require('../app/auth_request').sendAuthRequest;
-const sendSaveRequest = require('../app/auth_request').sendSaveRequest;
+const sendAuthRequest = require('../app/server_request').sendAuthRequest;
+const sendSaveRequest = require('../app/server_request').sendSaveRequest;
 const parseCookies = require('../app/parse_cookies').parseCookies;
 const logs = require('../app/logs');
-const SAVE_CONFIG = require('../config/save_config.json');
-
-const ERRORS = {
-    AUTH_ERROR: 1,
-    LOAD_ERROR: 2,
-    LOAD_SERVER_ERROR: 3,
-    AUTH_SERVER_ERROR: 4,
-}
-
-const returnError = (res, code) => {
-    res.writeHead(200, {
-        'Content-Type': 'application/json',
-    });
-    return res.end(JSON.stringify({
-        data: null,
-        error: code
-    }));
-}
+const CONFIG = require('../config/main_config.json');
+const ERRORS = require('../config/errors.json');
+const ERROR_MESSAGES = require('../config/error_messages.json');
+const returnError = require('../app/server_responses').returnError;
+const returnJSON = require('../app/server_responses').returnJSON;
 
 const loadUserData = (req, res) => {
-    logs.log('\x1b[34mLOAD DATA\x1b[0m Method: ' + req.method);
-
     const cookies = parseCookies(req.headers.cookie);
     const postAuthData = qs.stringify({
         "session": cookies['token']
     });
-    
+
     sendAuthRequest('/check_session', postAuthData).then(
         authINFO => {
             if (authINFO.error) {
-                return returnError(res, ERRORS.AUTH_ERROR);
+                logs.log(`\x1b[34mLOAD USER DATA\x1b[0m \x1b[31mFAILED\x1b[0m: User: ${cookies['token']}, Error: ${ERROR_MESSAGES[authINFO.error]}`);
+                return returnError(authINFO.error, res);
             }
 
             let postSaveData = null;
             let adress = null;
 
             const parsedURL = url.parse(req.url, true);
-            if (parsedURL.query['status'] == SAVE_CONFIG.GUEST) { //string&int
+            if (parsedURL.query['status'] == CONFIG.GUEST) { //string&int
                 postSaveData = qs.stringify({
                     'session': cookies['token'],
                 });
 
                 adress = '/load_guest';
-                logs.log('\x1b[34mLOAD FOR GUEST\x1b[0m');
-            } else if (parsedURL.query['status'] == SAVE_CONFIG.USER && authINFO.status === SAVE_CONFIG.USER) {
+            } else if (parsedURL.query['status'] == CONFIG.USER && authINFO.status === CONFIG.USER) {
                 postSaveData = qs.stringify({
                     'title': parsedURL.query['title'],
                     'email': authINFO.email
                 });
                 adress = '/load_user';
-                logs.log('\x1b[34mLOAD FOR USER\x1b[0m');
             } else {
-                return returnError(res, ERRORS.AUTH_ERROR);
+                logs.log(`\x1b[34mLOAD USER DATA\x1b[0m \x1b[31mFAILED\x1b[0m: User: ${cookies['token']} have no permission to load data.`);
+                return returnError(ERRORS.PERMISSION_DENIED, res);
             }
 
             sendSaveRequest(adress, postSaveData).then(
                 loadINFO => {
                     if (loadINFO.error) {
-                        return returnError(res, ERRORS.LOAD_ERROR);
+                        logs.log('\x1b[34mLOAD USER DATA\x1b[0m \x1b[31mFAILED\x1b[0m:' +
+                            `SessionID ${cookies['token']}, Title: ${parsedURL.query['title']}, Email: ${authINFO.email}, Error: ${ERROR_MESSAGES[loadINFO.error]}`);
+                        return returnError(loadINFO.error, res);
                     }
 
-                    res.writeHead(200, {
-                        'Content-Type': 'application/json',
-                    });
-                    return res.end(JSON.stringify({
+                    logs.log(`\x1b[34mLOAD USER DATA\x1b[0m \x1b[32mSUCCESS\x1b[0m: SessionID ${cookies['token']}, Title: ${parsedURL.query['title']}, Email: ${authINFO.email}`);
+                    return returnJSON({
                         data: loadINFO.data,
                         error: null
-                    }));
+                    }, res);
                 },
 
-                () => {
-                    return returnError(res, ERRORS.LOAD_SERVER_ERROR);
+                (err) => {
+                    logs.log('\x1b[34mLOAD USER DATA\x1b[0m \x1b[31mFAILED\x1b[0m:' +
+                        `SessionID ${cookies['token']}, Server Error: ${err.message}`);
+                    return returnError(ERRORS.SAVE_SERVER_ERROR, res);
                 }
             )
         },
 
-        () => {
-            return returnError(res, ERRORS.AUTH_SERVER_ERROR);
+        (err) => {
+            logs.log('\x1b[34mLOAD USER DATA\x1b[0m \x1b[31mFAILED\x1b[0m:' +
+                `SessionID ${cookies['token']}, Title: ${parsedURL.query['title']}, Email: ${authINFO.email}, Server Error: ${err.message}`);
+            return returnError(ERRORS.SAVE_SERVER_ERROR, res);
         });
 }
 
