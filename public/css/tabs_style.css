@@ -96,7 +96,7 @@ nav li {
 
 ul.submenu {
   display: none;
-  position: absolute;
+  position: inherit;
   width: 200px;
   top: 37px;
   left: 0;
@@ -561,5 +561,29 @@ textarea.form-control {
   font-family: sans-serif;
   font-size: 14px;
   font-weight: bold;
+}
+
+.PageName{
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+h1#name {
+  width: 40%;
+  margin-left: 35%;
+  color: white;
+  font-weight: 500;
+  font-size: 1.15rem;
+  margin-bottom: 15px;
+}
+
+a#account{
+  transition: 1s linear;
+  color: white;
+}
+a#account:hover:after,
+a#account:focus:after{
+color: #757575;
 }
 
