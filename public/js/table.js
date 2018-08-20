@@ -941,7 +941,6 @@ const addExpansion = (letter, j) => {
                 document.getElementById(letter + i).style.padding = (flag) ? '0px ' + padSize1 + 'px' : '2px ' + padSize1 + 'px';
                 document.getElementById('Cell_' + letter + i).style.padding = (flag) ? '0px ' + padSize2 + 'px' : '1px ' + padSize2 + 'px';
                 document.getElementById(letter + i).style.width = coords + delta2 + 'px';
-                document.getElementById('main_right_' + letter + i).style.left = (coords > 0)? coords - 3 + 'px' : '0px';
             }
         }
 
@@ -1042,7 +1041,6 @@ const addVerticalExpansion = (i) => {
                 document.getElementById('Cell_' + currentLet[j] + (i + 1)).style.padding =
                     (flag) ? padSize2 + 'px 0px' : padSize2 + 'px 1px';
                 document.getElementById(currentLet[j] + (i + 1)).style.height = coords + delta2 + 'px';
-                document.getElementById('main_bottom_' + currentLet[j] + (i + 1)).style.top = (coords > 0)? coords - 3 + 'px' : '0px';
             }
         }
 
@@ -1345,17 +1343,6 @@ const initCell = (columnNumber, rowNumber) => {
 }
 
 const addCells = function (rows, cols) {
-
-    const correctMainDiv = (curId, prevId) => {
-        const curRight = document.getElementById('main_right_' + curId);
-        const curBot = document.getElementById('main_bottom_' + curId);
-        const prevRight = document.getElementById('main_right_' + prevId);
-        const prevBot = document.getElementById('main_bottom_' + prevId);
-
-        curRight.style.left = prevRight.style.left;
-        curBot.style.top = prevBot.style.top;
-    }
-
     if (rows === 0) {
         for (let i = COLS + 1; i <= COLS + cols; i++) {
 
@@ -1381,7 +1368,6 @@ const addCells = function (rows, cols) {
               const inp = document.getElementById(curId);
               const preInp = document.getElementById(prevId);
 
-              correctMainDiv(curId, prevId);
               inp.style.height = preInp.style.height;
               inp.style.padding = preInp.style.padding;
               cell.style.padding = document.getElementById('Cell_' + prevId).style.padding;
@@ -1459,7 +1445,6 @@ const addCells = function (rows, cols) {
                 const inp = document.getElementById(curId);
                 const preInp = document.getElementById(prevId);
 
-                correctMainDiv(curId, prevId);
                 inp.style.width = preInp.style.width;
                 inp.style.padding = preInp.style.padding;
                 new_cell.style.padding = document.getElementById('Cell_' + prevId).style.padding;

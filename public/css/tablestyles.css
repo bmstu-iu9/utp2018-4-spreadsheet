@@ -192,7 +192,7 @@ td {
     height: 100%;
     width: 3px;
     top: 0px;
-    left: 35px;
+    right: -1px;
 }
 
 .main_top {
@@ -201,7 +201,7 @@ td {
     -moz-user-select: none;
     -ms-user-select: none;
     z-index: 500;
-    height: 3px;
+    height: 2px;
     width: 100%;
     top: 0px;
     left: 0px;
@@ -214,7 +214,7 @@ td {
     -ms-user-select: none;
     z-index: 500;
     height: 100%;
-    width: 3px;
+    width: 2px;
     top: 0px;
     left: 0px;
 }
@@ -226,9 +226,9 @@ td {
     -ms-user-select: none;
     z-index: 500;
     height: 100%;
-    width: 3px;
+    width: 2px;
     top: 0px;
-    left: 103px;
+    right: 0px;
 }
 
 .main_bottom {
@@ -237,8 +237,8 @@ td {
     -moz-user-select: none;
     -ms-user-select: none;
     z-index: 500;
-    height: 3px;
+    height: 2px;
     width: 100%;
-    top: 19px;
+    bottom: 0px;
     left: 0px;
 }
