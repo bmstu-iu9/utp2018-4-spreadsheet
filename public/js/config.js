@@ -29,6 +29,12 @@ const ERROR_MESSAGES = {
     603 : "AUTH_SERVER_ERROR", 
 };
 
+const ERRORS = {
+    PERMISSION_DENIED : 601,
+    SAVE_SERVER_ERROR : 602,
+    AUTH_SERVER_ERROR : 603,
+}
+
 const USER_STATUS = {
     GUEST : 0,
     USER : 1,

@@ -17,3 +17,23 @@ const parseCookies = (reqCookies) => {
 
     return cookies;
 }
+
+
+/**
+ * Send XMLHttpRequest
+ */
+const sendXMLHttpRequest = (host, port, adress, method, callback, jsonErrorCallback) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, 'http://' + host + ':' + port + adress);
+    xhr.send();
+    xhr.onload = () => {
+        let dataJSON = null;
+        try {
+            dataJSON = JSON.parse(xhr.responseText);
+        } catch {
+            return jsonErrorCallback();
+        }
+
+        callback(dataJSON);
+    };
+}

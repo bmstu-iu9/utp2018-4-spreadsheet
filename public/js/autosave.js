@@ -30,7 +30,7 @@ const ajax_save = (postData, okCallback, errorCallback) => {
 
     ajax.open('POST', 'http://' + config.host_main + ':' + config.port_main + '/save_user_data');
     ajax.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    ajax.send('status='+ postData.status + '&title=' + postData.title + '&session=' + postData.session + '&data=' + postData.data);
+    ajax.send('status=' + postData.status + '&title=' + postData.title + '&session=' + postData.session + '&data=' + postData.data);
 }
 
 /**
@@ -39,71 +39,44 @@ const ajax_save = (postData, okCallback, errorCallback) => {
  * @param {Object} postData 
  */
 const ajax_remove_guest = (okCallback, errorCallback) => {
-    const ajax = new XMLHttpRequest();
-    ajax.onreadystatechange = () => {
-        if (ajax.readyState === 4) {
-            if (ajax.status === 200) {
-                let saveINFO = null;
-                try {
-                    saveINFO = JSON.parse(ajax.responseText);
-                } catch {
-                    errorCallback();
-                    return;
-                }
-
-                if (saveINFO.error) {
-                    errorCallback(saveINFO.error);
-                    return;
-                }
-
-                okCallback(saveINFO);
+    sendXMLHttpRequest(config.host_main, config.port_main,
+        '/remove_user_data?status=' + USER_STATUS.GUEST, 'GET', (dataJSON) => {
+            if (dataJSON.error) {
+                return errorCallback(dataJSON.error);
+            } else {
+                okCallback(dataJSON);
             }
-        }
-    };
-
-    ajax.open('GET', 'http://' + config.host_main + ':' + config.port_main + '/remove_user_data?status='+USER_STATUS.GUEST);
-    ajax.send();
+        }, errorCallback);
 }
 
 const transfer = (transferData, okCallback, errorCallback) => {
-    const checkXHR = new XMLHttpRequest();
-    checkXHR.open('GET', 'http://' + config.host_main + ':' + config.port_main + '/check_user_title' + '?title=' + transferData.title);
-    checkXHR.send();
-    checkXHR.onload = () => {
-        let checkINFO = null;
-        try {
-            checkINFO = JSON.parse(checkXHR.responseText);
-        } catch {
-            errorCallback();
-            return
-        }
-
-        if (checkINFO.error) {
-            errorCallback(checkINFO.error);
-            return
-        }
-
-        const saveXHR = new XMLHttpRequest();
-        saveXHR.open('POST', 'http://' + config.host_main + ':' + config.port_main + '/save_user_data');
-        saveXHR.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        saveXHR.send('status='+ USER_STATUS.USER + '&session=' + transferData.session + '&title=' + transferData.title + '&data=' + transferData.data);
-        saveXHR.onload = () => {
-            let saveINFO = null;
-            try {
-                saveINFO = JSON.parse(saveXHR.responseText);
-            } catch {
-                errorCallback();
-                return;
+    sendXMLHttpRequest(config.host_main, config.port_main,
+        '/check_user_title?title=' + transferData.title, 'GET',
+        (dataJSON) => {
+            if (dataJSON.error) {
+                return errorCallback(dataJSON.error);
             }
 
-            if (saveINFO.error) {
-                errorCallback(saveINFO.error);
-                return;
+            const saveXHR = new XMLHttpRequest();
+            saveXHR.open('POST', 'http://' + config.host_main + ':' + config.port_main + '/save_user_data');
+            saveXHR.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            saveXHR.send('status=' + USER_STATUS.USER + '&session=' + transferData.session + '&title=' + transferData.title + '&data=' + transferData.data);
+            saveXHR.onload = () => {
+                let saveINFO = null;
+                try {
+                    saveINFO = JSON.parse(saveXHR.responseText);
+                } catch {
+                    return errorCallback();
+                }
+
+                if (saveINFO.error) {
+                    return errorCallback(saveINFO.error);
+                }
+
+                ajax_remove_guest(okCallback, errorCallback);
             }
 
-            ajax_remove_guest(okCallback, errorCallback);
-        }
-    };
+        }, errorCallback);
 }
 
 const saveData = (postData) => {
@@ -123,8 +96,10 @@ const new_table = (mode, okCallback) => {
         title: newTitle,
         status: cookie['status'],
         session: cookie['token'],
-        data: JSON.stringify({'size': [DEFAULT_ROWS, DEFAULT_COLS]})
-    }, (saveINFO)=>{
+        data: JSON.stringify({
+            'size': [DEFAULT_ROWS, DEFAULT_COLS]
+        })
+    }, (saveINFO) => {
         tableTitle = newTitle;
         okCallback(saveINFO);
     }, (error) => {

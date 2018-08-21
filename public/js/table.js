@@ -1283,14 +1283,6 @@ const addCells = function (rows, cols) {
     COLS += cols;
 }
 
-const removeTable = () => {
-    ROWS = COLS = 0;
-    letters = [65];
-    currentLet = [];
-    mainTable.innerHTML = upTable.innerHTML = leftTable.innerHTML = '';
-    document.getElementsByClassName('null-div')[0].innerHTML = '';
-}
-
 mainDiv.onscroll = function () {
     upDiv.scrollLeft = this.scrollLeft;
     leftDiv.scrollTop = this.scrollTop;
@@ -1339,31 +1331,33 @@ const updateTables = () => {
     }
 }
 
-const getSavedTable = (title, okCallback, errCallback) => {
-    let adress = title ? '/load_user_data?status=' + USER_STATUS.USER + '&title=' + title :
-        '/load_user_data?status=' + USER_STATUS.GUEST;
-
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://' + config.host_main + ':' + config.port_main + adress);
-    xhr.send();
-    xhr.onload = () => {
-        let dataINFO = null;
-        try {
-            dataINFO = JSON.parse(xhr.responseText);
-        } catch {
-            errCallback();
-            return;
-        }
-
-        if (dataINFO.error) {
-            errCallback(dataINFO.error);
-            return;
-        }
-
-        okCallback(dataINFO);
-    };
+/**
+ * Удаляет таблицу, вместе с отображением
+ */
+const removeTable = () => {
+    ROWS = COLS = 0;
+    letters = [65];
+    currentLet = [];
+    mainTable.innerHTML = upTable.innerHTML = leftTable.innerHTML = '';
+    document.getElementsByClassName('null-div')[0].innerHTML = '';
 }
 
+/**
+ * Создаёт в памяти таблицу rows x cols + её отображение
+ * @param {Number} rows 
+ * @param {Number} cols 
+ */
+const createTable = (rows, cols) => {
+    innerTable = new Table(cols, rows);
+    addCells(rows, cols);
+}
+
+/**
+ * Восстанавливает таблицу(+отображение) из JSON объекта,
+ * Размер задаётся свойством size : [rows, cols]
+ * Ячейки записываются в формате [x, y] : [<массив кодов символов>]
+ * @param {Object} tableData 
+ */
 const tableFromObject = (tableData) => {
     document.getElementsByClassName('null-div')[0].innerHTML = `<table><tr><td></td></tr></table>`;
     innerTable = new Table(tableData['size'][0], tableData['size'][1]);
@@ -1373,93 +1367,108 @@ const tableFromObject = (tableData) => {
         const coord = coordStr.split(',').map(e => parseInt(e, 10));
         innerTable.setCeil(coord[0], coord[1], arr2str(tableData[coordStr]));
     }
+
     updateTables();
 }
 
-const createTable = (rows, cols) => {
-    innerTable = new Table(cols, rows);
-    addCells(rows, cols);
+/**
+ * Загружает таблицу
+ * @param {String} title 
+ * @param {Function} okCallback 
+ * @param {Function} errCallback 
+ */
+const getSavedTable = (title, okCallback, errCallback) => {
+    let adress = title ? '/load_user_data?status=' + USER_STATUS.USER + '&title=' + title :
+        '/load_user_data?status=' + USER_STATUS.GUEST;
+
+    sendXMLHttpRequest(config.host_main, config.port_main, adress, 'GET',
+        (dataJSON) => {
+            if (dataJSON.error) {
+                errCallback(dataJSON.error);
+            } else {
+                okCallback(dataJSON);
+            }
+        },
+        () => {
+            console.error('getSavedTable(): JSON parse error');
+        });
 }
 
+/**
+ * Загрузка таблицы при открытии страницы
+ */
 const loadTable = () => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://' + config.host_main + ':' + config.port_main + '/start');
-    xhr.send();
-    xhr.onload = () => {
-        let data = null;
-        try {
-            data = JSON.parse(xhr.responseText);
-        } catch {
-            createTable(DEFAULT_ROWS, DEFAULT_COLS);
-            return;
-        }
+    sendXMLHttpRequest(config.host_main, config.port_main, '/start', 'GET',
+        (data) => {
+            if (data.error === ERRORS.AUTH_SERVER_ERROR) {
+                console.log(ERROR_MESSAGES[data.error])
 
-
-        if (data.error === 'check_error') {
-            console.log(data.error)
-
-            document.getElementById('userINFO').textContent = 'Auth server прилёг';
-            createTable(DEFAULT_ROWS, DEFAULT_COLS);
-            return;
-        }
-
-        if (data.status === 'new_guest') {
-            document.getElementById('userINFO').textContent = 'GUEST';
-            document.getElementById('log').innerHTML = '<a href="/authentication">Войти</a>';
-            createTable(DEFAULT_ROWS, DEFAULT_COLS);
-        } else if (data.status === 'user') {
-            document.getElementById('userINFO').textContent = data.email;
-            document.getElementById('log').innerHTML = '<a href="/logout">Выйти</a>';
-
-            const newButton = document.createElement('button');
-            newButton.onclick = () => new_table(0, () => {
+                document.getElementById('userINFO').textContent = ERROR_MESSAGES[data.error];
                 createTable(DEFAULT_ROWS, DEFAULT_COLS);
-            }); //!!!
-            newButton.innerText = 'New';
-            document.getElementById('titles').appendChild(newButton);
-
-            if (!data.error) {
-                data.titles.forEach((title) => {
-                    const button = document.createElement('button');
-                    button.onclick = () => getSavedTable(title, (dataINFO) => {
-                        ajax_remove_guest(() => {
-                            removeTable();
-
-                            const tableData = JSON.parse(dataINFO.data);
-                            tableFromObject(tableData);
-                            tableTitle = title;
-                        }, (error) => console.log(error));
-                    }, (error) => console.log(error));
-                    button.innerText = title;
-                    document.getElementById('titles').appendChild(button);
-                })
-            } else {
-                console.log(data.error)
+                return;
             }
 
-            getSavedTable(null, (dataINFO) => {
-                const tableData = JSON.parse(dataINFO.data);
-                tableFromObject(tableData);
-                const newButton = document.createElement('button');
-                newButton.onclick = () => stay(0);
-                newButton.innerText = 'Stay';
-                document.getElementById('titles').appendChild(newButton);
-            }, () => {
-                console.log('No guest saves');
-            });
+            if (data.status === 'new_guest') {
+                document.getElementById('userINFO').textContent = 'GUEST';
+                document.getElementById('log').innerHTML = '<a href="/authentication">Войти</a>';
+                createTable(DEFAULT_ROWS, DEFAULT_COLS);
+            } else if (data.status === 'user') {
+                document.getElementById('userINFO').textContent = data.email;
+                document.getElementById('log').innerHTML = '<a href="/logout">Выйти</a>';
 
-            //заблокировать таблицу
-        } else if (data.status === 'guest') {
-            document.getElementById('userINFO').textContent = 'GUEST';
-            document.getElementById('log').innerHTML = '<a href="/authentication">Войти</a>';
-            getSavedTable(null, (dataINFO) => {
-                const tableData = JSON.parse(dataINFO.data);
-                tableFromObject(tableData);
-            }, () => {
-                createTable(DEFAULT_ROWS, DEFAULT_COLS)
-            });
+                const newButton = document.createElement('button');
+                newButton.onclick = () => new_table(0, () => {
+                    createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                });
+                newButton.innerText = 'New';
+                document.getElementById('titles').appendChild(newButton);
+
+                if (!data.error) {
+                    data.titles.forEach((title) => {
+                        const button = document.createElement('button');
+                        button.onclick = () => getSavedTable(title, (dataINFO) => {
+                            ajax_remove_guest(() => {
+                                removeTable();
+
+                                const tableData = JSON.parse(dataINFO.data);
+                                tableFromObject(tableData);
+                                tableTitle = title;
+                            }, (error) => console.log(error));
+                        }, (error) => console.log(error));
+                        button.innerText = title;
+                        document.getElementById('titles').appendChild(button);
+                    })
+                } else {
+                    console.log(ERROR_MESSAGES[data.error]);
+                }
+
+                getSavedTable(null, (dataINFO) => {
+                    const tableData = JSON.parse(dataINFO.data);
+                    tableFromObject(tableData);
+                    const newButton = document.createElement('button');
+                    newButton.onclick = () => stay(0);
+                    newButton.innerText = 'Stay';
+                    document.getElementById('titles').appendChild(newButton);
+                }, () => {
+                    console.log('No guest saves');
+                });
+
+                //заблокировать таблицу
+            } else if (data.status === 'guest') {
+                document.getElementById('userINFO').textContent = 'GUEST';
+                document.getElementById('log').innerHTML = '<a href="/authentication">Войти</a>';
+                getSavedTable(null, (dataINFO) => {
+                    const tableData = JSON.parse(dataINFO.data);
+                    tableFromObject(tableData);
+                }, () => {
+                    createTable(DEFAULT_ROWS, DEFAULT_COLS)
+                });
+            }
+        },
+        () => {
+            createTable(DEFAULT_ROWS, DEFAULT_COLS);
         }
-    }
+    );
 }
 
 //Сохраняем перед закрытием
