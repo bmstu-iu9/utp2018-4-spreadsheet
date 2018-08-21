@@ -7,7 +7,7 @@
  */
 const parseCookies = (reqCookies) => {
     const cookies = {};
-    
+
     if (reqCookies) {
         reqCookies.replace(' ', '').split(';').forEach((cookie) => {
             const kv = cookie.split('=');
@@ -27,13 +27,17 @@ const sendXMLHttpRequest = (host, port, adress, method, callback, jsonErrorCallb
     xhr.open(method, 'http://' + host + ':' + port + adress);
     xhr.send();
     xhr.onload = () => {
-        let dataJSON = null;
-        try {
-            dataJSON = JSON.parse(xhr.responseText);
-        } catch {
-            return jsonErrorCallback();
-        }
+        if (xhr.status === 200 && xhr.readyState === 4) {
+            let dataJSON = null;
+            try {
+                dataJSON = JSON.parse(xhr.responseText);
+            } catch {
+                return jsonErrorCallback();
+            }
 
-        callback(dataJSON);
+            callback(dataJSON);
+        } else {
+            callback();
+        }
     };
 }

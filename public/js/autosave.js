@@ -90,8 +90,9 @@ const saveData = (postData) => {
 
 const new_table = (mode, okCallback) => {
     const cookie = parseCookies(document.cookie);
-    const newTitle = prompt(mode ? 'Title is already used' : 'Enter file title: ', 'new_title');
+    const newTitle = prompt(mode === 1 ? 'Title is already used' : 'Enter file title: ', 'new_title');
     if (!newTitle) return;
+
     ajax_save({
         title: newTitle,
         status: cookie['status'],
@@ -103,7 +104,7 @@ const new_table = (mode, okCallback) => {
         tableTitle = newTitle;
         okCallback(saveINFO);
     }, (error) => {
-        new_table(1);
+        new_table(1, okCallback);
     });
 }
 

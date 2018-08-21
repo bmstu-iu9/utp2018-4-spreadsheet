@@ -46,6 +46,8 @@ const start = (req, res) => {
                         } //повтор
                     }
                 );
+
+                return;
             }
 
             if (authINFO.status) {

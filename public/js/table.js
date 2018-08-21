@@ -1348,6 +1348,7 @@ const removeTable = () => {
  * @param {Number} cols 
  */
 const createTable = (rows, cols) => {
+    document.getElementsByClassName('null-div')[0].innerHTML = `<table><tr><td></td></tr></table>`;
     innerTable = new Table(cols, rows);
     addCells(rows, cols);
 }
@@ -1418,7 +1419,10 @@ const loadTable = () => {
 
                 const newButton = document.createElement('button');
                 newButton.onclick = () => new_table(0, () => {
-                    createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                    ajax_remove_guest(() => {
+                        removeTable();
+                        createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                    }, (error) => console.log(error));
                 });
                 newButton.innerText = 'New';
                 document.getElementById('titles').appendChild(newButton);

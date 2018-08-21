@@ -68,7 +68,7 @@ const server = http.createServer((req, res) => {
     }).listen(CONFIG.port_main, () =>
         logs.log('\x1b[35mMain Application\x1b[0m successfully \x1b[32mstarted\x1b[0m at ' + CONFIG.port_main))
     .on('close', () => {
-        logs.log(`\x1b[35mMain Application\x1b[0m successfully \x1b[32mstoped\x1b[0m at ${CONFIG.port}`);
+        logs.log(`\x1b[35mMain Application\x1b[0m successfully \x1b[32mstoped\x1b[0m at ${CONFIG.port_main}`);
     });
 
 process.on('SIGINT', () => server.close());
