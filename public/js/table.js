@@ -1139,6 +1139,7 @@ const initCell = (columnNumber, rowNumber) => {
     const newInput = document.getElementById(id);
     const newCell = document.getElementById('Cell_' + id);
     newInput.editMode = false;
+    newInput.hasOldValue = false;
 
     addDecor(columnNumber, rowNumber - 1);
     newCell.colNum = columnNumber;
@@ -1191,8 +1192,11 @@ const initCell = (columnNumber, rowNumber) => {
     }(newInput);
 
     newCell.onmousedown = (e) => {
-        if (!newInput.editMode) {
 
+        if (!newInput.editMode) {
+          e.preventDefault();
+          newInput.selectionStart = newInput.selectionEnd = 0;
+          newInput.focus();
           isMultiHL = true;
 
           const bleachCells = () => {
@@ -1293,6 +1297,8 @@ const initCell = (columnNumber, rowNumber) => {
               oldInput.style.textAlign = 'right';
               oldInput.editMode = false;
               oldInput.style.cursor = 'cell';
+
+              newInput.hasOldValue = true;
           }
 
           focusID = newInput.id;
@@ -1331,8 +1337,10 @@ const initCell = (columnNumber, rowNumber) => {
 
     newCell.ondblclick = () => {
         newInput.editMode = true;
+        newInput.focus();
 
         newInput.style.cursor = 'text';
+        newInput.selectionStart = newInput.selectionEnd = newInput.value.length;
         document.getElementById('main_top_' + id).style.backgroundColor = '#0080ff';
         document.getElementById('main_left_' + id).style.backgroundColor = '#0080ff';
         document.getElementById('main_right_' + id).style.backgroundColor = '#0080ff';
@@ -1359,10 +1367,13 @@ const initCell = (columnNumber, rowNumber) => {
               e.preventDefault();
               dy = 1;
           } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
               dy = (rowNumber ? -1 : 0);
           } else if (e.key === 'ArrowLeft') {
+              e.preventDefault();
               dx = (columnNumber ? -1 : 0);
           } else if (e.key === 'ArrowRight') {
+              e.preventDefault();
               dx = 1;
           } else if (e.key === 'Tab' && e.shiftKey) {
               e.preventDefault();
@@ -1370,14 +1381,19 @@ const initCell = (columnNumber, rowNumber) => {
           } else if (e.key === 'Tab') {
               e.preventDefault();
               dx = 1;
+          } else if ((newInput.hasOldValue) && (!e.shiftKey)) {
+              newInput.value = '';
+              newInput.hasOldValue = false;
           }
         }
 
-        const low_cell = document.getElementById('Cell_' + currentLet[columnNumber + dx] + (rowNumber + dy))
-        const low_input = document.getElementById(currentLet[columnNumber + dx] + (rowNumber + dy))
-        low_cell.dispatchEvent(new Event('mousedown', { keyCode: 13 }));
-        document.dispatchEvent(new Event('mouseup'));
-        low_input.focus();
+        if ((dx !== 0) || (dy !== 0)) {
+          const low_cell = document.getElementById('Cell_' + currentLet[columnNumber + dx] + (rowNumber + dy));
+          const low_input = document.getElementById(currentLet[columnNumber + dx] + (rowNumber + dy));
+          low_cell.dispatchEvent(new Event('mousedown', { keyCode: 13 }));
+          document.dispatchEvent(new Event('mouseup'));
+          low_input.focus();
+        }
     });
 }
 
