@@ -2,7 +2,7 @@
   width: 97%;
   float: left;
   overflow: auto;
-  height: 88vh;
+  height: 97%;
 }
 
 .scroll-table td {
@@ -10,13 +10,6 @@
   border: 1px solid #000;
   cursor: cell;
   outline-offset: -1px;
-}
-
-.left-div{
-  overflow: hidden;
-  width: 3%;
-  height: 88vh;
-  float: left;
 }
 
 .up-div{
@@ -30,7 +23,7 @@
 }
 
 .up-div td{
-   height: 18px;
+   height: 17px;
    position: relative;
    background-color: #eee;
    padding: 1px 3px;
@@ -44,6 +37,14 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+}
+
+.left-div{
+  overflow: hidden;
+  width: 3%;
+  height: 96%;
+  float: left;
+  //border: 1px solid #555;
 }
 
 .left-div table td{
@@ -69,31 +70,36 @@
 .null-div td {
   background-color: #eee;
   border: 1px solid #555;
-  height: 20px;
+  height: 23px;
   width: 100px;
 }
 
 .table{
+    background-color: #fff;
     margin-left: 20px;
+    height: 67vh;
 }
 
-input {
+textarea {
     border: none;
     cursor: cell;
     background-color: #fff;
-    color: #000;
-    width: 100px;
-    height: 16px;
+    width: 104px;
+    height: 20px;
+    overflow: hidden;
+    resize: none;
     font-size: 14px;
-    padding: 2px;
+    padding: 5px;
+    wrap: none;
+    vertical-align: top;
 }
 
-input:focus {
+textarea:focus {
     outline: none;
 }
 
-input:not(:focus) {
-    text-align: right;
+textarea:not(:focus) {
+    text-align: left;
 }
 
 table {
@@ -129,4 +135,3 @@ td {
     top: 21px;
     left: 0px;
 }
-

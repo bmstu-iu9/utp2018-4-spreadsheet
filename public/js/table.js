@@ -112,7 +112,7 @@ const addExpansion = (letter, j) => {
           mainCell.style.padding = '1px 3px';
           mainCell.isZeroPad = false;
           movableLine.style.cursor = 'ew-resize';
-          goExpansion(-6, -6, 2, 1);
+          goExpansion(-6, -6, 2, 3);
         }
       }
 
@@ -212,7 +212,7 @@ const addVerticalExpansion = (i) => {
           mainCell.style.padding = '1px 3px';
           mainCell.isZeroPad = false;
           movableLine.style.cursor = 'ns-resize';
-          goExpansion(-2, -6, 2, 1);
+          goExpansion(-1, -5, 2, 3);
         }
       }
 
@@ -252,7 +252,7 @@ const initCell = (columnNumber, rowNumber) => {
 
         focusID = newInput.id;
         newInput.style.textAlign = 'left';
-        newCell.style.outline = '3px solid #6bc961' 
+        newCell.style.outline = '3px solid #6bc961'
     }
 
     //При нажатии на Enter спускаемся вниз
@@ -293,7 +293,7 @@ const addCells = function(rows, cols){
         for (let j = 0; j < ROWS; j++) {
 
             const cell = mainTable.rows[j].insertCell(-1);
-            cell.innerHTML = "<input id = '"+ letter + (j + 1) +"'/>";
+            cell.innerHTML = cell.innerHTML = "<textarea id = '"+ letter + (j + 1) +"' class = 'cell_input_area'/>";
             cell.id = 'Cell_' + letter + (j + 1);
             initCell(currentLet.length - 1, j + 1);
 
@@ -342,7 +342,7 @@ const addCells = function(rows, cols){
             const letter = currentLet[j];
 
             const new_cell = row.insertCell(-1);
-            new_cell.innerHTML = "<input id = '"+ letter + (i + 1) +"'/>";
+            new_cell.innerHTML = "<textarea id = '"+ letter + (i + 1) +"' class = 'cell_input_area'/>";
             new_cell.id = 'Cell_' + letter + (i + 1);
             initCell(j, i + 1);
 
@@ -377,3 +377,5 @@ mainDiv.onscroll = function() {
     addCells(0, 5);
   }
 }
+
+// KHOPO4KU & DESIGH

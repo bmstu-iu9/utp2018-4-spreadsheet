@@ -587,3 +587,7 @@ a#account:focus:after{
 color: #757575;
 }
 
+.table{
+    margin-left: 20px;
+    height: 60vh;
+}
