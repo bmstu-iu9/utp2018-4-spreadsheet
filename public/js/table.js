@@ -211,6 +211,19 @@ const convCoord = (str) => {
     return { x: first, y: second };
 }
 
+function colName(n) {
+    let ordA = 'A'.charCodeAt(0);
+    let ordZ = 'Z'.charCodeAt(0);
+    let len = ordZ - ordA + 1;
+
+    let s = "";
+    while (n >= 0) {
+        s = String.fromCharCode(n % len + ordA) + s;
+        n = Math.floor(n / len) - 1;
+    }
+    return s;
+}
+
 function transform(str) {
     try {
         str = str.toUpperCase();
@@ -230,7 +243,6 @@ function transform(str) {
         }
         return res + '}';
     } catch (e) {
-        console.log(e + 'kek')
         return str;
     }
 }
@@ -262,8 +274,8 @@ function build(str, x, y) {
             formula += str.substring(pt, old_pt);
         }
         formula += '`;}'
-        console.log(formula)
-        return eval(formula)
+        console.log(formula);
+        return eval(formula);
     }
 }
 
@@ -1801,19 +1813,6 @@ function initContextMenu() {
     clickListener();
     keyupListener();
     resizeListener();
-}
-
-function colName(n) {
-    let ordA = 'A'.charCodeAt(0);
-    let ordZ = 'Z'.charCodeAt(0);
-    let len = ordZ - ordA + 1;
-
-    let s = "";
-    while (n >= 0) {
-        s = String.fromCharCode(n % len + ordA) + s;
-        n = Math.floor(n / len) - 1;
-    }
-    return s;
 }
 
 const convNumtoId = (x, y) => {
