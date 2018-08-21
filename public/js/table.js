@@ -414,7 +414,7 @@ class Table {
             this.setCeil(x, y, this.copied(x, y));
     }
 
-    erase(x, y){
+    erase(x, y) {
         this.copied = build(this.field[x][y].realText, x, y);
         this.setCeil(x, y, '')
     }
