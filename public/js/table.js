@@ -1138,6 +1138,7 @@ const initCell = (columnNumber, rowNumber) => {
     const id = currentLet[columnNumber] + rowNumber;
     const newInput = document.getElementById(id);
     const newCell = document.getElementById('Cell_' + id);
+    newInput.editMode = false;
 
     addDecor(columnNumber, rowNumber - 1);
     newCell.colNum = columnNumber;
@@ -1163,6 +1164,12 @@ const initCell = (columnNumber, rowNumber) => {
             if (event.key == 'Escape') {
                 console.log(elem.value);
                 elem.value = '';
+                elem.editMode = false;
+                elem.style.cursor = 'cell';
+                document.getElementById('main_top_' + elem.id).style.backgroundColor = '#6bc961';
+                document.getElementById('main_left_' + elem.id).style.backgroundColor = '#6bc961';
+                document.getElementById('main_right_' + elem.id).style.backgroundColor = '#6bc961';
+                document.getElementById('main_bottom_' + elem.id).style.backgroundColor = '#6bc961';
             }
         }
     }(newInput))
@@ -1184,131 +1191,136 @@ const initCell = (columnNumber, rowNumber) => {
     }(newInput);
 
     newCell.onmousedown = (e) => {
-        isMultiHL = true;
+        if (!newInput.editMode) {
 
-        const bleachCells = () => {
-            while (grayCells.length !== 0) {
-                const obj = grayCells.pop();
-                const cell = obj.cell;
-                const upCell = upTable.rows[0].cells[cell.colNum];
-                const leftCell = leftTable.rows[cell.rowNum].cells[0];
+          isMultiHL = true;
 
-                cell.style.backgroundColor = 'transparent';
-                document.getElementById(obj.id).style.backgroundColor = 'transparent';
-                upCell.style.backgroundColor = '#eee';
-                document.getElementById('up_' + cell.colNum).style.backgroundColor = 'transparent';
-                leftCell.style.backgroundColor = '#eee';
-                document.getElementById('left_' + (cell.rowNum + 1)).style.backgroundColor = 'transparent';
-            }
+          const bleachCells = () => {
+              while (grayCells.length !== 0) {
+                  const obj = grayCells.pop();
+                  const cell = obj.cell;
+                  const upCell = upTable.rows[0].cells[cell.colNum];
+                  const leftCell = leftTable.rows[cell.rowNum].cells[0];
 
-            while (borderCells.length !== 0) {
-                const id = borderCells.pop();
+                  cell.style.backgroundColor = 'transparent';
+                  document.getElementById(obj.id).style.backgroundColor = 'transparent';
+                  upCell.style.backgroundColor = '#eee';
+                  document.getElementById('up_' + cell.colNum).style.backgroundColor = 'transparent';
+                  leftCell.style.backgroundColor = '#eee';
+                  document.getElementById('left_' + (cell.rowNum + 1)).style.backgroundColor = 'transparent';
+              }
 
-                document.getElementById('main_top_' + id).style.backgroundColor = 'transparent';
-                document.getElementById('main_left_' + id).style.backgroundColor = 'transparent';
-                document.getElementById('main_right_' + id).style.backgroundColor = 'transparent';
-                document.getElementById('main_bottom_' + id).style.backgroundColor = 'transparent';
-            }
+              while (borderCells.length !== 0) {
+                  const id = borderCells.pop();
+
+                  document.getElementById('main_top_' + id).style.backgroundColor = 'transparent';
+                  document.getElementById('main_left_' + id).style.backgroundColor = 'transparent';
+                  document.getElementById('main_right_' + id).style.backgroundColor = 'transparent';
+                  document.getElementById('main_bottom_' + id).style.backgroundColor = 'transparent';
+              }
+          }
+
+          const paintCells = () => {
+              const rowFlag = newCell.rowNum > curCell.rowNum;
+              const colFlag = newCell.colNum > curCell.colNum;
+              const start_i = (rowFlag)? curCell.rowNum : newCell.rowNum;
+              const start_j = (colFlag)? curCell.colNum : newCell.colNum;
+              const end_i = (rowFlag)? newCell.rowNum : curCell.rowNum;
+              const end_j = (colFlag)? newCell.colNum : curCell.colNum;
+
+              for (let i = start_i; i <= end_i; i++) {
+                  for (let j = start_j; j<= end_j; j++) {
+                      const id = currentLet[j] + (i + 1);
+
+                      if ((i !== newCell.rowNum) || (j !== newCell.colNum)) {
+                          grayCells.push({cell : mainTable.rows[i].cells[j], id : id});
+                          mainTable.rows[i].cells[j].style.backgroundColor = '#c3c3c3';
+                          document.getElementById(id).style.backgroundColor = '#c3c3c3';
+                      }
+
+                      if (i === start_i) {
+                          paintBorders(currentLet[j] + (i + 1), true, false, false, false);
+                          borderCells.push(id);
+                      }
+                      if (j === start_j) {
+                          paintBorders(currentLet[j] + (i + 1), false, true, false, false);
+                          borderCells.push(id);
+                      }
+                      if (j === end_j) {
+                          paintBorders(currentLet[j] + (i + 1), false, false, true, false);
+                          borderCells.push(id);
+                      }
+                      if (i === end_i) {
+                          paintBorders(currentLet[j] + (i + 1), false, false, false, true);
+                          borderCells.push(id);
+                      }
+
+                      upTable.rows[0].cells[j].style.backgroundColor = '#c3c3c3';
+                      document.getElementById('up_' + j).style.backgroundColor = '#6bc961';
+                      leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
+                      document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
+                  }
+              }
+          }
+
+          const paintBorders = (id, top, left, right, bottom) => {
+              if (top) {
+                document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
+              }
+              if (left) {
+                document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
+              }
+              if (right) {
+                document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
+              }
+              if (bottom) {
+                document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
+              }
+          }
+
+          bleachCells();
+
+          if (focusID) {
+              const oldInput = document.getElementById(focusID);
+              const oldCell = document.getElementById('Cell_' + focusID);
+              const upCell = upTable.rows[0].cells[oldCell.colNum];
+              const leftCell = leftTable.rows[oldCell.rowNum].cells[0];
+
+              upCell.style.backgroundColor = '#eee';
+              document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
+              leftCell.style.backgroundColor = '#eee';
+              document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
+              oldInput.style.textAlign = 'right';
+              oldInput.editMode = false;
+              oldInput.style.cursor = 'cell';
+          }
+
+          focusID = newInput.id;
+          const upCell = upTable.rows[0].cells[columnNumber];
+          const leftCell = leftTable.rows[rowNumber - 1].cells[0];
+
+          upCell.style.backgroundColor = '#c3c3c3';
+          document.getElementById('up_' + columnNumber).style.backgroundColor = '#6bc961';
+          leftCell.style.backgroundColor = '#c3c3c3';
+          document.getElementById('left_' + rowNumber).style.backgroundColor = '#6bc961';
+          newInput.style.textAlign = 'left';
+          paintBorders(id, true, true, true, true);
+          borderCells.push(id);
+
+          document.onmousemove = (e) => {
+              if (curCell !== null) {
+                  bleachCells();
+                  paintCells();
+              }
+          }
+
+          document.onmouseup = () => {
+              isMultiHL = false;
+              curCell = null;
+              document.onmousemove = document.onmouseup = null;
+          }
+
         }
-
-        const paintCells = () => {
-            const rowFlag = newCell.rowNum > curCell.rowNum;
-            const colFlag = newCell.colNum > curCell.colNum;
-            const start_i = (rowFlag)? curCell.rowNum : newCell.rowNum;
-            const start_j = (colFlag)? curCell.colNum : newCell.colNum;
-            const end_i = (rowFlag)? newCell.rowNum : curCell.rowNum;
-            const end_j = (colFlag)? newCell.colNum : curCell.colNum;
-
-            for (let i = start_i; i <= end_i; i++) {
-                for (let j = start_j; j<= end_j; j++) {
-                    const id = currentLet[j] + (i + 1);
-
-                    if ((i !== newCell.rowNum) || (j !== newCell.colNum)) {
-                        grayCells.push({cell : mainTable.rows[i].cells[j], id : id});
-                        mainTable.rows[i].cells[j].style.backgroundColor = '#c3c3c3';
-                        document.getElementById(id).style.backgroundColor = '#c3c3c3';
-                    }
-
-                    if (i === start_i) {
-                        paintBorders(currentLet[j] + (i + 1), true, false, false, false);
-                        borderCells.push(id);
-                    }
-                    if (j === start_j) {
-                        paintBorders(currentLet[j] + (i + 1), false, true, false, false);
-                        borderCells.push(id);
-                    }
-                    if (j === end_j) {
-                        paintBorders(currentLet[j] + (i + 1), false, false, true, false);
-                        borderCells.push(id);
-                    }
-                    if (i === end_i) {
-                        paintBorders(currentLet[j] + (i + 1), false, false, false, true);
-                        borderCells.push(id);
-                    }
-
-                    upTable.rows[0].cells[j].style.backgroundColor = '#c3c3c3';
-                    document.getElementById('up_' + j).style.backgroundColor = '#6bc961';
-                    leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
-                    document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
-                }
-            }
-        }
-
-        const paintBorders = (id, top, left, right, bottom) => {
-            if (top) {
-              document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
-            }
-            if (left) {
-              document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
-            }
-            if (right) {
-              document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
-            }
-            if (bottom) {
-              document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
-            }
-        }
-
-        bleachCells();
-
-        if (focusID) {
-            const oldInput = document.getElementById(focusID);
-            const oldCell = document.getElementById('Cell_' + focusID);
-            const upCell = upTable.rows[0].cells[oldCell.colNum];
-            const leftCell = leftTable.rows[oldCell.rowNum].cells[0];
-
-            upCell.style.backgroundColor = '#eee';
-            document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
-            leftCell.style.backgroundColor = '#eee';
-            document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
-            oldInput.style.textAlign = 'right';
-        }
-
-        focusID = newInput.id;
-        const upCell = upTable.rows[0].cells[columnNumber];
-        const leftCell = leftTable.rows[rowNumber - 1].cells[0];
-
-        upCell.style.backgroundColor = '#c3c3c3';
-        document.getElementById('up_' + columnNumber).style.backgroundColor = '#6bc961';
-        leftCell.style.backgroundColor = '#c3c3c3';
-        document.getElementById('left_' + rowNumber).style.backgroundColor = '#6bc961';
-        newInput.style.textAlign = 'left';
-        paintBorders(id, true, true, true, true);
-        borderCells.push(id);
-
-        document.onmousemove = (e) => {
-            if (curCell !== null) {
-                bleachCells();
-                paintCells();
-            }
-        }
-
-        document.onmouseup = () => {
-            isMultiHL = false;
-            curCell = null;
-            document.onmousemove = document.onmouseup = null;
-        }
-
     }
 
     newCell.onmouseenter = (e) => {
@@ -1317,27 +1329,54 @@ const initCell = (columnNumber, rowNumber) => {
         }
     }
 
-    //При нажатии на Enter спускаемся вниз
+    newCell.ondblclick = () => {
+        newInput.editMode = true;
+
+        newInput.style.cursor = 'text';
+        document.getElementById('main_top_' + id).style.backgroundColor = '#0080ff';
+        document.getElementById('main_left_' + id).style.backgroundColor = '#0080ff';
+        document.getElementById('main_right_' + id).style.backgroundColor = '#0080ff';
+        document.getElementById('main_bottom_' + id).style.backgroundColor = '#0080ff';
+    }
+
     newInput.addEventListener('keydown', (e) => {
         let dx = 0;
         let dy = 0;
 
-        if (e.key === 'Enter' || e.key === 'ArrowDown') { //Enter and down button
-            dy = 1;
-        } else if (e.key === 'ArrowUp') { //up
-            dy = (rowNumber ? -1 : 0);
-        } else if (e.key === 'ArrowLeft') { //left
-            dx = (columnNumber ? -1 : 0);
-        } else if (e.key === 'ArrowRight') { //right
-            dx = 1;
-        } else if (e.key === 'Tab') {
-            e.preventDefault();
-            dx = 1;
+        if (newInput.editMode) {
+          if (e.key === 'Enter') {
+              e.preventDefault();
+              dy = 1;
+          } else if (e.key === 'Tab' && e.shiftKey) {
+              e.preventDefault();
+              dx = (columnNumber ? -1 : 0);
+          } else if (e.key === 'Tab') {
+              e.preventDefault();
+              dx = 1;
+          }
+        } else {
+          if (e.key === 'Enter' || e.key === 'ArrowDown') {
+              e.preventDefault();
+              dy = 1;
+          } else if (e.key === 'ArrowUp') {
+              dy = (rowNumber ? -1 : 0);
+          } else if (e.key === 'ArrowLeft') {
+              dx = (columnNumber ? -1 : 0);
+          } else if (e.key === 'ArrowRight') {
+              dx = 1;
+          } else if (e.key === 'Tab' && e.shiftKey) {
+              e.preventDefault();
+              dx = (columnNumber ? -1 : 0);
+          } else if (e.key === 'Tab') {
+              e.preventDefault();
+              dx = 1;
+          }
         }
 
         const low_cell = document.getElementById('Cell_' + currentLet[columnNumber + dx] + (rowNumber + dy))
         const low_input = document.getElementById(currentLet[columnNumber + dx] + (rowNumber + dy))
         low_cell.dispatchEvent(new Event('mousedown', { keyCode: 13 }));
+        document.dispatchEvent(new Event('mouseup'));
         low_input.focus();
     });
 }
