@@ -22,17 +22,25 @@ const ERROR_MESSAGES = {
     502 : 'Invalid email',
     503 : 'Title is already used',
     504 : 'The save server has a rest :)',
-    505 : "TOKEN_UNDEFINED",
+    505 : 'TOKEN_UNDEFINED',
     
-    601 : "PERMISSION_DENIED",
-    602 : "SAVE_SERVER_ERROR",
-    603 : "AUTH_SERVER_ERROR", 
+    601 : 'PERMISSION_DENIED',
+    602 : 'SAVE_SERVER_ERROR',
+    603 : 'AUTH_SERVER_ERROR', 
+
+    701 : 'JSON parse error',
+    702 : 'XMLHttpRequest failed',
 };
 
 const ERRORS = {
+    NOT_UNIQUE_ERROR: 503,
+
     PERMISSION_DENIED : 601,
     SAVE_SERVER_ERROR : 602,
     AUTH_SERVER_ERROR : 603,
+
+    JSON_PARSE_ERROR : 701,
+    XMLHTTP_FAILED : 702,
 }
 
 const USER_STATUS = {

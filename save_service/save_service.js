@@ -83,6 +83,11 @@ const saveGuestHandle = (body, response) => {
  * @param {http.ServerResponse} response 
  */
 const saveUserHandle = (body, response) => {
+    if (!body.title) {
+        logs.log(`Save USER \x1b[31mFAILED\x1b[0m: Title is empty.`);
+        return returnError(CONFIG.TOKEN_UNDEFINED, response);
+    }
+
     const currDate = new Date();
     saveClient.run(`REPLACE INTO saves_user(Title, Email, Data, SaveTime) VALUES(?, ?, ?, ?)`, [body.title, body.email, body.data, Math.round(currDate.getTime() / 1000)], (err) => {
         if (err) {

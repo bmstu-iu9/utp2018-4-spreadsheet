@@ -27,6 +27,13 @@ const logout = (req, res) => {
                 'Set-Cookie': 'status=' + CONFIG.GUEST + ';expires=' + new Date(new Date().getTime() + 31556952000).toUTCString()
             });
             return res.end();
+        },
+        (error) => {
+            logs.log(`\x1b[34mLOGOUT\x1b[0m \x1b[31mFAILED\x1b[0m: SessionID: ${cookies['token']}, Error: ${ERROR_MESSAGES[error]}`);
+            res.render('error.html', {
+                "code": 500,
+                "message": '500 Internal server error!'
+            });
         });
 }
 

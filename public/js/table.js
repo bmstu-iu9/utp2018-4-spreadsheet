@@ -1378,20 +1378,17 @@ const tableFromObject = (tableData) => {
  * @param {Function} okCallback 
  * @param {Function} errCallback 
  */
-const getSavedTable = (title, okCallback, errCallback) => {
+const getSavedTable = (title, okCallback, errorCallback) => {
     let adress = title ? '/load_user_data?status=' + USER_STATUS.USER + '&title=' + title :
         '/load_user_data?status=' + USER_STATUS.GUEST;
 
-    sendXMLHttpRequest(config.host_main, config.port_main, adress, 'GET',
-        (dataJSON) => {
-            if (dataJSON.error) {
-                errCallback(dataJSON.error);
-            } else {
-                okCallback(dataJSON);
+    sendXMLHttpRequest(config.host_main, config.port_main, adress, 'GET', null,
+        (dataJSON, error) => {
+            if (dataJSON.error || error) {
+                return errorCallback(error ? error : dataJSON.error);
             }
-        },
-        () => {
-            console.error('getSavedTable(): JSON parse error');
+
+            okCallback(dataJSON);
         });
 }
 
@@ -1399,13 +1396,14 @@ const getSavedTable = (title, okCallback, errCallback) => {
  * Загрузка таблицы при открытии страницы
  */
 const loadTable = () => {
-    sendXMLHttpRequest(config.host_main, config.port_main, '/start', 'GET',
-        (data) => {
-            if (data.error === ERRORS.AUTH_SERVER_ERROR) {
-                console.log(ERROR_MESSAGES[data.error])
+    sendXMLHttpRequest(config.host_main, config.port_main, '/start', 'GET', null,
+        (data, error) => {
+            if (data.error === ERRORS.AUTH_SERVER_ERROR || error) {
+                console.log(ERROR_MESSAGES[error ? error : data.error])
 
-                document.getElementById('userINFO').textContent = ERROR_MESSAGES[data.error];
+                document.getElementById('userINFO').textContent = ERROR_MESSAGES[error ? error : data.error];
                 createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                alert('Данные не будут сохраняться');
                 return;
             }
 
@@ -1418,12 +1416,15 @@ const loadTable = () => {
                 document.getElementById('log').innerHTML = '<a href="/logout">Выйти</a>';
 
                 const newButton = document.createElement('button');
-                newButton.onclick = () => new_table(0, () => {
-                    ajax_remove_guest(() => {
+                newButton.onclick = () => new_table(0,
+                    () => {
                         removeTable();
                         createTable(DEFAULT_ROWS, DEFAULT_COLS);
-                    }, (error) => console.log(error));
-                });
+                    },
+                    (error) => {
+                        alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
+                        console.log(ERROR_MESSAGES[error]);
+                    });
                 newButton.innerText = 'New';
                 document.getElementById('titles').appendChild(newButton);
 
@@ -1431,18 +1432,26 @@ const loadTable = () => {
                     data.titles.forEach((title) => {
                         const button = document.createElement('button');
                         button.onclick = () => getSavedTable(title, (dataINFO) => {
-                            ajax_remove_guest(() => {
-                                removeTable();
+                                ajax_remove_guest(() => {
+                                    removeTable();
 
-                                const tableData = JSON.parse(dataINFO.data);
-                                tableFromObject(tableData);
-                                tableTitle = title;
-                            }, (error) => console.log(error));
-                        }, (error) => console.log(error));
+                                    const tableData = JSON.parse(dataINFO.data);
+                                    tableFromObject(tableData);
+                                    tableTitle = title;
+                                }, (error) => {
+                                    alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
+                                    console.log(ERROR_MESSAGES[error]);
+                                });
+                            },
+                            (error) => {
+                                alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
+                                console.log(ERROR_MESSAGES[error]);
+                            });
                         button.innerText = title;
                         document.getElementById('titles').appendChild(button);
                     })
                 } else {
+                    alert(`Error: ${ERROR_MESSAGES[data.error]}. Retry later.`);
                     console.log(ERROR_MESSAGES[data.error]);
                 }
 
@@ -1450,7 +1459,11 @@ const loadTable = () => {
                     const tableData = JSON.parse(dataINFO.data);
                     tableFromObject(tableData);
                     const newButton = document.createElement('button');
-                    newButton.onclick = () => stay(0);
+                    newButton.onclick = () => stay(0, null,
+                        (error) => {
+                            alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
+                            console.log(ERROR_MESSAGES[error]);
+                        });
                     newButton.innerText = 'Stay';
                     document.getElementById('titles').appendChild(newButton);
                 }, () => {
@@ -1483,8 +1496,6 @@ window.onbeforeunload = function () {
         '&data=' + JSON.stringify(Object.assign({}, {
             'size': [ROWS, COLS]
         }, innerTable.activeCeils)));
-
-    //ajax_save({session: parseCookies(document.cookie)['token'], data: JSON.stringify(prepareText(innerTable.collectData()))});
 }
 
 document.onkeydown = (e) => {

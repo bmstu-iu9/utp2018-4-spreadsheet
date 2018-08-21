@@ -71,7 +71,7 @@ const loadUserData = (req, res) => {
 
         (err) => {
             logs.log('\x1b[34mLOAD USER DATA\x1b[0m \x1b[31mFAILED\x1b[0m:' +
-                `SessionID ${cookies['token']}, Title: ${parsedURL.query['title']}, Email: ${authINFO.email}, Server Error: ${err.message}`);
+                `SessionID ${cookies['token']},  Server Error: ${err.message}`);
             return returnError(ERRORS.SAVE_SERVER_ERROR, res);
         });
 }

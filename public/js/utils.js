@@ -22,22 +22,38 @@ const parseCookies = (reqCookies) => {
 /**
  * Send XMLHttpRequest
  */
-const sendXMLHttpRequest = (host, port, adress, method, callback, jsonErrorCallback) => {
+const sendXMLHttpRequest = (host, port, adress, method, data, callback) => {
     const xhr = new XMLHttpRequest();
     xhr.open(method, 'http://' + host + ':' + port + adress);
-    xhr.send();
+    if (method === 'POST') {
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    }
+    xhr.send(method === 'POST' ? data : null);
     xhr.onload = () => {
         if (xhr.status === 200 && xhr.readyState === 4) {
             let dataJSON = null;
             try {
                 dataJSON = JSON.parse(xhr.responseText);
             } catch {
-                return jsonErrorCallback();
+                return callback(null, ERRORS.JSON_PARSE_ERROR);
             }
 
-            callback(dataJSON);
+            callback(dataJSON, null);
         } else {
-            callback();
+            callback(null, ERRORS.XMLHTTP_FAILED);
         }
     };
+}
+
+function arr2str(buf) {
+    return String.fromCharCode.apply(null, buf);
+}
+
+function str2arr(str) {
+    var buf = new Array(str.length); // 2 bytes for each char
+    for (var i = 0; i < str.length; i++) {
+        buf[i] = str.charCodeAt(i);
+    }
+
+    return buf;
 }
