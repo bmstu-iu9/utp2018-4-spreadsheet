@@ -211,6 +211,74 @@ const convCoord = (str) => {
     return { x: first, y: second };
 }
 
+function colName(n) {
+    let ordA = 'A'.charCodeAt(0);
+    let ordZ = 'Z'.charCodeAt(0);
+    let len = ordZ - ordA + 1;
+
+    let s = "";
+    while (n >= 0) {
+        s = String.fromCharCode(n % len + ordA) + s;
+        n = Math.floor(n / len) - 1;
+    }
+    return s;
+}
+
+function transform(str) {
+    try {
+        str = str.toUpperCase();
+        let res = '${';
+        let coord = convCoord(str);
+        if (str[0] == '$') {
+            res += "'$" + colName(coord.x) + "'";
+        } else {
+            res += 'colName(' + coord.x + ' + delta_x)'
+        }
+        res += ' + '
+        if (str.includes('$') && str.lastIndexOf('$') !== 0) {
+            console.log(res.includes('$'), str.lastIndexOf('$') !== 0)
+            res += "'$' + " + (coord.y + 1);
+        } else {
+            res += '(' + (coord.y + 1) + ' + delta_y) '
+        }
+        return res + '}';
+    } catch (e) {
+        return str;
+    }
+}
+
+function build(str, x, y) {
+
+    if (str === '' || str[0] !== '=') {
+        return (x, y) => str;
+    } else {
+        let formula = `(x, y) =>{
+                        const delta_x = x - ${x};
+                        const delta_y = y - ${y};
+                        return \``
+        let pt = 0;
+        let old_pt = 0;
+        while (pt < str.length) {
+            old_pt = pt;
+            while (pt < str.length && (isAlphabetic(str[pt]) || isNumeric(str[pt]) || str[pt] == '$')) {
+                pt++;
+            }
+
+            formula += transform(str.substring(pt, old_pt));
+
+            old_pt = pt;
+            while (pt < str.length && !(isAlphabetic(str[pt]) || isNumeric(str[pt]) || str[pt] == '$')) {
+                pt++;
+            }
+
+            formula += str.substring(pt, old_pt);
+        }
+        formula += '`;}'
+        console.log(formula);
+        return eval(formula);
+    }
+}
+
 class Table {
 
     constructor(x, y, action_memo = 50) {
@@ -224,6 +292,7 @@ class Table {
         console.log('ALL CREATED');
         this.toUpdate = new Stack();
         this.actions = new ActionStack(action_memo);
+        this.copied = null;
     }
 
     createCeilIfNeed(x, y) {
@@ -346,6 +415,24 @@ class Table {
             this.setCeil(change.x, change.y, change.newText, true);
         }
         return change;
+    }
+
+    copy(x, y) {
+        this.copied = build(this.field[x][y].realText, x, y);
+    }
+
+    paste(x, y) {
+        if (this.copied != null)
+            this.setCeil(x, y, this.copied(x, y));
+    }
+
+    erase(x, y) {
+        this.copied = build(this.field[x][y].realText, x, y);
+        this.setCeil(x, y, '')
+    }
+
+    deleteCopy(x, y) {
+        this.copied = null;
     }
 
 }
@@ -1352,16 +1439,16 @@ const initCell = (columnNumber, rowNumber) => {
         let dy = 0;
 
         if (newInput.editMode) {
-          if (e.key === 'Enter') {
-              e.preventDefault();
-              dy = 1;
-          } else if (e.key === 'Tab' && e.shiftKey) {
-              e.preventDefault();
-              dx = (columnNumber ? -1 : 0);
-          } else if (e.key === 'Tab') {
-              e.preventDefault();
-              dx = 1;
-          }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                dy = 1;
+            } else if (e.key === 'Tab' && e.shiftKey) {
+                e.preventDefault();
+                dx = (columnNumber ? -1 : 0);
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                dx = 1;
+            }
         } else {
           if (e.key === 'Enter' || e.key === 'ArrowDown') {
               e.preventDefault();
@@ -1412,100 +1499,100 @@ const addCells = function (rows, cols) {
 
             for (let j = 0; j < ROWS; j++) {
 
-              const cell = mainTable.rows[j].insertCell(-1);
-              cell.innerHTML = "<textarea id = '"+ letter + (j + 1) +"' class = 'cell_input_area'/>";
-              cell.id = 'Cell_' + letter + (j + 1);
-              initCell(currentLet.length - 1, j + 1);
-              //contextMenuListener(document.getElementById("" + letter + (j + 1)));
+                const cell = mainTable.rows[j].insertCell(-1);
+                cell.innerHTML = "<textarea id = '" + letter + (j + 1) + "' class = 'cell_input_area'/>";
+                cell.id = 'Cell_' + letter + (j + 1);
+                initCell(currentLet.length - 1, j + 1);
+                //contextMenuListener(document.getElementById("" + letter + (j + 1)));
 
-              const curId = letter + (j + 1);
-              const prevId = currentLet[currentLet.length - 2] + (j + 1);
-              const inp = document.getElementById(curId);
-              const preInp = document.getElementById(prevId);
-
-              inp.style.height = preInp.style.height;
-              inp.style.padding = preInp.style.padding;
-              cell.style.padding = document.getElementById('Cell_' + prevId).style.padding;
-
-              cell.onkeydown = function(e) {
-                if (e.ctrlKey && e.keyCode === 67){
-                  e.preventDefault();
-                  tryToSmthToClipboard(cell.firstChild, 'copy');
-                }
-                else if (e.ctrlKey && e.keyCode === 88){
-                  e.preventDefault();
-                  tryToSmthToClipboard(cell.firstChild, 'cut');
-                }
-              };
-            }
-
-        addExpansion(letter, i);
-    }
-  } else {
-
-    if (ROWS === 0){
-      const row = upTable.insertRow(-1);
-
-      for (let j = 0; j <= COLS + cols; j++) {
-
-          currentLet.push(String.fromCharCode.apply(null, letters));
-          updateLetters(letters.length - 1);
-          const letter = currentLet[j];
-
-          const new_cell = row.insertCell(-1);
-          new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
-          new_cell.id = 'Cell_' + letter;
-          addDecorUpDiv(j);
-          addExpansion(letter, j);
-        }
-      }
-
-        for (let i = ROWS; i < ROWS + rows; i++) {
-          const row = mainTable.insertRow(-1);
-          const leftRow = leftTable.insertRow(-1);
-
-          const left_cell = leftRow.insertCell(-1);
-          left_cell.innerHTML = `<div align = "center" id = "${'@' + (i + 1)}" class = "left"> ${i+1} </div>`;
-          left_cell.id = 'Cell_' + (i + 1);
-          addDecorLeftDiv(i);
-          addVerticalExpansion(i);
-
-          for (let j = 0; j <= COLS + cols; j++) {
-
-            if (j > currentLet.length) {
-              currentLet.push(String.fromCharCode.apply(null, letters));
-              updateLetters(letters.length - 1);
-            }
-            const letter = currentLet[j];
-
-            const new_cell = row.insertCell(-1);
-            new_cell.innerHTML = "<textarea id = '"+ letter + (i + 1) +"' class = 'cell_input_area'/>";
-            new_cell.id = 'Cell_' + letter + (i + 1);
-            initCell(j, i + 1);
-
-            new_cell.onkeydown = function(e) {
-              if (e.ctrlKey && e.keyCode === 67){
-                e.preventDefault();
-                tryToSmthToClipboard(new_cell.firstChild, 'copy');
-              }
-              else if (e.ctrlKey && e.keyCode === 88){
-                e.preventDefault();
-                tryToSmthToClipboard(new_cell.firstChild, 'cut');
-              }
-            };
-
-            if (i >= DEFAULT_ROWS) {
-                const curId = letter + (i + 1);
-                const prevId = letter + i;
+                const curId = letter + (j + 1);
+                const prevId = currentLet[currentLet.length - 2] + (j + 1);
                 const inp = document.getElementById(curId);
                 const preInp = document.getElementById(prevId);
 
-                inp.style.width = preInp.style.width;
+                inp.style.height = preInp.style.height;
                 inp.style.padding = preInp.style.padding;
-                new_cell.style.padding = document.getElementById('Cell_' + prevId).style.padding;
+                cell.style.padding = document.getElementById('Cell_' + prevId).style.padding;
+
+                cell.onkeydown = function (e) {
+                    if (e.ctrlKey && e.keyCode === 67) {
+                        e.preventDefault();
+                        tryToSmthToClipboard(cell.firstChild, 'copy');
+                    }
+                    else if (e.ctrlKey && e.keyCode === 88) {
+                        e.preventDefault();
+                        tryToSmthToClipboard(cell.firstChild, 'cut');
+                    }
+                };
             }
-            //contextMenuListener(document.getElementById("" + letter + (i + 1)));
-          }
+
+            addExpansion(letter, i);
+        }
+    } else {
+
+        if (ROWS === 0) {
+            const row = upTable.insertRow(-1);
+
+            for (let j = 0; j <= COLS + cols; j++) {
+
+                currentLet.push(String.fromCharCode.apply(null, letters));
+                updateLetters(letters.length - 1);
+                const letter = currentLet[j];
+
+                const new_cell = row.insertCell(-1);
+                new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
+                new_cell.id = 'Cell_' + letter;
+                addDecorUpDiv(j);
+                addExpansion(letter, j);
+            }
+        }
+
+        for (let i = ROWS; i < ROWS + rows; i++) {
+            const row = mainTable.insertRow(-1);
+            const leftRow = leftTable.insertRow(-1);
+
+            const left_cell = leftRow.insertCell(-1);
+            left_cell.innerHTML = `<div align = "center" id = "${'@' + (i + 1)}" class = "left"> ${i + 1} </div>`;
+            left_cell.id = 'Cell_' + (i + 1);
+            addDecorLeftDiv(i);
+            addVerticalExpansion(i);
+
+            for (let j = 0; j <= COLS + cols; j++) {
+
+                if (j > currentLet.length) {
+                    currentLet.push(String.fromCharCode.apply(null, letters));
+                    updateLetters(letters.length - 1);
+                }
+                const letter = currentLet[j];
+
+                const new_cell = row.insertCell(-1);
+                new_cell.innerHTML = "<textarea id = '" + letter + (i + 1) + "' class = 'cell_input_area'/>";
+                new_cell.id = 'Cell_' + letter + (i + 1);
+                initCell(j, i + 1);
+
+                new_cell.onkeydown = function (e) {
+                    if (e.ctrlKey && e.keyCode === 67) {
+                        e.preventDefault();
+                        tryToSmthToClipboard(new_cell.firstChild, 'copy');
+                    }
+                    else if (e.ctrlKey && e.keyCode === 88) {
+                        e.preventDefault();
+                        tryToSmthToClipboard(new_cell.firstChild, 'cut');
+                    }
+                };
+
+                if (i >= DEFAULT_ROWS) {
+                    const curId = letter + (i + 1);
+                    const prevId = letter + i;
+                    const inp = document.getElementById(curId);
+                    const preInp = document.getElementById(prevId);
+
+                    inp.style.width = preInp.style.width;
+                    inp.style.padding = preInp.style.padding;
+                    new_cell.style.padding = document.getElementById('Cell_' + prevId).style.padding;
+                }
+                //contextMenuListener(document.getElementById("" + letter + (i + 1)));
+            }
         }
     }
 
@@ -1519,7 +1606,7 @@ addCells(DEFAULT_ROWS, DEFAULT_COLS);
 
 initContextMenu();
 
-mainDiv.onscroll = function() {
+mainDiv.onscroll = function () {
     upDiv.scrollLeft = this.scrollLeft;
     leftDiv.scrollTop = this.scrollTop;
 
@@ -1543,41 +1630,41 @@ mainDiv.onscroll = function() {
 }
 
 const clickInsideElement = (e, className) => {
-  let el = e.srcElement || e.target;
+    let el = e.srcElement || e.target;
 
-  if (el.classList.contains(className)) {
-    return el;
-  } else {
-    while (el = el.parentNode) {
-      if (el.classList && el.classList.contains(className)) {
+    if (el.classList.contains(className)) {
         return el;
-      }
+    } else {
+        while (el = el.parentNode) {
+            if (el.classList && el.classList.contains(className)) {
+                return el;
+            }
+        }
     }
-  }
-  return false;
+    return false;
 }
 
 const getPosition = e => {
-  let posX = 0;
-  let posY = 0;
+    let posX = 0;
+    let posY = 0;
 
-  if (!e)
-    e = window.event;
+    if (!e)
+        e = window.event;
 
-  if (e.pageX || e.pageY) {
-    posX = e.pageX;
-    posY = e.pageY;
-  } else if (e.clientX || e.clientY) {
-    posX = e.clientX + document.body.scrollLeft +
-                       document.documentElement.scrollLeft;
-    posY = e.clientY + document.body.scrollTop +
-                       document.documentElement.scrollTop;
-  }
+    if (e.pageX || e.pageY) {
+        posX = e.pageX;
+        posY = e.pageY;
+    } else if (e.clientX || e.clientY) {
+        posX = e.clientX + document.body.scrollLeft +
+            document.documentElement.scrollLeft;
+        posY = e.clientY + document.body.scrollTop +
+            document.documentElement.scrollTop;
+    }
 
-  return {
-    x: posX,
-    y: posY
-  }
+    return {
+        x: posX,
+        y: posY
+    }
 }
 
 const menu = document.getElementById("context-menu");
@@ -1598,41 +1685,41 @@ var clickCoordsY;
 var itemInContext;
 
 const positionMenu = e => {
-  clickCoords = getPosition(e);
-  clickCoordsX = clickCoords.x;
-  clickCoordsY = clickCoords.y;
+    clickCoords = getPosition(e);
+    clickCoordsX = clickCoords.x;
+    clickCoordsY = clickCoords.y;
 
-  menuWidth = menu.offsetWidth + 15;
-  menuHeight = menu.offsetHeight + 15;
+    menuWidth = menu.offsetWidth + 15;
+    menuHeight = menu.offsetHeight + 15;
 
-  windowWidth = window.innerWidth;
-  windowHeight = window.innerHeight;
+    windowWidth = window.innerWidth;
+    windowHeight = window.innerHeight;
 
-  if ((windowWidth - clickCoordsX) < menuWidth) {
-    menu.style.left = windowWidth - menuWidth + "px";
-  } else {
-    menu.style.left = clickCoordsX + "px";
-  }
+    if ((windowWidth - clickCoordsX) < menuWidth) {
+        menu.style.left = windowWidth - menuWidth + "px";
+    } else {
+        menu.style.left = clickCoordsX + "px";
+    }
 
-  if ((windowHeight - clickCoordsY) < menuHeight) {
-    menu.style.top = windowHeight - menuHeight + "px";
-  } else {
-    menu.style.top = clickCoordsY + "px";
-  }
+    if ((windowHeight - clickCoordsY) < menuHeight) {
+        menu.style.top = windowHeight - menuHeight + "px";
+    } else {
+        menu.style.top = clickCoordsY + "px";
+    }
 }
 
 function contextMenuOn() {
-  if (menuState !== 1) {
-    menuState = 1;
-    menu.classList.add("context-menu--active");
-  }
+    if (menuState !== 1) {
+        menuState = 1;
+        menu.classList.add("context-menu--active");
+    }
 }
 
 function contextMenuOff() {
-  if (menuState !== 0) {
-    menuState = 0;
-    menu.classList.remove("context-menu--active");
-  }
+    if (menuState !== 0) {
+        menuState = 0;
+        menu.classList.remove("context-menu--active");
+    }
 }
 
 function triggerPasteEvent(element) {
@@ -1641,121 +1728,107 @@ function triggerPasteEvent(element) {
     element.dispatchEvent(pasteEvent)
 }
 
-function PasteFromClipboard(el)
-{
+function PasteFromClipboard(el) {
     el.focus();
     //var PastedText = el.createTextRange();
     PastedText.execCommand("Paste");
 }
 
 const tryToPasteFromClipboard = cell => {
-  if (navigator.clipboard) {
-    navigator.clipboard.readText()
-      .then(text => {
-        cell.value = text;
-      })
-      .catch(err => {
-        alert('Failed to read clipboard contents: ' + err);
-      });
-  } else {
-    alert("Only for Chromium 66+");
-  }
+    if (navigator.clipboard) {
+        navigator.clipboard.readText()
+            .then(text => {
+                cell.value = text;
+            })
+            .catch(err => {
+                alert('Failed to read clipboard contents: ' + err);
+            });
+    } else {
+        alert("Only for Chromium 66+");
+    }
 }
 
 const tryToSmthToClipboard = (cell, command) => {
-  cell.focus();
-  cell.select();
-  try {
-    document.execCommand(command);
-  } catch (err) {
-      alert("Opa4ki!");
-  }
-  window.getSelection().removeAllRanges();
+    cell.focus();
+    cell.select();
+    try {
+        document.execCommand(command);
+    } catch (err) {
+        alert("Opa4ki!");
+    }
+    window.getSelection().removeAllRanges();
 }
 
 const menuItemListener = link => {
-  //alert("Cell - " + itemInContext.id + ", Action - " + link.getAttribute("data-action"));
-  let cell = itemInContext;
-  let action = link.getAttribute("data-action");
-  switch (action){
-    case 'paste':
-      tryToPasteFromClipboard(cell);
-      break;
-    case 'copy':
-      tryToSmthToClipboard(cell, 'copy');
-      break;
-    case 'cut':
-      tryToSmthToClipboard(cell, 'cut');
-      break;
-    case 'delete':
-      cell.value = null;
+    //alert("Cell - " + itemInContext.id + ", Action - " + link.getAttribute("data-action"));
+    let cell = itemInContext;
+    let action = link.getAttribute("data-action");
+    switch (action) {
+        case 'paste':
+            tryToPasteFromClipboard(cell);
+            break;
+        case 'copy':
+            tryToSmthToClipboard(cell, 'copy');
+            break;
+        case 'cut':
+            tryToSmthToClipboard(cell, 'cut');
+            break;
+        case 'delete':
+            cell.value = null;
     }
-  contextMenuOff();
+    contextMenuOff();
 }
 
 function contextMenuListener() {
-  document.addEventListener("contextmenu", e => {
-    itemInContext = clickInsideElement(e, 'cell_input_area');
+    document.addEventListener("contextmenu", e => {
+        itemInContext = clickInsideElement(e, 'cell_input_area');
 
-    if (itemInContext) {
-      e.preventDefault();
-      contextMenuOn();
-      positionMenu(e);
-    } else {
-      itemInContext = null;
-      contextMenuOff();
-    }
-  });
+        if (itemInContext) {
+            e.preventDefault();
+            contextMenuOn();
+            positionMenu(e);
+        } else {
+            itemInContext = null;
+            contextMenuOff();
+        }
+    });
 }
 
 function clickListener() {
-  document.addEventListener("click", e => {
-    let clickeElIsLink = clickInsideElement(e, 'context-menu_link');
+    document.addEventListener("click", e => {
+        let clickeElIsLink = clickInsideElement(e, 'context-menu_link');
 
-    if (clickeElIsLink) {
-      e.preventDefault();
-      menuItemListener(clickeElIsLink);
-    } else {
-      let button = e.which || e.button;
-      if (button === 1) {
-        contextMenuOff();
-      }
-    }
-  });
+        if (clickeElIsLink) {
+            e.preventDefault();
+            menuItemListener(clickeElIsLink);
+        } else {
+            let button = e.which || e.button;
+            if (button === 1) {
+                contextMenuOff();
+            }
+        }
+    });
 }
 
 function keyupListener() {
-  window.onkeyup = e => {
-    if (e.keyCode === 27) {
-      contextMenuOff();
+    window.onkeyup = e => {
+        if (e.keyCode === 27) {
+            contextMenuOff();
+        }
     }
-  }
 }
 
 function resizeListener() {
-  window.onresize = function(e) {
-    contextMenuOff();
-  };
+    window.onresize = function (e) {
+        contextMenuOff();
+    };
 }
 
-function initContextMenu(){
-  contextMenuListener();
-  clickListener();
-  keyupListener();
-  resizeListener();
-}
-
-function colName(n) {
-    let ordA = 'A'.charCodeAt(0);
-    let ordZ = 'Z'.charCodeAt(0);
-    let len = ordZ - ordA + 1;
-
-    let s = "";
-    while (n >= 0) {
-        s = String.fromCharCode(n % len + ordA) + s;
-        n = Math.floor(n / len) - 1;
-    }
-    return s;
+function initContextMenu() {
+    contextMenuListener();
+    clickListener();
+    keyupListener();
+    resizeListener();
 }
 
 const convNumtoId = (x, y) => {
