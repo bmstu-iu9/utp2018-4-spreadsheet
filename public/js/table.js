@@ -1408,6 +1408,7 @@ const loadTable = () => {
             if (data.error === ERRORS.AUTH_SERVER_ERROR || error) {
                 console.log(ERROR_MESSAGES[error ? error : data.error])
 
+                setColorScheme(USER_STATUS.GUEST);
                 document.getElementById('username').textContent = ERROR_MESSAGES[error ? error : data.error];
                 createTable(DEFAULT_ROWS, DEFAULT_COLS);
                 alert('Данные не будут сохраняться');
@@ -1415,6 +1416,7 @@ const loadTable = () => {
             }
 
             if (data.status === 'new_guest') {
+                setColorScheme(USER_STATUS.GUEST);
                 document.getElementById('username').textContent = 'GUEST';
 
                 const aHref = document.getElementById('account');
@@ -1423,6 +1425,7 @@ const loadTable = () => {
 
                 createTable(DEFAULT_ROWS, DEFAULT_COLS);
             } else if (data.status === 'user') {
+                setColorScheme(USER_STATUS.USER);
                 document.getElementById('username').textContent = (data.first_name ?
                     data.first_name + ' ' + data.last_name : data.email);
 
@@ -1499,6 +1502,7 @@ const loadTable = () => {
 
                 //заблокировать таблицу
             } else if (data.status === 'guest') {
+                setColorScheme(USER_STATUS.GUEST);
                 document.getElementById('username').textContent = 'GUEST';
 
                 const aHref = document.getElementById('account');
@@ -1510,7 +1514,7 @@ const loadTable = () => {
                     tableFromObject(tableData);
                 }, () => {
                     createTable(DEFAULT_ROWS, DEFAULT_COLS)
-                });
+                })
             }
         },
         () => {
