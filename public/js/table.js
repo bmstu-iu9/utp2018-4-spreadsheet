@@ -1802,11 +1802,12 @@ mainDiv.onscroll = function () {
     upDiv.scrollLeft = this.scrollLeft;
     leftDiv.scrollTop = this.scrollTop;
 
-    if (mainDiv.scrollLeft - upDiv.scrollLeft === 16) {
-        mainDiv.scrollLeft -= 16;
+    if (mainDiv.scrollLeft !== upDiv.scrollLeft) {
+        mainDiv.scrollLeft = upDiv.scrollLeft;
     }
-    if (mainDiv.scrollTop - leftDiv.scrollTop === 16) {
-        mainDiv.scrollTop -= 16;
+
+    if (mainDiv.scrollTop !== leftDiv.scrollTop) {
+        mainDiv.scrollTop = leftDiv.scrollTop;
     }
 
     const moreCellsOnY = mainDiv.scrollHeight - mainDiv.clientHeight;
