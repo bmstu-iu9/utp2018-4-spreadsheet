@@ -955,6 +955,7 @@ let curCell = null;
 let grayCells = [];
 let borderCells = [];
 let selUpCells = [];
+let selLeftCells = [];
 
 const innerTable = new Table(DEFAULT_COLS, DEFAULT_ROWS);
 
@@ -1250,6 +1251,17 @@ const bleachCells = () => {
         cell.style.backgroundColor = '#eee';
         document.getElementById(currentLet[num] + '0').style.color = 'rgb(0, 0, 0)';
         document.getElementById('up_' + num).style.backgroundColor = 'transparent';
+    }
+
+    while (selLeftCells.length !== 0) {
+        const obj = selLeftCells.pop();
+        const cell = obj.cell;
+        const num = obj.num;
+
+        cell.isSelected = false;
+        cell.style.backgroundColor = '#eee';
+        document.getElementById('@' + num).style.color = 'rgb(0, 0, 0)';
+        document.getElementById('left_' + num).style.backgroundColor = 'transparent';
     }
 }
 
@@ -1571,6 +1583,62 @@ const addUpAndLeftEvents = (type, num) => {
 
   } else if (type === 'left') {
 
+    cell.onmousedown = (e) => {
+
+      cell.isSelected = true;
+      bleachCells();
+
+      if (focusID) {
+          const oldInput = document.getElementById(focusID);
+          const oldCell = document.getElementById('Cell_' + focusID);
+          const upCell = upTable.rows[0].cells[oldCell.colNum];
+          const leftCell = leftTable.rows[oldCell.rowNum].cells[0];
+
+          upCell.style.backgroundColor = '#eee';
+          document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
+          leftCell.style.backgroundColor = '#eee';
+          document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
+          oldInput.style.textAlign = 'right';
+          oldInput.editMode = false;
+          oldInput.style.cursor = 'cell';
+          oldInput.hasOldValue = true;
+      }
+
+      focusID = '';
+      prevColor = '#bbffbb';
+      cell.style.backgroundColor = '#9fff9f';
+      document.getElementById('@' + num).style.color = '#003e00';
+      document.getElementById('left_' + num).style.backgroundColor = '#6bc961';
+      selLeftCells.push({cell: cell, num: num});
+
+      for (let i = 0; i <= COLS; i++) {
+          const id = currentLet[i] + num;
+
+          if (i === 0) {
+              borderCells.push(id);
+              grayCells.push({cell : mainTable.rows[num - 1].cells[i], id : id});
+              document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
+              document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
+              document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
+          } else {
+              grayCells.push({cell : mainTable.rows[num - 1].cells[i], id : id});
+              mainTable.rows[num - 1].cells[i].style.backgroundColor = '#c3c3c3';
+              document.getElementById(id).style.backgroundColor = '#c3c3c3';
+
+              borderCells.push(id);
+              document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
+              document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
+              if (i === COLS) {
+                  document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
+              }
+          }
+
+          upTable.rows[0].cells[i].style.backgroundColor = '#c3c3c3';
+          document.getElementById('up_' + i).style.backgroundColor = '#6bc961';
+      }
+
+    }
+
   }
 
 }
@@ -1605,6 +1673,21 @@ const addCells = function (rows, cols) {
                 inp.style.height = preInp.style.height;
                 inp.style.padding = preInp.style.padding;
                 cell.style.padding = document.getElementById('Cell_' + prevId).style.padding;
+
+                if (document.getElementById('Cell_' + (j + 1)).isSelected) {
+                  grayCells.push({cell : cell, id : curId});
+                  cell.style.backgroundColor = '#c3c3c3';
+                  document.getElementById(curId).style.backgroundColor = '#c3c3c3';
+
+                  borderCells.push(curId);
+                  document.getElementById('main_top_' + curId).style.backgroundColor = '#6bc961';
+                  document.getElementById('main_right_' + curId).style.backgroundColor = '#6bc961';
+                  document.getElementById('main_bottom_' + curId).style.backgroundColor = '#6bc961';
+                  document.getElementById('main_right_' + prevId).style.backgroundColor = 'transparent';
+
+                  upTable.rows[0].cells[i].style.backgroundColor = '#c3c3c3';
+                  document.getElementById('up_' + i).style.backgroundColor = '#6bc961';
+                }
 
                 cell.onkeydown = function (e) {
                     if (e.ctrlKey && e.keyCode === 67) {
