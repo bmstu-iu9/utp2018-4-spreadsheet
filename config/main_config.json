@@ -1,4 +1,16 @@
 {
-    "host" : "127.0.0.1",
-    "port" : 8080
+    "host_main" : "127.0.0.1",
+    "port_main" : 8080,
+
+    "host_auth" : "127.0.0.1",
+    "port_auth" : 8081,
+
+    "host_save" : "127.0.0.1",
+    "port_save" : 8082,
+
+    "GUEST" : 0,
+    "USER" : 1,
+    "ADMIN" : 666
+
+    
 }

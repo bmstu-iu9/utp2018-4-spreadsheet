@@ -1,57 +1,45 @@
+'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const logs = require('../app/logs')
 
-const public = (req, res) => {
-    logs.log('\x1b[34mPUBLIC\x1b[0m Method: ' + req.method);
+const contentTypes = {
+    '.html': 'text/html',
+    '.css': 'text/css',
+    '.js': 'text/javascript',
+    '.png': 'image/png',
+    '.jpg': 'image/jpg',
+    '.svg': 'image/svg+xml',
+}
 
+const publicResource = (req, res) => {
     const extension = path.extname(req.url);
-    var contentType = '';
-
-    switch (extension) {
-        case '.html':
-            contentType = 'text/html';
-            break;
-        case '.css':
-            contentType = 'text/css';
-            break;
-        case '.js':
-            contentType = 'text/javascript';
-            break;
-        case '.png':
-            contentType = 'image/png';
-            break;
-        case '.jpg':
-            contentType = 'image/jpg';
-            break;
-        case '.svg':
-            contentType = 'image/svg+xml';
-            break;
-        default:
-            contentType = 'text/plain';
-            break;
-    }
+    const contentType = extension in contentTypes ? contentTypes[extension] : 'text/plain';
 
     res.writeHead(200, {
         'Content-Type': contentType
     });
-    console.log(path.resolve('public', req.url.slice(1)));
-    const stream = fs.createReadStream(path.resolve('public', req.url.slice(1)));
+    const p = path.resolve('public', req.url.slice(1));
+    logs.log('\x1b[34mRESOURCE\x1b[0m: ' + p);
+    const stream = fs.createReadStream(p);
     stream.pipe(res);
 
     stream.on('error', error => {
         if (error.code === 'ENOENT') {
-            res.writeHead(404, {
-                'Content-Type': 'text/html'
+            logs.log(`\x1b[34mRESOURCE\x1b[0m \x1b[31mNOT FOUND\x1b[0m: ${p}`)
+            res.render('error.html', {
+                "code": 404,
+                "message": '404 Not Found!'
             });
-            res.end('<h1>404 Not Found<h1>');
         } else {
-            res.writeHead(500, {
-                'Content-Type': 'text/html'
+            logs.log(`\x1b[34mRESOURCE\x1b[0m \x1b[31mUNKNOWN ERROR\x1b[0m: ${p}`)
+            res.render('error.html', {
+                "code": 500,
+                "message": 'Internal server error!'
             });
-            res.end(error.message);
         }
     });
 }
 
-module.exports.public = public;
+module.exports.publicResource = publicResource;
