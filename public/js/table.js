@@ -954,6 +954,7 @@ let isMultiHL = false;
 let curCell = null;
 let grayCells = [];
 let borderCells = [];
+let selUpCells = [];
 
 const innerTable = new Table(DEFAULT_COLS, DEFAULT_ROWS);
 
@@ -1216,6 +1217,42 @@ const addDecor = (colNum, rowNum) => {
     mainTable.rows[rowNum].cells[colNum].appendChild(bottom);
 }
 
+const bleachCells = () => {
+    while (grayCells.length !== 0) {
+        const obj = grayCells.pop();
+        const cell = obj.cell;
+        const upCell = upTable.rows[0].cells[cell.colNum];
+        const leftCell = leftTable.rows[cell.rowNum].cells[0];
+
+        cell.style.backgroundColor = 'transparent';
+        document.getElementById(obj.id).style.backgroundColor = 'transparent';
+        upCell.style.backgroundColor = '#eee';
+        document.getElementById('up_' + cell.colNum).style.backgroundColor = 'transparent';
+        leftCell.style.backgroundColor = '#eee';
+        document.getElementById('left_' + (cell.rowNum + 1)).style.backgroundColor = 'transparent';
+    }
+
+    while (borderCells.length !== 0) {
+        const id = borderCells.pop();
+
+        document.getElementById('main_top_' + id).style.backgroundColor = 'transparent';
+        document.getElementById('main_left_' + id).style.backgroundColor = 'transparent';
+        document.getElementById('main_right_' + id).style.backgroundColor = 'transparent';
+        document.getElementById('main_bottom_' + id).style.backgroundColor = 'transparent';
+    }
+
+    while (selUpCells.length !== 0) {
+        const obj = selUpCells.pop();
+        const cell = obj.cell;
+        const num = obj.num;
+
+        cell.isSelected = false;
+        cell.style.backgroundColor = '#eee';
+        document.getElementById(currentLet[num] + '0').style.color = 'rgb(0, 0, 0)';
+        document.getElementById('up_' + num).style.backgroundColor = 'transparent';
+    }
+}
+
 /**
  * Initialize cell events
  * @param {String} id
@@ -1285,31 +1322,6 @@ const initCell = (columnNumber, rowNumber) => {
           newInput.selectionStart = newInput.selectionEnd = 0;
           newInput.focus();
           isMultiHL = true;
-
-          const bleachCells = () => {
-              while (grayCells.length !== 0) {
-                  const obj = grayCells.pop();
-                  const cell = obj.cell;
-                  const upCell = upTable.rows[0].cells[cell.colNum];
-                  const leftCell = leftTable.rows[cell.rowNum].cells[0];
-
-                  cell.style.backgroundColor = 'transparent';
-                  document.getElementById(obj.id).style.backgroundColor = 'transparent';
-                  upCell.style.backgroundColor = '#eee';
-                  document.getElementById('up_' + cell.colNum).style.backgroundColor = 'transparent';
-                  leftCell.style.backgroundColor = '#eee';
-                  document.getElementById('left_' + (cell.rowNum + 1)).style.backgroundColor = 'transparent';
-              }
-
-              while (borderCells.length !== 0) {
-                  const id = borderCells.pop();
-
-                  document.getElementById('main_top_' + id).style.backgroundColor = 'transparent';
-                  document.getElementById('main_left_' + id).style.backgroundColor = 'transparent';
-                  document.getElementById('main_right_' + id).style.backgroundColor = 'transparent';
-                  document.getElementById('main_bottom_' + id).style.backgroundColor = 'transparent';
-              }
-          }
 
           const paintCells = () => {
               const rowFlag = newCell.rowNum > curCell.rowNum;
@@ -1384,11 +1396,10 @@ const initCell = (columnNumber, rowNumber) => {
               oldInput.style.textAlign = 'right';
               oldInput.editMode = false;
               oldInput.style.cursor = 'cell';
-
-              newInput.hasOldValue = true;
           }
 
           focusID = newInput.id;
+          newInput.hasOldValue = true;
           const upCell = upTable.rows[0].cells[columnNumber];
           const leftCell = leftTable.rows[rowNumber - 1].cells[0];
 
@@ -1484,6 +1495,86 @@ const initCell = (columnNumber, rowNumber) => {
     });
 }
 
+const addUpAndLeftEvents = (type, num) => {
+
+  const cell = (type === 'up')? document.getElementById('Cell_' + currentLet[num]) :
+                                                document.getElementById('Cell_' + num);
+  cell.isSelected = false;
+  let prevColor = '';
+
+  cell.onmouseenter = () => {
+      prevColor = getComputedStyle(cell).backgroundColor;
+      cell.style.backgroundColor = '#9fff9f';
+  }
+
+  cell.onmouseleave = () => {
+      cell.style.backgroundColor = prevColor;
+  }
+
+  if (type === 'up') {
+
+    cell.onmousedown = (e) => {
+
+      cell.isSelected = true;
+      bleachCells();
+
+      if (focusID) {
+          const oldInput = document.getElementById(focusID);
+          const oldCell = document.getElementById('Cell_' + focusID);
+          const upCell = upTable.rows[0].cells[oldCell.colNum];
+          const leftCell = leftTable.rows[oldCell.rowNum].cells[0];
+
+          upCell.style.backgroundColor = '#eee';
+          document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
+          leftCell.style.backgroundColor = '#eee';
+          document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
+          oldInput.style.textAlign = 'right';
+          oldInput.editMode = false;
+          oldInput.style.cursor = 'cell';
+          oldInput.hasOldValue = true;
+      }
+
+      focusID = '';
+      prevColor = '#bbffbb';
+      cell.style.backgroundColor = '#9fff9f';
+      document.getElementById(currentLet[num] + '0').style.color = '#003e00';
+      document.getElementById('up_' + num).style.backgroundColor = '#6bc961';
+      selUpCells.push({cell: cell, num: num});
+
+      for (let i = 0; i < ROWS; i++) {
+          const id = currentLet[num] + (i + 1);
+
+          if (i === 0) {
+              borderCells.push(id);
+              grayCells.push({cell : mainTable.rows[i].cells[num], id : id});
+              document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
+              document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
+              document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
+          } else {
+              grayCells.push({cell : mainTable.rows[i].cells[num], id : id});
+              mainTable.rows[i].cells[num].style.backgroundColor = '#c3c3c3';
+              document.getElementById(id).style.backgroundColor = '#c3c3c3';
+
+              borderCells.push(id);
+              document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
+              document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
+              if (i === ROWS - 1) {
+                  document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
+              }
+          }
+
+          leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
+          document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
+      }
+
+    }
+
+  } else if (type === 'left') {
+
+  }
+
+}
+
 const addCells = function (rows, cols) {
     if (rows === 0) {
         for (let i = COLS + 1; i <= COLS + cols; i++) {
@@ -1496,6 +1587,7 @@ const addCells = function (rows, cols) {
             new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
             new_cell.id = 'Cell_' + letter;
             addDecorUpDiv(currentLet.length - 1);
+            addUpAndLeftEvents('up', currentLet.length - 1);
 
             for (let j = 0; j < ROWS; j++) {
 
@@ -1543,6 +1635,7 @@ const addCells = function (rows, cols) {
                 new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
                 new_cell.id = 'Cell_' + letter;
                 addDecorUpDiv(j);
+                addUpAndLeftEvents('up', j);
                 addExpansion(letter, j);
             }
         }
@@ -1555,6 +1648,7 @@ const addCells = function (rows, cols) {
             left_cell.innerHTML = `<div align = "center" id = "${'@' + (i + 1)}" class = "left"> ${i + 1} </div>`;
             left_cell.id = 'Cell_' + (i + 1);
             addDecorLeftDiv(i);
+            addUpAndLeftEvents('left', i + 1);
             addVerticalExpansion(i);
 
             for (let j = 0; j <= COLS + cols; j++) {
@@ -1590,6 +1684,21 @@ const addCells = function (rows, cols) {
                     inp.style.width = preInp.style.width;
                     inp.style.padding = preInp.style.padding;
                     new_cell.style.padding = document.getElementById('Cell_' + prevId).style.padding;
+
+                    if (document.getElementById('Cell_' + letter).isSelected) {
+                      grayCells.push({cell : new_cell, id : curId});
+                      new_cell.style.backgroundColor = '#c3c3c3';
+                      document.getElementById(curId).style.backgroundColor = '#c3c3c3';
+
+                      borderCells.push(curId);
+                      document.getElementById('main_left_' + curId).style.backgroundColor = '#6bc961';
+                      document.getElementById('main_right_' + curId).style.backgroundColor = '#6bc961';
+                      document.getElementById('main_bottom_' + curId).style.backgroundColor = '#6bc961';
+                      document.getElementById('main_bottom_' + prevId).style.backgroundColor = 'transparent';
+
+                      leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
+                      document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
+                    }
                 }
                 //contextMenuListener(document.getElementById("" + letter + (i + 1)));
             }
