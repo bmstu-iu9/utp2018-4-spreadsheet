@@ -1402,19 +1402,26 @@ const loadTable = () => {
             if (data.error === ERRORS.AUTH_SERVER_ERROR || error) {
                 console.log(ERROR_MESSAGES[error ? error : data.error])
 
-                document.getElementById('userINFO').textContent = ERROR_MESSAGES[error ? error : data.error];
+                document.getElementById('username').textContent = ERROR_MESSAGES[error ? error : data.error];
                 createTable(DEFAULT_ROWS, DEFAULT_COLS);
                 alert('Данные не будут сохраняться');
                 return;
             }
 
             if (data.status === 'new_guest') {
-                document.getElementById('userINFO').textContent = 'GUEST';
-                document.getElementById('log').innerHTML = '<a href="/authentication">Войти</a>';
+                document.getElementById('username').textContent = 'GUEST';
+
+                const aHref = document.getElementById('account');
+                aHref.href = '/authentication';
+                aHref.textContent = 'Sign In';
+
                 createTable(DEFAULT_ROWS, DEFAULT_COLS);
             } else if (data.status === 'user') {
-                document.getElementById('userINFO').textContent = data.email;
-                document.getElementById('log').innerHTML = '<a href="/logout">Выйти</a>';
+                document.getElementById('username').textContent = data.email;
+                
+                const aHref = document.getElementById('account');
+                aHref.href = '/logout';
+                aHref.textContent = 'Sign Out';
 
                 const newButton = document.createElement('button');
                 newButton.onclick = () => new_table(0,
@@ -1473,8 +1480,12 @@ const loadTable = () => {
 
                 //заблокировать таблицу
             } else if (data.status === 'guest') {
-                document.getElementById('userINFO').textContent = 'GUEST';
-                document.getElementById('log').innerHTML = '<a href="/authentication">Войти</a>';
+                document.getElementById('username').textContent = 'GUEST';
+
+                const aHref = document.getElementById('account');
+                aHref.href = '/authentication';
+                aHref.textContent = 'Sign In';
+
                 getSavedTable(null, (dataINFO) => {
                     const tableData = JSON.parse(dataINFO.data);
                     tableFromObject(tableData);

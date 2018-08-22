@@ -44,7 +44,7 @@
   width: 3%;
   height: 96%;
   float: left;
-  //border: 1px solid #555;
+  /* border: 1px solid #555; */
 }
 
 .left-div table td{
@@ -71,14 +71,14 @@
   background-color: #eee;
   border: 1px solid #555;
   height: 23px;
-  width: 100px;
+  width: 666px;
 }
 
-.table{
+/* .table{
     background-color: #fff;
     margin-left: 20px;
-    height: 67vh;
-}
+    height: 77vh;
+} */
 
 textarea {
     border: none;

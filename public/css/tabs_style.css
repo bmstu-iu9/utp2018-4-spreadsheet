@@ -14,6 +14,7 @@ body {
   background-size: 15px 15px;
   background-position: center center;
 }
+
 input[type="text"] {
   background-color: #cccccc;
   border: 1px solid #e7e7e7;
@@ -181,24 +182,11 @@ ul.top-menu > li:hover > ul.submenu {
   box-sizing: content-box;;
 
 }
+
 .toolbar{
   margin-left: 20px;
   padding-bottom: 20px;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 .block {
   top: 26px;
@@ -306,10 +294,7 @@ a:visited {
   box-sizing: content-box;;
 }
 
-.font .
-
-
-.transformtext{
+.font.transformtext{
   color: #000000;
 }
 
@@ -582,12 +567,19 @@ a#account{
   transition: 1s linear;
   color: white;
 }
+
 a#account:hover:after,
 a#account:focus:after{
 color: #757575;
 }
 
-.table{
-    margin-left: 20px;
-    height: 60vh;
+.table {
+    background-color: #fff;
+
+    /* Change my mind */
+    position: absolute;
+    top: 220px;
+    bottom: 5px;
+    right: 5px;
+    left: 20px;
 }
