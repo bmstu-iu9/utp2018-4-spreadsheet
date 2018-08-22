@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c72d8e50-4fa1-4811-954f-81774dbb7a5b" name="Default" comment="" />
+    <list default="true" id="c72d8e50-4fa1-4811-954f-81774dbb7a5b" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -11,11 +13,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/views/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="17" column="18" selection-start-line="17" selection-start-column="18" selection-end-line="17" selection-end-column="18" />
+            <state relative-caret-position="17">
+              <caret line="31" column="18" selection-start-line="31" selection-start-column="18" selection-end-line="31" selection-end-column="18" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#html#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#button#0;n#div#0;n#div#0;n#div#0;n#html#0;n#div#0;n#!!top" expanded="true" />
@@ -28,10 +30,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="tabs_style.css" pinned="false" current-in-tab="true">
+      <file leaf-file-name="tabs_style.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/css/tabs_style.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
+            <state relative-caret-position="1666">
               <caret line="98" column="17" selection-start-line="98" selection-start-column="17" selection-end-line="98" selection-end-column="17" />
             </state>
           </provider>
@@ -87,8 +89,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/public/css/tablestyles.css" />
-        <option value="$PROJECT_DIR$/views/index.html" />
         <option value="$PROJECT_DIR$/public/css/tabs_style.css" />
+        <option value="$PROJECT_DIR$/views/index.html" />
       </list>
     </option>
   </component>
@@ -225,12 +227,13 @@
       <workItem from="1534764092875" duration="599000" />
       <workItem from="1534765912293" duration="1599000" />
       <workItem from="1534767731576" duration="1495000" />
-      <workItem from="1534769573654" duration="270000" />
+      <workItem from="1534769573654" duration="1062000" />
+      <workItem from="1534851431378" duration="599000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28578000" />
+    <option name="totallyTimeSpent" value="29969000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="64" y="-11" width="1857" height="1092" extended-state="6" />
@@ -534,10 +537,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/public/css/tabs_style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1666">
+          <caret line="98" column="17" selection-start-line="98" selection-start-column="17" selection-end-line="98" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/views/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="18" selection-start-line="17" selection-start-column="18" selection-end-line="17" selection-end-column="18" />
+        <state relative-caret-position="17">
+          <caret line="31" column="18" selection-start-line="31" selection-start-column="18" selection-end-line="31" selection-end-column="18" />
           <folding>
             <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#html#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#button#0;n#div#0;n#div#0;n#div#0;n#html#0;n#div#0;n#!!top" expanded="true" />
@@ -546,13 +556,6 @@
             <element signature="n#style#0;n#span#0;n#p#0;n#div#1;n#html#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#span#0;n#p#0;n#div#2;n#html#0;n#div#0;n#!!top" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/css/tabs_style.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="98" column="17" selection-start-line="98" selection-start-column="17" selection-end-line="98" selection-end-column="17" />
         </state>
       </provider>
     </entry>
