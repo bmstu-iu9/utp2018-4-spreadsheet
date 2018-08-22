@@ -30,7 +30,7 @@ const returnError = (errorCode, response) => {
     return returnJSON({
         error: errorCode
     }, response);
-} 
+}
 
 /**
  * Finds user's session token in token key-value store
@@ -61,6 +61,28 @@ const checkSession = (body, response) => {
             error: null
         }, response);
     });
+}
+
+const getUserData = (body, response) => {
+    usersClient.get(`SELECT First_name first_name, Last_name last_name, Organization org FROM login_data WHERE Email=?`, [body.email],
+        (err, row) => {
+            if (err) {
+                logs.log(`Get User Data \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Database error: ${err.message}`);
+                return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
+            }
+
+            if (!row) {
+                logs.log(`Get User Data \x1b[31mFAILED\x1b[0m: Email: ${body.email}. User is not registered`);
+                return returnError(CONFIG.NO_USER_ERROR, response);
+            }
+
+            logs.log(`Get User Data \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}.`);
+            return returnJSON({
+                first_name: row.first_name,
+                last_name: row.last_name,
+                org: row.org,
+            }, response);
+        });
 }
 
 /**
@@ -200,6 +222,8 @@ const server = http.createServer((req, res) => {
                     registerHandle(qs.parse(body), res);
                 } else if (path.path === '/logout') {
                     logoutHandle(qs.parse(body), res);
+                } else if (path.path === '/data') {
+                    getUserData(qs.parse(body), res);
                 } else {
                     res.writeHead(404, {
                         'Content-Type': 'text/plain'

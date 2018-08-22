@@ -11,16 +11,17 @@ const contentTypes = {
     '.png': 'image/png',
     '.jpg': 'image/jpg',
     '.svg': 'image/svg+xml',
+    '.ico': 'image/x-icon',
 }
 
 const publicResource = (req, res) => {
     const extension = path.extname(req.url);
     const contentType = extension in contentTypes ? contentTypes[extension] : 'text/plain';
 
-    res.writeHead(200, {
-        'Content-Type': contentType
-    });
-    const p = path.resolve('public', req.url.slice(1));
+    res.status = 200;
+    res.setHeader('Content-Type', contentType);
+
+    const p = path.resolve('public', (extension === '.ico' ? 'img/' : '') + req.url.slice(1));
     logs.log('\x1b[34mRESOURCE\x1b[0m: ' + p);
     const stream = fs.createReadStream(p);
     stream.pipe(res);

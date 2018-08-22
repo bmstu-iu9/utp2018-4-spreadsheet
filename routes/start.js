@@ -60,28 +60,48 @@ const start = (req, res) => {
                         'status=' + CONFIG.USER + ';expires=' + new Date(new Date().getTime() + 31556952000).toUTCString()
                     ]
                 }) //на год
+                
+                const reqData = qs.stringify({email : authINFO.email});
+                sendAuthRequest('/data', reqData).then(
+                    data => {
+                        logs.log(`\x1b[34mUSER INFO\x1b[0m \x1b[32mRECEIVED\x1b[0m: SessionID: ${cookies['token']}, Email: ${authINFO.email}`);
 
-                sendSaveRequest('/titles', qs.stringify({
-                    "email": authINFO.email
-                })).then(
-                    titles => {
-                        logs.log(`\x1b[34mTITLES\x1b[0m \x1b[32mRECEIVED\x1b[0m: SessionID: ${cookies['token']}, Email: ${authINFO.email}`);
-                        res.end(JSON.stringify({
-                            status: 'user',
-                            email: authINFO.email,
-                            titles: titles.titles
-                        }));
+                        sendSaveRequest('/titles', reqData).then(
+                            titles => {
+                                logs.log(`\x1b[34mTITLES\x1b[0m \x1b[32mRECEIVED\x1b[0m: SessionID: ${cookies['token']}, Email: ${authINFO.email}`);
+                                res.end(JSON.stringify({
+                                    status: 'user',
+                                    first_name: data.first_name,
+                                    last_name: data.last_name,
+                                    org: data.org,
+                                    email: authINFO.email,
+                                    titles: titles.titles
+                                }));
+                            },
+        
+                            (err) => {
+                                logs.log(`\x1b[34mTITLES LOAD\x1b[0m \x1b[31mFAILED\x1b[0m: SessionID: ${cookies['token']}, Email: ${authINFO.email}, Error: ${err.message}`);
+                                res.end(JSON.stringify({
+                                    status: 'user',
+                                    first_name: data.first_name,
+                                    last_name: data.last_name,
+                                    org: data.org,
+                                    email: authINFO.email,
+                                    error: ERRORS.SAVE_SERVER_ERROR
+                                }));
+                            }
+                        );
                     },
 
                     (err) => {
-                        logs.log(`\x1b[34mTITLES LOAD\x1b[0m \x1b[31mFAILED\x1b[0m: SessionID: ${cookies['token']}, Email: ${authINFO.email}, Error: ${err.message}`);
+                        logs.log(`\x1b[34mUSER INFO LOAD\x1b[0m \x1b[31mFAILED\x1b[0m: SessionID: ${cookies['token']}, Email: ${authINFO.email}, Error: ${err.message}`);
                         res.end(JSON.stringify({
                             status: 'user',
                             email: authINFO.email,
-                            error: ERRORS.SAVE_SERVER_ERROR
+                            error: ERRORS.AUTH_SERVER_ERROR
                         }));
                     }
-                );
+                )
             } else {
                 logs.log(`\x1b[34mSTART FOR GUEST\x1b[0m: SessionID: ${cookies['token']}`);
                 res.writeHead(200, {

@@ -69,7 +69,7 @@ const new_table = (mode, okCallback, errorCallback) => {
             'size': [DEFAULT_ROWS, DEFAULT_COLS]
         })
     }, (removeINFO) => {
-        tableTitle = newTitle;
+        setNewTitle(newTitle);
         okCallback(removeINFO);
     }, (errorCode) => {
         if (errorCode === ERRORS.NOT_UNIQUE_ERROR) //Название занято
@@ -92,7 +92,7 @@ const stay = (mode, data, errorCallback) => {
         title: newTitle,
         data: newData
     }, (removeINFO) => {
-        tableTitle = newTitle;
+        setNewTitle(newTitle);
         console.log('ok' + removeINFO);
     }, (errorCode) => {
         console.log('err' + errorCode)

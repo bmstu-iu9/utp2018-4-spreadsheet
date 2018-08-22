@@ -56,7 +56,7 @@ const server = http.createServer((req, res) => {
             req.on('end', () => {
                 register(qs.parse(body), res);
             });
-        } else if (parsedURL.pathname.match(/\.(html|css|js|png|jpg|svg)$/)) {
+        } else if (parsedURL.pathname.match(/\.(html|css|js|png|jpg|svg|ico)$/)) {
             publicResource(req, res);
         } else {
             logs.log(`Path "${parsedURL.pathname}" \x1b[31mNOT FOUND\x1b[0m`);

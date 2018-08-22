@@ -1393,8 +1393,14 @@ const getSavedTable = (title, okCallback, errorCallback) => {
         });
 }
 
+const setNewTitle = (title) => {
+    tableTitle = title;
+    document.getElementById('name').textContent = title;
+}
+
 /**
  * Загрузка таблицы при открытии страницы
+ * (надо бы отдельный файл, но пока нет)
  */
 const loadTable = () => {
     sendXMLHttpRequest(config.host_main, config.port_main, '/start', 'GET', null,
@@ -1417,44 +1423,57 @@ const loadTable = () => {
 
                 createTable(DEFAULT_ROWS, DEFAULT_COLS);
             } else if (data.status === 'user') {
-                document.getElementById('username').textContent = data.email;
-                
+                document.getElementById('username').textContent = (data.first_name ?
+                    data.first_name + ' ' + data.last_name : data.email);
+
                 const aHref = document.getElementById('account');
                 aHref.href = '/logout';
                 aHref.textContent = 'Sign Out';
 
                 const newButton = document.createElement('button');
-                newButton.onclick = () => new_table(0,
-                    () => {
-                        removeTable();
-                        createTable(DEFAULT_ROWS, DEFAULT_COLS);
-                    },
-                    (error) => {
-                        alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
-                        console.log(ERROR_MESSAGES[error]);
-                    });
+                newButton.onclick = () => {
+                    if (tableTitle) {
+                        save();
+                    }
+
+                    new_table(0,
+                        () => {
+                            removeTable();
+                            createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                        },
+                        (error) => {
+                            alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
+                            console.log(ERROR_MESSAGES[error]);
+                        });
+                }
                 newButton.innerText = 'New';
                 document.getElementById('titles').appendChild(newButton);
 
                 if (!data.error) {
                     data.titles.forEach((title) => {
                         const button = document.createElement('button');
-                        button.onclick = () => getSavedTable(title, (dataINFO) => {
-                                ajax_remove_guest(() => {
-                                    removeTable();
+                        button.onclick = () => {
+                            if (tableTitle) {
+                                save();
+                            }
 
-                                    const tableData = JSON.parse(dataINFO.data);
-                                    tableFromObject(tableData);
-                                    tableTitle = title;
-                                }, (error) => {
+                            getSavedTable(title, (dataINFO) => {
+                                    ajax_remove_guest(() => {
+                                        removeTable();
+
+                                        const tableData = JSON.parse(dataINFO.data);
+                                        tableFromObject(tableData);
+                                        setNewTitle(title);
+                                    }, (error) => {
+                                        alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
+                                        console.log(ERROR_MESSAGES[error]);
+                                    });
+                                },
+                                (error) => {
                                     alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
                                     console.log(ERROR_MESSAGES[error]);
                                 });
-                            },
-                            (error) => {
-                                alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
-                                console.log(ERROR_MESSAGES[error]);
-                            });
+                        }
                         button.innerText = title;
                         document.getElementById('titles').appendChild(button);
                     })
