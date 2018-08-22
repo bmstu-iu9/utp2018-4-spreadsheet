@@ -10,7 +10,7 @@ function forPassword(passId, iconId, ph) {
         input.value = elem.value;
         input.placeholder = ph;
         elem.parentNode.replaceChild(input, elem);
-        icon.src='/img/eye-slash-solid.svg';
+        icon.src = '/img/eye-slash-solid.svg';
     } else {
         let input = document.createElement("input");
         input.id = passId;
@@ -18,6 +18,6 @@ function forPassword(passId, iconId, ph) {
         input.value = elem.value;
         input.placeholder = ph;
         elem.parentNode.replaceChild(input, elem);
-        icon.src='/img/eye-regular.svg';
+        icon.src = '/img/eye-regular.svg';
     }
 }

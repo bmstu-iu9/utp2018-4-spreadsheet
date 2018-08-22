@@ -7,7 +7,7 @@
  */
 const parseCookies = (reqCookies) => {
     const cookies = {};
-    
+
     if (reqCookies) {
         reqCookies.replace(' ', '').split(';').forEach((cookie) => {
             const kv = cookie.split('=');

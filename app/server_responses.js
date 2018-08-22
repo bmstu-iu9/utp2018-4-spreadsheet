@@ -23,7 +23,7 @@ const returnError = (errorCode, response) => {
     return returnJSON({
         error: errorCode
     }, response);
-} 
+}
 
 
 module.exports.returnError = returnError;

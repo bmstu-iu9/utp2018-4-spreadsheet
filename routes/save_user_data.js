@@ -31,7 +31,7 @@ const saveUserData = (body, res) => {
                 });
 
                 adress = '/save_guest';
-            } else if (body.status == CONFIG.USER && authINFO.status === CONFIG.USER){
+            } else if (body.status == CONFIG.USER && authINFO.status === CONFIG.USER) {
                 postSaveData = qs.stringify({
                     'title': body.title,
                     'email': authINFO.email,

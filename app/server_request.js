@@ -27,29 +27,30 @@ const sendSaveRequest = (adress, postData) => {
 const sendPostRequest = (adress, postData, hostname, port) => {
     return new Promise((resolve, reject) => {
         const postRequest = http.request({ //Ждём проверку токена
-            hostname :  hostname,
-            port : port,
-            path : adress,
-            method : 'POST',
-            headers : {
+            hostname: hostname,
+            port: port,
+            path: adress,
+            method: 'POST',
+            headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Content-Length': Buffer.byteLength(postData)
-            }}, (res) => {
+            }
+        }, (res) => {
             let data = "";
             res.on('data', (chunk) => {
                 data += chunk;
             });
-        
+
             res.on('end', () => {
                 resolve(JSON.parse(data));
             });
         });
-    
+
         postRequest.on('error', (error) => {
             const message = `${hostname}:${port}${adress} request \x1b[31mFAILED\x1b[0m: Error: ${error.message}`;
             reject(new Error(message));
         });
-    
+
         postRequest.write(postData);
         postRequest.end();
     });
