@@ -1527,56 +1527,60 @@ const addUpAndLeftEvents = (type, num) => {
 
     cell.onmousedown = (e) => {
 
-      cell.isSelected = true;
-      bleachCells();
+      if (e.target.className !== 'modSymb') {
 
-      if (focusID) {
-          const oldInput = document.getElementById(focusID);
-          const oldCell = document.getElementById('Cell_' + focusID);
-          const upCell = upTable.rows[0].cells[oldCell.colNum];
-          const leftCell = leftTable.rows[oldCell.rowNum].cells[0];
+        cell.isSelected = true;
+        bleachCells();
 
-          upCell.style.backgroundColor = '#eee';
-          document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
-          leftCell.style.backgroundColor = '#eee';
-          document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
-          oldInput.style.textAlign = 'right';
-          oldInput.editMode = false;
-          oldInput.style.cursor = 'cell';
-          oldInput.hasOldValue = true;
-      }
+        if (focusID) {
+            const oldInput = document.getElementById(focusID);
+            const oldCell = document.getElementById('Cell_' + focusID);
+            const upCell = upTable.rows[0].cells[oldCell.colNum];
+            const leftCell = leftTable.rows[oldCell.rowNum].cells[0];
 
-      focusID = '';
-      prevColor = '#bbffbb';
-      cell.style.backgroundColor = '#9fff9f';
-      document.getElementById(currentLet[num] + '0').style.color = '#003e00';
-      document.getElementById('up_' + num).style.backgroundColor = '#6bc961';
-      selUpCells.push({cell: cell, num: num});
+            upCell.style.backgroundColor = '#eee';
+            document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
+            leftCell.style.backgroundColor = '#eee';
+            document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
+            oldInput.style.textAlign = 'right';
+            oldInput.editMode = false;
+            oldInput.style.cursor = 'cell';
+            oldInput.hasOldValue = true;
+        }
 
-      for (let i = 0; i < ROWS; i++) {
-          const id = currentLet[num] + (i + 1);
+        focusID = '';
+        prevColor = '#bbffbb';
+        cell.style.backgroundColor = '#9fff9f';
+        document.getElementById(currentLet[num] + '0').style.color = '#003e00';
+        document.getElementById('up_' + num).style.backgroundColor = '#6bc961';
+        selUpCells.push({cell: cell, num: num});
 
-          if (i === 0) {
-              borderCells.push(id);
-              grayCells.push({cell : mainTable.rows[i].cells[num], id : id});
-              document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
-              document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
-              document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
-          } else {
-              grayCells.push({cell : mainTable.rows[i].cells[num], id : id});
-              mainTable.rows[i].cells[num].style.backgroundColor = '#c3c3c3';
-              document.getElementById(id).style.backgroundColor = '#c3c3c3';
+        for (let i = 0; i < ROWS; i++) {
+            const id = currentLet[num] + (i + 1);
 
-              borderCells.push(id);
-              document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
-              document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
-              if (i === ROWS - 1) {
-                  document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
-              }
-          }
+            if (i === 0) {
+                borderCells.push(id);
+                grayCells.push({cell : mainTable.rows[i].cells[num], id : id});
+                document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
+                document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
+                document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
+            } else {
+                grayCells.push({cell : mainTable.rows[i].cells[num], id : id});
+                mainTable.rows[i].cells[num].style.backgroundColor = '#c3c3c3';
+                document.getElementById(id).style.backgroundColor = '#c3c3c3';
 
-          leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
-          document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
+                borderCells.push(id);
+                document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
+                document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
+                if (i === ROWS - 1) {
+                    document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
+                }
+            }
+
+            leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
+            document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
+        }
+
       }
 
     }
@@ -1585,56 +1589,60 @@ const addUpAndLeftEvents = (type, num) => {
 
     cell.onmousedown = (e) => {
 
-      cell.isSelected = true;
-      bleachCells();
+      if (e.target.className !== 'modVertSymb') {
 
-      if (focusID) {
-          const oldInput = document.getElementById(focusID);
-          const oldCell = document.getElementById('Cell_' + focusID);
-          const upCell = upTable.rows[0].cells[oldCell.colNum];
-          const leftCell = leftTable.rows[oldCell.rowNum].cells[0];
+        cell.isSelected = true;
+        bleachCells();
 
-          upCell.style.backgroundColor = '#eee';
-          document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
-          leftCell.style.backgroundColor = '#eee';
-          document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
-          oldInput.style.textAlign = 'right';
-          oldInput.editMode = false;
-          oldInput.style.cursor = 'cell';
-          oldInput.hasOldValue = true;
-      }
+        if (focusID) {
+            const oldInput = document.getElementById(focusID);
+            const oldCell = document.getElementById('Cell_' + focusID);
+            const upCell = upTable.rows[0].cells[oldCell.colNum];
+            const leftCell = leftTable.rows[oldCell.rowNum].cells[0];
 
-      focusID = '';
-      prevColor = '#bbffbb';
-      cell.style.backgroundColor = '#9fff9f';
-      document.getElementById('@' + num).style.color = '#003e00';
-      document.getElementById('left_' + num).style.backgroundColor = '#6bc961';
-      selLeftCells.push({cell: cell, num: num});
+            upCell.style.backgroundColor = '#eee';
+            document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
+            leftCell.style.backgroundColor = '#eee';
+            document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
+            oldInput.style.textAlign = 'right';
+            oldInput.editMode = false;
+            oldInput.style.cursor = 'cell';
+            oldInput.hasOldValue = true;
+        }
 
-      for (let i = 0; i <= COLS; i++) {
-          const id = currentLet[i] + num;
+        focusID = '';
+        prevColor = '#bbffbb';
+        cell.style.backgroundColor = '#9fff9f';
+        document.getElementById('@' + num).style.color = '#003e00';
+        document.getElementById('left_' + num).style.backgroundColor = '#6bc961';
+        selLeftCells.push({cell: cell, num: num});
 
-          if (i === 0) {
-              borderCells.push(id);
-              grayCells.push({cell : mainTable.rows[num - 1].cells[i], id : id});
-              document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
-              document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
-              document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
-          } else {
-              grayCells.push({cell : mainTable.rows[num - 1].cells[i], id : id});
-              mainTable.rows[num - 1].cells[i].style.backgroundColor = '#c3c3c3';
-              document.getElementById(id).style.backgroundColor = '#c3c3c3';
+        for (let i = 0; i <= COLS; i++) {
+            const id = currentLet[i] + num;
 
-              borderCells.push(id);
-              document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
-              document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
-              if (i === COLS) {
-                  document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
-              }
-          }
+            if (i === 0) {
+                borderCells.push(id);
+                grayCells.push({cell : mainTable.rows[num - 1].cells[i], id : id});
+                document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
+                document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
+                document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
+            } else {
+                grayCells.push({cell : mainTable.rows[num - 1].cells[i], id : id});
+                mainTable.rows[num - 1].cells[i].style.backgroundColor = '#c3c3c3';
+                document.getElementById(id).style.backgroundColor = '#c3c3c3';
 
-          upTable.rows[0].cells[i].style.backgroundColor = '#c3c3c3';
-          document.getElementById('up_' + i).style.backgroundColor = '#6bc961';
+                borderCells.push(id);
+                document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
+                document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
+                if (i === COLS) {
+                    document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
+                }
+            }
+
+            upTable.rows[0].cells[i].style.backgroundColor = '#c3c3c3';
+            document.getElementById('up_' + i).style.backgroundColor = '#6bc961';
+        }
+
       }
 
     }
