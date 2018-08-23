@@ -116,9 +116,35 @@ ul.submenu > li > a {
   text-decoration: none;
 }
 
-ul.top-menu > li:hover > ul.submenu {
+ul.top-menu > li:hover > ul.submenu{
   display: block;
 }
+
+
+ul.submenu1 {
+  display: none;
+  position: inherit;
+  width: 200px;
+  top: 37px;
+  left: 0;
+  background-color: white;
+}
+ul.submenu1 > li {
+  display: block;
+}
+ul.submenu1 > li > a {
+  display: block;
+  color: #5c5c5c;
+  background-color: white;
+  text-decoration: none;
+}
+
+ul.top-menu > li:hover > ul.submenu1 {
+  display: block;
+}
+
+
+
 
 .back-button{
   height: 35px;
@@ -628,3 +654,74 @@ div#sideMenu ul.submenu {
   margin-left: 20px;
   display: inline;
 }
+
+
+
+
+label[for="sideMenu"] {
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+#filesMenu {
+  position: relative;
+  transform: rotateY(20deg);
+}
+
+input#filesMenu {
+  display: none;
+}
+
+label[for="filesMenu"] {
+  cursor: pointer;
+}
+
+div#filesMenu {
+  position: fixed;
+  background: white;
+  top: 0;
+  bottom: 0;
+  width: 200px;
+  left: -340px;
+  z-index: 99;
+  color: black;
+  transition: .4s;
+  opacity: 0;
+}
+
+input#filesMenu:checked ~ div#filesMenu{
+  left: 0px;
+  transform: rotateY(0);
+  opacity: 1;
+}
+
+
+
+div#filesMenu ul.submenu1 {
+  display: block;
+  position: relative;
+}
+
+.top-menu label[for="filesMenu"],
+.top-menu li > a {
+  line-height: 1;
+  margin-left: 20px;
+  display: inline;
+}
+
+
+
+.top-menu label[for="filesMenu"],
+.top-menu li > a {
+  line-height: 1;
+  margin-left: 20px;
+  display: inline;
+}
+
+
+
