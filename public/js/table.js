@@ -62,9 +62,6 @@ class Stack {
     }
 }
 
-const NONE = 0;
-const PUSH = 1;
-const POP = 2;
 
 class ActionStack {
     constructor(cap) {
@@ -426,7 +423,7 @@ class Table {
             this.setCeil(x, y, this.copied(x, y));
     }
 
-    erase(x, y) {
+    cut(x, y) {
         this.copied = build(this.field[x][y].realText, x, y);
         this.setCeil(x, y, '')
     }
@@ -1330,111 +1327,111 @@ const initCell = (columnNumber, rowNumber) => {
     newCell.onmousedown = (e) => {
 
         if (!newInput.editMode) {
-          e.preventDefault();
-          newInput.selectionStart = newInput.selectionEnd = 0;
-          newInput.focus();
-          isMultiHL = true;
+            e.preventDefault();
+            newInput.selectionStart = newInput.selectionEnd = 0;
+            newInput.focus();
+            isMultiHL = true;
 
-          const paintCells = () => {
-              const rowFlag = newCell.rowNum > curCell.rowNum;
-              const colFlag = newCell.colNum > curCell.colNum;
-              const start_i = (rowFlag)? curCell.rowNum : newCell.rowNum;
-              const start_j = (colFlag)? curCell.colNum : newCell.colNum;
-              const end_i = (rowFlag)? newCell.rowNum : curCell.rowNum;
-              const end_j = (colFlag)? newCell.colNum : curCell.colNum;
+            const paintCells = () => {
+                const rowFlag = newCell.rowNum > curCell.rowNum;
+                const colFlag = newCell.colNum > curCell.colNum;
+                const start_i = (rowFlag) ? curCell.rowNum : newCell.rowNum;
+                const start_j = (colFlag) ? curCell.colNum : newCell.colNum;
+                const end_i = (rowFlag) ? newCell.rowNum : curCell.rowNum;
+                const end_j = (colFlag) ? newCell.colNum : curCell.colNum;
 
-              for (let i = start_i; i <= end_i; i++) {
-                  for (let j = start_j; j<= end_j; j++) {
-                      const id = currentLet[j] + (i + 1);
+                for (let i = start_i; i <= end_i; i++) {
+                    for (let j = start_j; j <= end_j; j++) {
+                        const id = currentLet[j] + (i + 1);
 
-                      if ((i !== newCell.rowNum) || (j !== newCell.colNum)) {
-                          grayCells.push({cell : mainTable.rows[i].cells[j], id : id});
-                          mainTable.rows[i].cells[j].style.backgroundColor = '#c3c3c3';
-                          document.getElementById(id).style.backgroundColor = '#c3c3c3';
-                      }
+                        if ((i !== newCell.rowNum) || (j !== newCell.colNum)) {
+                            grayCells.push({ cell: mainTable.rows[i].cells[j], id: id });
+                            mainTable.rows[i].cells[j].style.backgroundColor = '#c3c3c3';
+                            document.getElementById(id).style.backgroundColor = '#c3c3c3';
+                        }
 
-                      if (i === start_i) {
-                          paintBorders(currentLet[j] + (i + 1), true, false, false, false);
-                          borderCells.push(id);
-                      }
-                      if (j === start_j) {
-                          paintBorders(currentLet[j] + (i + 1), false, true, false, false);
-                          borderCells.push(id);
-                      }
-                      if (j === end_j) {
-                          paintBorders(currentLet[j] + (i + 1), false, false, true, false);
-                          borderCells.push(id);
-                      }
-                      if (i === end_i) {
-                          paintBorders(currentLet[j] + (i + 1), false, false, false, true);
-                          borderCells.push(id);
-                      }
+                        if (i === start_i) {
+                            paintBorders(currentLet[j] + (i + 1), true, false, false, false);
+                            borderCells.push(id);
+                        }
+                        if (j === start_j) {
+                            paintBorders(currentLet[j] + (i + 1), false, true, false, false);
+                            borderCells.push(id);
+                        }
+                        if (j === end_j) {
+                            paintBorders(currentLet[j] + (i + 1), false, false, true, false);
+                            borderCells.push(id);
+                        }
+                        if (i === end_i) {
+                            paintBorders(currentLet[j] + (i + 1), false, false, false, true);
+                            borderCells.push(id);
+                        }
 
-                      upTable.rows[0].cells[j].style.backgroundColor = '#c3c3c3';
-                      document.getElementById('up_' + j).style.backgroundColor = '#6bc961';
-                      leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
-                      document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
-                  }
-              }
-          }
+                        upTable.rows[0].cells[j].style.backgroundColor = '#c3c3c3';
+                        document.getElementById('up_' + j).style.backgroundColor = '#6bc961';
+                        leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
+                        document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
+                    }
+                }
+            }
 
-          const paintBorders = (id, top, left, right, bottom) => {
-              if (top) {
-                document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
-              }
-              if (left) {
-                document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
-              }
-              if (right) {
-                document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
-              }
-              if (bottom) {
-                document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
-              }
-          }
+            const paintBorders = (id, top, left, right, bottom) => {
+                if (top) {
+                    document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
+                }
+                if (left) {
+                    document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
+                }
+                if (right) {
+                    document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
+                }
+                if (bottom) {
+                    document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
+                }
+            }
 
-          bleachCells();
+            bleachCells();
 
-          if (focusID) {
-              const oldInput = document.getElementById(focusID);
-              const oldCell = document.getElementById('Cell_' + focusID);
-              const upCell = upTable.rows[0].cells[oldCell.colNum];
-              const leftCell = leftTable.rows[oldCell.rowNum].cells[0];
+            if (focusID) {
+                const oldInput = document.getElementById(focusID);
+                const oldCell = document.getElementById('Cell_' + focusID);
+                const upCell = upTable.rows[0].cells[oldCell.colNum];
+                const leftCell = leftTable.rows[oldCell.rowNum].cells[0];
 
-              upCell.style.backgroundColor = '#eee';
-              document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
-              leftCell.style.backgroundColor = '#eee';
-              document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
-              oldInput.style.textAlign = 'right';
-              oldInput.editMode = false;
-              oldInput.style.cursor = 'cell';
-          }
+                upCell.style.backgroundColor = '#eee';
+                document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
+                leftCell.style.backgroundColor = '#eee';
+                document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
+                oldInput.style.textAlign = 'right';
+                oldInput.editMode = false;
+                oldInput.style.cursor = 'cell';
+            }
 
-          focusID = newInput.id;
-          newInput.hasOldValue = true;
-          const upCell = upTable.rows[0].cells[columnNumber];
-          const leftCell = leftTable.rows[rowNumber - 1].cells[0];
+            focusID = newInput.id;
+            newInput.hasOldValue = true;
+            const upCell = upTable.rows[0].cells[columnNumber];
+            const leftCell = leftTable.rows[rowNumber - 1].cells[0];
 
-          upCell.style.backgroundColor = '#c3c3c3';
-          document.getElementById('up_' + columnNumber).style.backgroundColor = '#6bc961';
-          leftCell.style.backgroundColor = '#c3c3c3';
-          document.getElementById('left_' + rowNumber).style.backgroundColor = '#6bc961';
-          newInput.style.textAlign = 'left';
-          paintBorders(id, true, true, true, true);
-          borderCells.push(id);
+            upCell.style.backgroundColor = '#c3c3c3';
+            document.getElementById('up_' + columnNumber).style.backgroundColor = '#6bc961';
+            leftCell.style.backgroundColor = '#c3c3c3';
+            document.getElementById('left_' + rowNumber).style.backgroundColor = '#6bc961';
+            newInput.style.textAlign = 'left';
+            paintBorders(id, true, true, true, true);
+            borderCells.push(id);
 
-          document.onmousemove = (e) => {
-              if (curCell !== null) {
-                  bleachCells();
-                  paintCells();
-              }
-          }
+            document.onmousemove = (e) => {
+                if (curCell !== null) {
+                    bleachCells();
+                    paintCells();
+                }
+            }
 
-          document.onmouseup = () => {
-              isMultiHL = false;
-              curCell = null;
-              document.onmousemove = document.onmouseup = null;
-          }
+            document.onmouseup = () => {
+                isMultiHL = false;
+                curCell = null;
+                document.onmousemove = document.onmouseup = null;
+            }
 
         }
     }
@@ -1473,36 +1470,36 @@ const initCell = (columnNumber, rowNumber) => {
                 dx = 1;
             }
         } else {
-          if (e.key === 'Enter' || e.key === 'ArrowDown') {
-              e.preventDefault();
-              dy = 1;
-          } else if (e.key === 'ArrowUp') {
-              e.preventDefault();
-              dy = (rowNumber ? -1 : 0);
-          } else if (e.key === 'ArrowLeft') {
-              e.preventDefault();
-              dx = (columnNumber ? -1 : 0);
-          } else if (e.key === 'ArrowRight') {
-              e.preventDefault();
-              dx = 1;
-          } else if (e.key === 'Tab' && e.shiftKey) {
-              e.preventDefault();
-              dx = (columnNumber ? -1 : 0);
-          } else if (e.key === 'Tab') {
-              e.preventDefault();
-              dx = 1;
-          } else if ((newInput.hasOldValue) && (!e.shiftKey)) {
-              newInput.value = '';
-              newInput.hasOldValue = false;
-          }
+            if (e.key === 'Enter' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                dy = 1;
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                dy = (rowNumber ? -1 : 0);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                dx = (columnNumber ? -1 : 0);
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                dx = 1;
+            } else if (e.key === 'Tab' && e.shiftKey) {
+                e.preventDefault();
+                dx = (columnNumber ? -1 : 0);
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                dx = 1;
+            } else if ((newInput.hasOldValue) && (!e.shiftKey)) {
+                newInput.value = '';
+                newInput.hasOldValue = false;
+            }
         }
 
         if ((dx !== 0) || (dy !== 0)) {
-          const low_cell = document.getElementById('Cell_' + currentLet[columnNumber + dx] + (rowNumber + dy));
-          const low_input = document.getElementById(currentLet[columnNumber + dx] + (rowNumber + dy));
-          low_cell.dispatchEvent(new Event('mousedown', { keyCode: 13 }));
-          document.dispatchEvent(new Event('mouseup'));
-          low_input.focus();
+            const low_cell = document.getElementById('Cell_' + currentLet[columnNumber + dx] + (rowNumber + dy));
+            const low_input = document.getElementById(currentLet[columnNumber + dx] + (rowNumber + dy));
+            low_cell.dispatchEvent(new Event('mousedown', { keyCode: 13 }));
+            document.dispatchEvent(new Event('mouseup'));
+            low_input.focus();
         }
     });
 }
@@ -1683,18 +1680,18 @@ const addCells = function (rows, cols) {
                 cell.style.padding = document.getElementById('Cell_' + prevId).style.padding;
 
                 if (document.getElementById('Cell_' + (j + 1)).isSelected) {
-                  grayCells.push({cell : cell, id : curId});
-                  cell.style.backgroundColor = '#c3c3c3';
-                  document.getElementById(curId).style.backgroundColor = '#c3c3c3';
+                    grayCells.push({ cell: cell, id: curId });
+                    cell.style.backgroundColor = '#c3c3c3';
+                    document.getElementById(curId).style.backgroundColor = '#c3c3c3';
 
-                  borderCells.push(curId);
-                  document.getElementById('main_top_' + curId).style.backgroundColor = '#6bc961';
-                  document.getElementById('main_right_' + curId).style.backgroundColor = '#6bc961';
-                  document.getElementById('main_bottom_' + curId).style.backgroundColor = '#6bc961';
-                  document.getElementById('main_right_' + prevId).style.backgroundColor = 'transparent';
+                    borderCells.push(curId);
+                    document.getElementById('main_top_' + curId).style.backgroundColor = '#6bc961';
+                    document.getElementById('main_right_' + curId).style.backgroundColor = '#6bc961';
+                    document.getElementById('main_bottom_' + curId).style.backgroundColor = '#6bc961';
+                    document.getElementById('main_right_' + prevId).style.backgroundColor = 'transparent';
 
-                  upTable.rows[0].cells[i].style.backgroundColor = '#c3c3c3';
-                  document.getElementById('up_' + i).style.backgroundColor = '#6bc961';
+                    upTable.rows[0].cells[i].style.backgroundColor = '#c3c3c3';
+                    document.getElementById('up_' + i).style.backgroundColor = '#6bc961';
                 }
 
                 cell.onkeydown = function (e) {
@@ -1777,18 +1774,18 @@ const addCells = function (rows, cols) {
                     new_cell.style.padding = document.getElementById('Cell_' + prevId).style.padding;
 
                     if (document.getElementById('Cell_' + letter).isSelected) {
-                      grayCells.push({cell : new_cell, id : curId});
-                      new_cell.style.backgroundColor = '#c3c3c3';
-                      document.getElementById(curId).style.backgroundColor = '#c3c3c3';
+                        grayCells.push({ cell: new_cell, id: curId });
+                        new_cell.style.backgroundColor = '#c3c3c3';
+                        document.getElementById(curId).style.backgroundColor = '#c3c3c3';
 
-                      borderCells.push(curId);
-                      document.getElementById('main_left_' + curId).style.backgroundColor = '#6bc961';
-                      document.getElementById('main_right_' + curId).style.backgroundColor = '#6bc961';
-                      document.getElementById('main_bottom_' + curId).style.backgroundColor = '#6bc961';
-                      document.getElementById('main_bottom_' + prevId).style.backgroundColor = 'transparent';
+                        borderCells.push(curId);
+                        document.getElementById('main_left_' + curId).style.backgroundColor = '#6bc961';
+                        document.getElementById('main_right_' + curId).style.backgroundColor = '#6bc961';
+                        document.getElementById('main_bottom_' + curId).style.backgroundColor = '#6bc961';
+                        document.getElementById('main_bottom_' + prevId).style.backgroundColor = 'transparent';
 
-                      leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
-                      document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
+                        leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
+                        document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
                     }
                 }
                 //contextMenuListener(document.getElementById("" + letter + (i + 1)));
@@ -1924,6 +1921,7 @@ function contextMenuOff() {
 }
 
 function triggerPasteEvent(element) {
+    alert(element)
     var pasteEvent = document.createEvent('ClipboardEvent')
     pasteEvent.initEvent('paste', true, true)
     element.dispatchEvent(pasteEvent)
@@ -1950,6 +1948,15 @@ const tryToPasteFromClipboard = cell => {
 }
 
 const tryToSmthToClipboard = (cell, command) => {
+    console.log(cell, command)
+    /*  switch (command) {
+         case 'copy':
+             tryToSmthToClipboard(cell, 'copy');
+             break;
+         case 'cut':
+             tryToSmthToClipboard(cell, 'cut');
+             break;
+     } */
     cell.focus();
     cell.select();
     try {
@@ -1963,19 +1970,43 @@ const tryToSmthToClipboard = (cell, command) => {
 const menuItemListener = link => {
     //alert("Cell - " + itemInContext.id + ", Action - " + link.getAttribute("data-action"));
     let cell = itemInContext;
+    console.log(cell.editMode);
     let action = link.getAttribute("data-action");
     switch (action) {
         case 'paste':
-            tryToPasteFromClipboard(cell);
+            if (cell.editMode)
+                tryToPasteFromClipboard(cell);
+            else {
+                const coord = convCoord(cell.id);
+                innerTable.paste(coord.x, coord.y);
+                updateTables();
+                cell.focus();
+            }
             break;
         case 'copy':
-            tryToSmthToClipboard(cell, 'copy');
+            if (cell.editMode)
+                tryToSmthToClipboard(cell, 'copy');
+            else {
+                const coord = convCoord(cell.id);
+                innerTable.copy(coord.x, coord.y);
+                updateTables();
+                cell.focus();
+            }
             break;
         case 'cut':
-            tryToSmthToClipboard(cell, 'cut');
+            if (cell.editMode)
+                tryToSmthToClipboard(cell, 'cut');
+            else {
+                const coord = convCoord(cell.id);
+                innerTable.cut(coord.x, coord.y);
+                updateTables();
+                cell.focus();
+            }
             break;
         case 'delete':
-            cell.value = null;
+            cell.value = '';
+            updateTables();
+            cell.focus();
     }
     contextMenuOff();
 }
