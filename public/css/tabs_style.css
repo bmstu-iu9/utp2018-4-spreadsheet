@@ -249,6 +249,7 @@ ul.circle li {
   margin-right: 10px;
   display: inline;
 }
+
 a {
   text-decoration: none;
   color: #222;
@@ -260,6 +261,7 @@ a:hover {
 a:visited {
   font-weight: bold;
 }
+
 
 .format {
   border: 1px solid black;
@@ -338,8 +340,6 @@ a:visited {
   margin-left:20px;
 }
 
-
-
 .font{
   margin-top: 35px;
   margin-left:20px;
@@ -386,11 +386,6 @@ a:visited {
 .alignment{
   color: #222222;
 }
-
-
-
-
-
 
 #one {
   display: block;
@@ -641,8 +636,6 @@ input#sideMenu:checked ~ div#sidemenu {
   opacity: 1;
 }
 
-
-
 div#sideMenu ul.submenu {
   display: block;
   position: relative;
@@ -655,18 +648,9 @@ div#sideMenu ul.submenu {
   display: inline;
 }
 
-
-
-
 label[for="sideMenu"] {
   cursor: pointer;
 }
-
-
-
-
-
-
 
 #filesMenu {
   position: relative;
@@ -700,8 +684,6 @@ input#filesMenu:checked ~ div#filesMenu{
   opacity: 1;
 }
 
-
-
 div#filesMenu ul.submenu1 {
   display: block;
   position: relative;
@@ -714,14 +696,19 @@ div#filesMenu ul.submenu1 {
   display: inline;
 }
 
-
-
 .top-menu label[for="filesMenu"],
 .top-menu li > a {
   line-height: 1;
-  margin-left: 20px;
+  margin-left: 10px;
   display: inline;
 }
 
-
+.timeStamp {
+  color: #807f7f;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-left: 10px;
+  margin-right: 20px;
+  font-size: 12px;
+}
 

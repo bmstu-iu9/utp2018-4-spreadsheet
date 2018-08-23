@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-    <title>Whitesquare</title>
+    <title>Data!</title>
     <link rel="stylesheet" href="css/tabs_style.css" type="text/css">
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Oswald:400,300" type="text/css">
 
@@ -19,7 +19,6 @@
           <h1 class = "UserName">|</h1>
           <a href="#" class="accountInf" id="account"></a>
           <span id="saveINFO"></span>
-          <button onclick="save()">save</button>
           <span id="titles"></span>
           <span id="log"></span> </p>
       </div>
@@ -171,23 +170,14 @@
             <label for="sideMenu" style="line-height: 1; margin-right: 20px;"><!-- <a href="#"> -->File<!-- </a> --></label>
             <div id="sideMenu">
               <label for="sideMenu" style="width: 30px; height: 30px; background: #000; z-index: 100; display: inline-block; position: absolute; top: 0; left: 0; margin-left: 0;"></label>
-              <ul class="submenu">
-                <li><a href="#">New</a></li>
-
-
-                <li>
-                  <input type ="checkbox" id="filesMenu">
-                  <label for="filesMenu" style="line-height: 1; margin-right: 20px;"><!-- <a href="#"> -->Open<!-- </a> --></label>
-                  <div id="filesMenu">
-                    <label for="filesMenu" style="width: 30px; height: 30px; background: #000; z-index: 100; display: inline-block; position: absolute; top: 0; left: 0; margin-left: 40px;"></label>
-                    <ul class="submenu1">
-                      <li><a href="#">test</a></li>
-                    </ul>
-                  </div>
-                </li>
-
-
-                <li><a href="#">Create copy</a></li>
+              <ul id="sideMenuUl" class="submenu">
+                <div id="filesMenu">
+                  <p>Recently Updated</p>
+                  <label onclick="closeSideMenu(document.getElementById('filesMenu'))"
+                        style="width: 30px; height: 30px; background: #000; z-index: 100; display: inline-block; position: absolute; top: 0; left: 0; margin-left: 40px;"></label>
+                  <ul id='filesMenuUl' class="submenu1">
+                  </ul>
+                </div>
               </ul>
             </div>
           </li>

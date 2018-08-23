@@ -45,15 +45,30 @@ const sendXMLHttpRequest = (host, port, adress, method, data, callback) => {
     };
 }
 
-function arr2str(buf) {
+const arr2str = (buf) => {
     return String.fromCharCode.apply(null, buf);
 }
 
-function str2arr(str) {
+const str2arr = (str) => {
     var buf = new Array(str.length); // 2 bytes for each char
     for (var i = 0; i < str.length; i++) {
         buf[i] = str.charCodeAt(i);
     }
 
     return buf;
+}
+
+const toDateTime = (secs) => {
+    var t = new Date(1970, 0, 1); // Epoch
+    t.setSeconds(secs);
+    return t;
+}
+
+const closeSideMenu = (sideMenu) => {
+    if (sideMenu.nodeName === 'DIV') {
+        sideMenu.style.left = '-340px';
+        sideMenu.style.opacity = '0';
+    } else {
+        sideMenu.checked = false;
+    }
 }

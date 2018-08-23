@@ -35,14 +35,14 @@ const returnError = (errorCode, response) => {
  * @param {http.ServerResponse} response 
  */
 const loadUserTitlesHandle = (body, response) => {
-    saveClient.all(`SELECT Title title FROM saves_user
+    saveClient.all(`SELECT Title title, SaveTime timeStamp FROM saves_user
                     WHERE Email=? ORDER BY SaveTime DESC`, [body.email], (err, rows) => {
         if (err) {
             logs.log(`Load user titles \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Database error: ${err.message}`);
             return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
         }
 
-        const titles = rows.map(e => e.title);
+        const titles = rows.map(e => { return{ title: e.title, timeStamp: e.timeStamp} });
         logs.log(`Load user titles \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}`);
         return returnJSON({
             titles: titles,

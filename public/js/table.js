@@ -520,6 +520,23 @@ const setNewTitle = (title) => {
     document.getElementById('name').textContent = title;
 }
 
+const addToSideMenu = (sideMenu, text, func) => {
+    const li = document.createElement('li');
+    const aLi = document.createElement('a');
+    aLi.onclick = func;
+    aLi.textContent = text;
+    li.appendChild(aLi);
+
+    sideMenu.appendChild(li);
+}
+
+const loadSideMenu = (sideMenu, funcObj) => {
+    for (let funcName in funcObj) {
+        addToSideMenu(sideMenu, funcName, funcObj[funcName]);
+    };
+}
+
+
 /**
  * Загрузка таблицы при открытии страницы
  * (надо бы отдельный файл, но пока нет)
@@ -530,6 +547,17 @@ const loadTable = () => {
             if (data.error === ERRORS.AUTH_SERVER_ERROR || error) {
                 console.log(ERROR_MESSAGES[error ? error : data.error])
 
+                loadSideMenu(document.getElementById('sideMenuUl'), {
+                    'Clear Table': () => {
+                        closeSideMenu(document.getElementById('sideMenu'));
+                        if (confirm('All your data will be lost')) {
+                            removeTable();
+                            createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                        }
+                    },
+                });
+
+
                 setColorScheme(USER_STATUS.GUEST);
                 document.getElementById('username').textContent = ERROR_MESSAGES[error ? error : data.error];
                 createTable(DEFAULT_ROWS, DEFAULT_COLS);
@@ -537,7 +565,7 @@ const loadTable = () => {
                 return;
             }
 
-            if (data.status === 'new_guest') {
+            if (data.status === 'new_guest' || data.status === 'guest') {
                 setColorScheme(USER_STATUS.GUEST);
                 document.getElementById('username').textContent = 'GUEST';
 
@@ -545,7 +573,31 @@ const loadTable = () => {
                 aHref.href = '/authentication';
                 aHref.textContent = 'Sign In';
 
-                createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                loadSideMenu(document.getElementById('sideMenuUl'), {
+                    'Clear Table': () => {
+                        if (confirm('All your data will be lost')) {
+                            removeTable();
+                            createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                            closeSideMenu(document.getElementById('sideMenu'));
+                        }
+                    },
+                    'Save': () => {
+                        closeSideMenu(document.getElementById('sideMenu'));
+                        save();
+                    },
+                });
+
+
+                if (data.status === 'new_guest') {
+                    createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                } else if (data.status === 'guest') {
+                    getSavedTable(null, (dataINFO) => {
+                        const tableData = JSON.parse(dataINFO.data);
+                        tableFromObject(tableData);
+                    }, () => {
+                        createTable(DEFAULT_ROWS, DEFAULT_COLS)
+                    });
+                }
             } else if (data.status === 'user') {
                 setColorScheme(USER_STATUS.USER);
                 document.getElementById('username').textContent = (data.first_name ?
@@ -555,40 +607,81 @@ const loadTable = () => {
                 aHref.href = '/logout';
                 aHref.textContent = 'Sign Out';
 
-                const newButton = document.createElement('button');
-                newButton.onclick = () => {
-                    if (tableTitle) {
-                        save();
-                    }
+                const sideMenu = document.getElementById('sideMenuUl');
+                loadSideMenu(sideMenu, {
+                    'New': () => {
+                        if (tableTitle) {
+                            save();
+                        }
 
-                    new_table(0,
-                        () => {
-                            removeTable();
-                            createTable(DEFAULT_ROWS, DEFAULT_COLS);
-                        },
-                        (error) => {
-                            alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
-                            console.log(ERROR_MESSAGES[error]);
-                        });
-                }
-                newButton.innerText = 'New';
-                document.getElementById('titles').appendChild(newButton);
+                        new_table(0,
+                            () => {
+                                removeTable();
+                                createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                                closeSideMenu(document.getElementById('sideMenu'));
+                            },
+                            (error) => {
+                                alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
+                                console.log(ERROR_MESSAGES[error]);
+                            });
+                    },
+                    'Open': () => {
+                        const filesMenu = document.getElementById('filesMenu');
+                        filesMenu.style.left = '0px';
+                        filesMenu.style.transform = 'rotateY(0)';
+                        filesMenu.style.opacity = '1';
+                    }
+                });
+
+                getSavedTable(null, (dataINFO) => {
+                    const tableData = JSON.parse(dataINFO.data);
+                    tableFromObject(tableData);
+                    const li = document.createElement('li');
+                    const aLi = document.createElement('a');
+                    aLi.onclick = () => {
+                        stay(0, null,
+                            (error) => {
+                                alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
+                                console.log(ERROR_MESSAGES[error]);
+                            });
+                        closeSideMenu(sideMenu);
+                        //начинать тут
+                        aLi.textContent = 'Save As..';
+                        aLi.onclick = () => {
+                            alert('kek');
+                        };
+                    };
+                    aLi.textContent = 'Stay';
+                    li.appendChild(aLi);
+                    sideMenu.appendChild(li);
+                }, () => {
+                    addToSideMenu(sideMenu, 'Save As..', () => {
+                        alert('kek');
+                    });
+                    console.log('No guest saves');
+                });
+
 
                 if (!data.error) {
-                    data.titles.forEach((title) => {
-                        const button = document.createElement('button');
-                        button.onclick = () => {
+                    const filesMenu = document.getElementById('filesMenuUl');
+                    data.titles.forEach((titleINFO) => {
+                        const li = document.createElement('li');
+                        const aLi = document.createElement('a');
+                        aLi.onclick = () => {
                             if (tableTitle) {
                                 save();
                             }
 
-                            getSavedTable(title, (dataINFO) => {
+                            getSavedTable(titleINFO.title, (dataINFO) => {
                                     ajax_remove_guest(() => {
                                         removeTable();
 
                                         const tableData = JSON.parse(dataINFO.data);
                                         tableFromObject(tableData);
-                                        setNewTitle(title);
+                                        setNewTitle(titleINFO.title);
+                                        closeSideMenu(document.getElementById('filesMenu'));
+                                        closeSideMenu(document.getElementById('sideMenu'));
+                                        // closeSideMenu(sideMenu);
                                     }, (error) => {
                                         alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
                                         console.log(ERROR_MESSAGES[error]);
@@ -598,45 +691,24 @@ const loadTable = () => {
                                     alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
                                     console.log(ERROR_MESSAGES[error]);
                                 });
-                        }
-                        button.innerText = title;
-                        document.getElementById('titles').appendChild(button);
-                    })
+                        };
+
+                        aLi.textContent = titleINFO.title;
+                        li.appendChild(aLi);
+
+                        const timeStamp = document.createElement('p');
+                        timeStamp.className = 'timeStamp'
+                        timeStamp.textContent = 'Save: ' + toDateTime(titleINFO.timeStamp).toLocaleString();
+                        li.appendChild(timeStamp);
+
+                        filesMenu.appendChild(li);
+                    });
                 } else {
                     alert(`Error: ${ERROR_MESSAGES[data.error]}. Retry later.`);
                     console.log(ERROR_MESSAGES[data.error]);
                 }
 
-                getSavedTable(null, (dataINFO) => {
-                    const tableData = JSON.parse(dataINFO.data);
-                    tableFromObject(tableData);
-                    const newButton = document.createElement('button');
-                    newButton.onclick = () => stay(0, null,
-                        (error) => {
-                            alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
-                            console.log(ERROR_MESSAGES[error]);
-                        });
-                    newButton.innerText = 'Stay';
-                    document.getElementById('titles').appendChild(newButton);
-                }, () => {
-                    console.log('No guest saves');
-                });
-
                 //заблокировать таблицу
-            } else if (data.status === 'guest') {
-                setColorScheme(USER_STATUS.GUEST);
-                document.getElementById('username').textContent = 'GUEST';
-
-                const aHref = document.getElementById('account');
-                aHref.href = '/authentication';
-                aHref.textContent = 'Sign In';
-
-                getSavedTable(null, (dataINFO) => {
-                    const tableData = JSON.parse(dataINFO.data);
-                    tableFromObject(tableData);
-                }, () => {
-                    createTable(DEFAULT_ROWS, DEFAULT_COLS)
-                })
             }
         },
         () => {
