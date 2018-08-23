@@ -1,3 +1,6 @@
+
+
+
 body {
   color: #000000;
   font: 12px Tahoma, sans-serif;
@@ -60,7 +63,7 @@ nav li {
 
 .top-menu li {
   display: inline-block;
-  padding: 10px 30px;
+  padding: 10px 15px;
   margin: 0;
   border-bottom: 1px solid;
 }
@@ -77,9 +80,11 @@ nav li {
   margin-left: 20px;
 }
 
-.top-menu a:after {
+.top-menu a:after,
+.top-menu label[for="sideMenu"]:after {
   display: block;
   content: "";
+  margin-top: 5px;
   height: 2px;
   width: 0%;
   background-color: #26154c;
@@ -87,7 +92,8 @@ nav li {
 }
 
 .top-menu a:hover:after,
-.top-menu a:focus:after {
+.top-menu a:focus:after,
+.top-menu label[for="sideMenu"]:hover:after  {
   width: 100%;
 }
 
@@ -249,7 +255,7 @@ a:visited {
 }
 
 .example-text{
-  border        : 1.5px solid black;
+  border		: 1.5px solid black;
   resize: none;
   width: 176px;
   height: 67px;
@@ -589,6 +595,11 @@ a#account:focus:after{
   height: 60vh;
 }
 
+#sideMenu {
+  position: relative;
+  transform: rotateY(20deg);
+}
+
 input#sideMenu {
   display: none;
 }
@@ -602,15 +613,18 @@ div#sideMenu {
   background: white;
   top: 0;
   bottom: 0;
-  width: 300px;
-  left: -300px;
+  width: 200px;
+  left: -340px;
   z-index: 99;
   color: black;
   transition: .4s;
+  opacity: 0;
 }
 
 input#sideMenu:checked ~ div#sidemenu {
-  left: 0;
+  left: 0px;
+  transform: rotateY(0);
+  opacity: 1;
 }
 
 
@@ -619,4 +633,10 @@ div#sideMenu ul.submenu {
   display: block;
   position: relative;
 }
- 
+
+.top-menu label[for="sideMenu"],
+.top-menu li > a {
+  line-height: 1;
+  margin-left: 20px;
+  display: inline;
+}
