@@ -1,225 +1,227 @@
 <div class="back">
-    <html xmlns="http://www.w3.org/1999/html">
-    <head>
-      <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-      <title>Data!</title>
-      <!-- <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico"/> -->
-      <link rel="stylesheet" href="css/tabs_style.css" type="text/css">
-      <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Oswald:400,300" type="text/css">
-  
-    </head>
-  
-  
-    <div id="topBarContainer" class = "TopBarContainer">
-      <div id="topbar" class="TopBarState">
-        <div class = "flexitems" style="height: 48px">
-            <button class="toMainPage" id="logoButton" style="display: inline"></button>
-            <h1 class = "PageName" id ="name"></h1>
-            <h1 class = "UserName" id ="username"></h1>
-            <h1 class = "UserName">|</h1>
-            <a href="#" class="accountInf" id="account"></a>
+  <html xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <title>Whitesquare</title>
+    <link rel="stylesheet" href="css/tabs_style.css" type="text/css">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Oswald:400,300" type="text/css">
 
-            <span id="saveINFO"></span>
-            <button onclick="save()">save</button>
-            <span id="titles"></span>
-            <span id="log"></span> </p>
-        </div>
+  </head>
+
+
+  <div id="topBarContainer" class = "TopBarContainer">
+    <div id="topbar" class="TopBarState">
+      <div class = "flexitems" style="height: 48px">
+          <button class="toMainPage" id="logoButton" style="display: inline"></button>
+          <h1 class = "PageName" id ="name"></h1>
+          <h1 class = "UserName" id ="username"></h1>
+          <h1 class = "UserName">|</h1>
+          <a href="#" class="accountInf" id="account"></a>
+          <span id="saveINFO"></span>
+          <button onclick="save()">save</button>
+          <span id="titles"></span>
+          <span id="log"></span> </p>
       </div>
     </div>
-    <div id="tab/three" class="abs tabs block">
-      <p class="abs">
-        &lt;div <span style="color: #444">id="tab/three"</span>&gt;
-        <br />...
-        <br />&lt;/div&gt;
-      </p>
+  </div>
+  <div id="tab/three" class="abs tabs block">
+    <p class="abs">
+      &lt;div <span style="color: #444">id="tab/three"</span>&gt;
+      <br />...
+      <br />&lt;/div&gt;
+    </p>
+  </div>
+  <div id="tab/two" class="abs tabs block">
+    <p class="abs">
+      &lt;div <span style="color: #444">id="tab/two"</span>&gt;
+      <br />...
+      <br />&lt;/div&gt;
+    </p>
+  </div>
+  <div id="tab/one" class="abs tabs block">
+    <p class="abs">
+      &lt;div <span style="color: #444">id="tab/one"</span>&gt;
+      <br />...
+      <br />&lt;/div&gt;
+    </p>
+  </div>
+  <div id="tab" class="abs block">
+    <a href="#one">#one</a>
+    <a href="#two">#two</a>
+    <b><a href="#tab/one">#tab</a></b>
+    <p class="abs" style="font-size: 24px; top: 32px; left: 34px; color: #ccc">
+      &lt;div id="tab"&gt;
+    </p>
+    <p class="abs" style="font-size: 24px; top: 200px; left: 34px; color: #ccc">
+      &lt;div id="tab"&gt;
+    </p>
+    <ul class="circle abs">
+      <a href="#tab/one">
+        <li></li>
+      </a>
+      <a href="#tab/two">
+        <li></li>
+      </a>
+      <a href="#tab/three">
+        <li></li>
+      </a>
+    </ul>
+    <ul class="abs">
+      <a href="#tab/one">
+        <li>3.1</li>
+      </a>
+      <a href="#tab/two">
+        <li>3.2</li>
+      </a>
+      <a href="#tab/three">
+        <li>3.3</li>
+      </a>
+    </ul>
+  </div>
+  <div id="two" class="abs block">
+    <div>
+      <nav>
+        <ul class="top-menu">
+          <li>
+            <a href="#">File</a>
+            <ul class="submenu">
+              <li><a href="#">New</a></li>
+              <li><a href="#">Open</a></li>
+              <li><a href="#">Create copy</a></li>
+            </ul>
+          </li>
+          <li><a href="#one">Edit</a></li>
+          <li><a href="#two">Format</a></li>
+        </ul>
+      </nav>
     </div>
-    <div id="tab/two" class="abs tabs block">
-      <p class="abs">
-        &lt;div <span style="color: #444">id="tab/two"</span>&gt;
-        <br />...
-        <br />&lt;/div&gt;
-      </p>
+
+    <div class="cellsettingstoolbar" style="display: block;">
+      <table cellspacing="0" cellpadding="0">
+        <tbody>
+        <tr>
+          <td>
+            <div class="currint_number">Свойства ячейки: <span id=currient_number"></span></div>
+          </td>
+        </tr>
+        <tr>
+          <td>  <button class="savecell">Save as: A1</button> <button class="cancel" href="#one" >Cancel</button>   </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
-    <div id="tab/one" class="abs tabs block">
-      <p class="abs">
-        &lt;div <span style="color: #444">id="tab/one"</span>&gt;
-        <br />...
-        <br />&lt;/div&gt;
-      </p>
+
+    <div class="input">
+      <input type="text" size="60" value="" class="form-control input-sm">
     </div>
-    <div id="tab" class="abs block">
-      <a href="#one">#one</a>
-      <a href="#two">#two</a>
-      <b><a href="#tab/one">#tab</a></b>
-      <p class="abs" style="font-size: 24px; top: 32px; left: 34px; color: #ccc">
-        &lt;div id="tab"&gt;
-      </p>
-      <p class="abs" style="font-size: 24px; top: 200px; left: 34px; color: #ccc">
-        &lt;div id="tab"&gt;
-      </p>
-      <ul class="circle abs">
-        <a href="#tab/one">
-          <li></li>
-        </a>
-        <a href="#tab/two">
-          <li></li>
-        </a>
-        <a href="#tab/three">
-          <li></li>
-        </a>
-      </ul>
-      <ul class="abs">
-        <a href="#tab/one">
-          <li>3.1</li>
-        </a>
-        <a href="#tab/two">
-          <li>3.2</li>
-        </a>
-        <a href="#tab/three">
-          <li>3.3</li>
-        </a>
-      </ul>
-    </div>
-    <div id="two" class="abs block">
-      <div>
-        <nav>
-          <ul class="top-menu">
-            <li>
-              <a href="#">File</a>
-              <ul class="submenu">
-                <li><a href="#">New</a></li>
-                <li><a href="#">Open</a></li>
-                <li><a href="#">Create copy</a></li>
-              </ul>
-            </li>
-            <li><a href="#one">Edit</a></li>
-            <li><a href="#two">Format</a></li>
-          </ul>
-        </nav>
-      </div>
-  
-      <div class="cellsettingstoolbar" style="display: block;">
-        <table cellspacing="0" cellpadding="0">
-          <tbody>
-          <tr>
-            <td>
-              <div class="currint_number">Свойства ячейки: <span id=currient_number"></span></div>
-            </td>
-          </tr>
-          <tr>
-            <td>  <button class="savecell">Save as: A1</button> <button class="cancel" href="#one" >Cancel</button>   </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-  
-      <div class="input">
-        <input type="text" size="60" value="" class="form-control input-sm">
-      </div>
-      <section class="format">
-        <div class="transformtext">
-          <div class="alignment">
-            <h2>Aligment:</h2>
-            <div class="horizontally">
-              <button class='left' title="left"></button>
-              <button class='center'title="center"></button>
-              <button class='right' title="right"></button>
-            </div>
-          </div>
-          <div class="font">
-            <h2>Font settings:</h2>
-            <div class="font-settings">
-              <button class='left' title="bold"></button>
-              <button class='center'title="italics"></button>
-              <button class='right' title="color"></button>
-            </div>
-          </div>
-          <div class="font-family">
-            <h2>Font family:</h2>
-            <div class="font-selecter">
-              <select>
-                <option selected disabled>Font family</option>
-                <option value="">Default</option>
-                <option value="">Arial</option>
-                <option value="">Courier</option>
-                <option value="">Verdana</option>
-              </select>
-            </div>
+    <section class="format">
+      <div class="transformtext">
+        <div class="alignment">
+          <h2>Aligment:</h2>
+          <div class="horizontally">
+            <button class='left' title="left"></button>
+            <button class='center'title="center"></button>
+            <button class='right' title="right"></button>
           </div>
         </div>
-        <div class="example_text">
-          <div style="width:100px;height:100px;overflow:hidden;border:1px solid black;background-color:#EEE;padding:6px;">
-            <table cellspacing="0" cellpadding="0">
-              <tbody>
-              <tr>
-                <td id="sample-text" style="height: 100px; width: 100px; background-color: rgb(255, 255, 255); font-size: small; padding: 2px 2px 1px; vertical-align: top; text-align: left;">
-                  <div>Это<br>пример</div>
-                  <div style="text-align: right;">9.8765<br>-1234.5</div>
-                </td>
-              </tr>
-              </tbody>
-            </table>
+        <div class="font">
+          <h2>Font settings:</h2>
+          <div class="font-settings">
+            <button class='left' title="bold"></button>
+            <button class='center'title="italics"></button>
+            <button class='right' title="color"></button>
           </div>
         </div>
-      </section>
-    </div>
-    <div id="one" class="abs block">
-      <div>
-        <nav>
-          <ul class="top-menu">
-            <li>
-              <a href="#">File</a>
-              <ul class="submenu">
-                <li><a href="#">New</a></li>
-                <li><a href="#">Open</a></li>
-                <li><a href="#">Create copy</a></li>
-              </ul>
-            </li>
-            <li><a href="#one">Edit</a></li>
-            <li><a href="#two">Format</a></li>
-          </ul>
-        </nav>
+        <div class="font-family">
+          <h2>Font family:</h2>
+          <div class="font-selecter">
+            <select>
+              <option selected disabled>Font family</option>
+              <option value="">Default</option>
+              <option value="">Arial</option>
+              <option value="">Courier</option>
+              <option value="">Verdana</option>
+            </select>
+          </div>
+        </div>
       </div>
-      <div class="toolbar">
-        <button class="back-button" title="Cancel"></button>
-        <button class="forward-button" title="Forward"></button>
-        <button class="copy-button" title="Copy"></button>
-        <button class="cut-button" title="Cut"></button>
-        <button class="paste-button" title="Paste"></button>
-        <button class="lock-button" title="Lock"></button>
-        <button class="unlock-button" title="Unlock"></button>
-      </div>
-      <div class="input">
-        <input type="text" size="60" value="" class="form-control input-sm">
-      </div>
-      
-      <div class="table" >
-        <link rel="stylesheet" type="text/css" href="/css/tablestyles.css" >
-        <div class = "null-div">
-          <table>
+      <div class="example_text">
+        <div style="width:100px;height:100px;overflow:hidden;border:1px solid black;background-color:#EEE;padding:6px;">
+          <table cellspacing="0" cellpadding="0">
+            <tbody>
             <tr>
-              <td></td>
+              <td id="sample-text" style="height: 100px; width: 100px; background-color: rgb(255, 255, 255); font-size: small; padding: 2px 2px 1px; vertical-align: top; text-align: left;">
+                <div>Это<br>пример</div>
+                <div style="text-align: right;">9.8765<br>-1234.5</div>
+              </td>
             </tr>
+            </tbody>
           </table>
-          <!-- для общности сделаем таблицей -->
         </div>
-        <div class = "up-div" id = "up-div">
-          <meta charset="utf8"/>
-          <table id = "up-table"></table>
-        </div>
-        <div class = "left-div" id = "left-div">
-          <table id = "left-table" width = 100%></table>
-        </div>
-        <div id = "main-div" class = "scroll-table">
-          <table id = "main-table"></table>
-        </div>
-        <script src="/js/config.js"></script>
-        <script src="/js/colorConfig.js"></script>
-        <script src="/js/utils.js"></script>
-        <script src="/js/autosave.js"></script>
-        <script src="/js/formulas.js"></script>
-        <script src="/js/table.js"></script>
       </div>
+    </section>
+  </div>
+  <div id="one" class="abs block">
+    <div>
+      <nav>
+        <ul class="top-menu">
+          <li>
+            <input type="checkbox" id="sideMenu">
+            <label for="sideMenu" style="line-height: 1; margin-right: 20px;"><!-- <a href="#"> -->File<!-- </a> --></label>
+            <div id="sideMenu">
+              <label for="sideMenu" style="width: 30px; height: 30px; background: #000; z-index: 100; display: inline-block; position: absolute; top: 0; left: 0; margin-left: 0;"></label>
+              <ul class="submenu">
+                <li><a href="#">New</a></li>
+                <li><a href="#">Open</a></li>
+                <li><a href="#">Create copy</a></li>
+              </ul>
+            </div>
+          </li>
+          <li><a href="#one">Edit</a></li>
+          <li><a href="#two">Format</a></li>
+        </ul>
+      </nav>
     </div>
-  </html>
+    <div class="toolbar">
+      <button class="back-button" title="Cancel"></button>
+      <button class="forward-button" title="Forward"></button>
+      <button class="copy-button" title="Copy"></button>
+      <button class="cut-button" title="Cut"></button>
+      <button class="paste-button" title="Paste"></button>
+      <button class="lock-button" title="Lock"></button>
+      <button class="unlock-button" title="Unlock"></button>
+    </div>
+    <div class="input">
+      <input type="text" size="60" value="" class="form-control input-sm">
+    </div>
+    <div class="table" >
+      <link rel="stylesheet" type="text/css" href="/css/tablestyles.css" >
+      <div class = "null-div">
+        <table>
+          <tr>
+            <td></td>
+          </tr>
+        </table>
+        <!-- для общности сделаем таблицей -->
+      </div>
+      <div class = "up-div" id = "up-div">
+        <meta charset="utf8"/>
+        <table id = "up-table"></table>
+      </div>
+      <!-- <div class = "great-table"> -->
+      <div class = "left-div" id = "left-div">
+        <table id = "left-table" width = 100%></table>
+      </div>
+      <div id = "main-div" class = "scroll-table">
+        <table id = "main-table"></table>
+      </div>
+      <script src="/js/config.js"></script>
+      <script src="/js/colorConfig.js"></script>
+      <script src="/js/utils.js"></script>
+      <script src="/js/autosave.js"></script>
+      <script src="/js/formulas.js"></script>
+      <script src="/js/table.js"></script>
+    </div>
+  </div>
+</html>
