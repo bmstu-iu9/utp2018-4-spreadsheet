@@ -92,15 +92,14 @@ textarea {
     padding: 5px;
     wrap: none;
     vertical-align: top;
+    //align: left;
 }
 
 textarea:focus {
     outline: none;
 }
 
-textarea:not(:focus) {
-    text-align: left;
-}
+
 
 table {
     border-collapse: collapse;

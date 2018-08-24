@@ -11,6 +11,7 @@ let ROWS = 0, COLS = 0;
 let letters = [65];
 let currentLet = [];
 let focusID = '';
+let lastFocusedTextarea = '';
 
 const clear = (index) => {
     for (let i = index; i < letters.length; i++) {
@@ -246,12 +247,14 @@ const initCell = (columnNumber, rowNumber) => {
             const oldInput = document.getElementById(focusID);
             const oldCell = document.getElementById('Cell_' + focusID);
 
-            oldInput.style.textAlign = 'right';
+            if(!oldInput.data)
+              oldInput.style.textAlign = 'right';
             oldCell.style.outline = '';
         }
 
         focusID = newInput.id;
-        newInput.style.textAlign = 'left';
+        if(!newInput.data)
+          newInput.style.textAlign = 'left';
         newCell.style.outline = '3px solid #6bc961'
     }
 
@@ -293,9 +296,13 @@ const addCells = function(rows, cols){
         for (let j = 0; j < ROWS; j++) {
 
             const cell = mainTable.rows[j].insertCell(-1);
-            cell.innerHTML = cell.innerHTML = "<textarea id = '"+ letter + (j + 1) +"' class = 'cell_input_area'/>";
+            cell.innerHTML = "<textarea id = '"+ letter + (j + 1) +"' class = 'cell_input_area'/>";
             cell.id = 'Cell_' + letter + (j + 1);
             initCell(currentLet.length - 1, j + 1);
+            cell.firstChild.onfocus = function() {
+              alert("lol");
+            };
+
 
             const inp = document.getElementById(letter + (j + 1));
             const preInp = document.getElementById(currentLet[currentLet.length - 2] + (j + 1));
@@ -346,6 +353,23 @@ const addCells = function(rows, cols){
             new_cell.id = 'Cell_' + letter + (i + 1);
             initCell(j, i + 1);
 
+            //new_cell.firstChild.data = 0;
+
+            new_cell.firstChild.onfocus = function() {
+              //if(!new_cell.firstChild.data)
+              //alert(new_cell.firstChild.data);
+              //new_cell.firstChild.data++;
+              // = parseInt(new_cell.firstChild.data) + 1;
+              lastFocusedTextarea = document.activeElement;
+            };
+
+            /*
+            new_cell.firstChild.onblur = function() {
+              //console.log(document.activeElement.id);
+              //new_cell.firstChild.data = 0;
+            };
+            */
+
             if (i >= DEFAULT_ROWS) {
                 const inp = document.getElementById(letter + (i + 1));
                 const preInp = document.getElementById(letter + i);
@@ -378,4 +402,19 @@ mainDiv.onscroll = function() {
   }
 }
 
+
 // KHOPO4KU & DESIGH
+
+document.getElementById("left-button").addEventListener("click", e => {
+   document.getElementById("left-button").style.borderRadius = "5px 5px 5px 5px";
+   document.getElementById("left-button").style.border = "2px solid #6bc961";
+   lastFocusedTextarea.style.textAlign = lastFocusedTextarea.data = "left";
+});
+
+document.getElementById("center-button").addEventListener("click", e => {
+   lastFocusedTextarea.style.textAlign = lastFocusedTextarea.data = "center";
+});
+
+document.getElementById("right-button").addEventListener("click", e => {
+   lastFocusedTextarea.style.textAlign = lastFocusedTextarea.data = "right";
+});

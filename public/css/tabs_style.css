@@ -290,6 +290,9 @@ a:visited {
   margin-top: 10px;
 }
 
+.horizontally button:focus {
+  outline: none;
+}
 
 .horizontally .left {
   background: url('../img/align-to-left.svg') center center / 100% 100% ;
