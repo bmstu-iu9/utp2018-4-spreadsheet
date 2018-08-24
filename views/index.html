@@ -168,13 +168,14 @@
           <li>
             <input type="checkbox" id="sideMenu">
             <label for="sideMenu" style="line-height: 1; margin-right: 20px;"><!-- <a href="#"> -->File<!-- </a> --></label>
+            <label for="sideMenu" class="close"></label>
             <div id="sideMenu">
-              <label for="sideMenu" style="width: 30px; height: 30px; background: #000; z-index: 100; display: inline-block; position: absolute; top: 0; left: 0; margin-left: 0;"></label>
+
               <ul id="sideMenuUl" class="submenu">
                 <div id="filesMenu">
-                  <p>Recently Updated</p>
-                  <label onclick="closeSideMenu(document.getElementById('filesMenu'))"
-                        style="width: 30px; height: 30px; background: #000; z-index: 100; display: inline-block; position: absolute; top: 0; left: 0; margin-left: 40px;"></label>
+                  <p id="recentlyUpdated">Recently Updated</p>
+                  <label id="closeFileMenuButton" onclick="closeSideMenu(document.getElementById('filesMenu'))"
+                        style="width: 35px; height: 35px; z-index: 100; display: inline-block; position: absolute; top: 0; left: 0;"></label>
                   <ul id='filesMenuUl' class="submenu1">
                   </ul>
                 </div>

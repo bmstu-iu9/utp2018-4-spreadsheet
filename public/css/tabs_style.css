@@ -663,8 +663,12 @@ input#filesMenu {
 
 label[for="filesMenu"] {
   cursor: pointer;
+
 }
 
+label#closeFileMenuButton{
+    background: url("../img/icons8-left-filled-50.png") center center / 100% 100%;
+}
 div#filesMenu {
   position: fixed;
   background: white;
@@ -711,4 +715,40 @@ div#filesMenu ul.submenu1 {
   margin-right: 20px;
   font-size: 12px;
 }
+
+p#recentlyUpdated{
+  margin-top: 50px;
+  margin-left: 20px;
+  font-size: 20px;
+}
+
+
+.close {
+  display: block !important;
+  position: fixed;
+  background: rgba(0, 0, 0, .5);
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 180px;
+  opacity: 0;
+  transition: .3s;
+  z-index: -1;
+  margin: 0;
+}
+
+
+.top-menu label[for="sideMenu"]:not(.close),
+.top-menu li > a {
+  line-height: 1;
+  margin-left: 20px;
+  display: inline;
+}
+
+input#sideMenu:checked ~ .close {
+  opacity: 1;
+  z-index: 99;
+  transition-delay: .3s;
+}
+
 
