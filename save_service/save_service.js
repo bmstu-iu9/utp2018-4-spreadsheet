@@ -62,8 +62,7 @@ const saveGuestHandle = (body, response) => {
         return returnError(CONFIG.TOKEN_UNDEFINED, response);
     }
 
-    const currDate = new Date();
-    saveClient.run(`REPLACE INTO saves_guest(Token, Data, SaveTime) VALUES(?, ?, ?)`, [body.session, body.data, Math.round(currDate.getTime() / 1000)],
+    saveClient.run(`REPLACE INTO saves_guest(Token, Data, SaveTime) VALUES(?, ?, ?)`, [body.session, body.data, Date.now()],
         (err) => {
             if (err) {
                 logs.log(`Save GUEST \x1b[31mFAILED\x1b[0m: SessionID: ${body.session}, Database error: ${err.message}`);
@@ -88,8 +87,7 @@ const saveUserHandle = (body, response) => {
         return returnError(CONFIG.TOKEN_UNDEFINED, response);
     }
 
-    const currDate = new Date();
-    saveClient.run(`REPLACE INTO saves_user(Title, Email, Data, SaveTime) VALUES(?, ?, ?, ?)`, [body.title, body.email, body.data, Math.round(currDate.getTime() / 1000)], (err) => {
+    saveClient.run(`REPLACE INTO saves_user(Title, Email, Data, SaveTime) VALUES(?, ?, ?, ?)`, [body.title, body.email, body.data, Date.now()], (err) => {
         if (err) {
             logs.log(`Save USER \x1b[31mFAILED\x1b[0m: Title: ${body.title}, Email: ${body.email}, Database error: ${err.message}`);
             return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);

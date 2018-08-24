@@ -738,10 +738,15 @@ p#recentlyUpdated{
 }
 
 
-.top-menu label[for="sideMenu"]:not(.close),
-.top-menu li > a {
+.top-menu label[for="sideMenu"]:not(.close) {
   line-height: 1;
   margin-left: 20px;
+  display: inline;
+}
+
+.top-menu li > a {
+  line-height: 1;
+  margin-left: 10px;
   display: inline;
 }
 

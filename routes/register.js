@@ -11,7 +11,7 @@ const returnJSON = require('../app/server_responses').returnJSON;
 const register = (body, res) => {
     const postData = qs.stringify({
         'first_name': body.first_name,
-        'last_name': body.first_name,
+        'last_name': body.last_name,
         'organization': body.org,
         'email': body.email_reg,
         'password': body.password

@@ -58,17 +58,6 @@ const str2arr = (str) => {
     return buf;
 }
 
-const toDateTime = (secs) => {
-    var t = new Date(1970, 0, 1); // Epoch
-    t.setSeconds(secs);
-    return t;
-}
-
-const closeSideMenu = (sideMenu) => {
-    if (sideMenu.nodeName === 'DIV') {
-        sideMenu.style.left = '-340px';
-        sideMenu.style.opacity = '0';
-    } else {
-        sideMenu.checked = false;
-    }
+const dateToString = (date) => {
+    return date.toLocaleString().split(' ').slice(0, 4).join(' ');
 }

@@ -80,7 +80,7 @@ const new_table = (mode, okCallback, errorCallback) => {
     });
 }
 
-const stay = (mode, data, errorCallback) => {
+const stay = (mode, data, okCallback, errorCallback) => {
     const newTitle = prompt(mode ? 'Title is already used' : 'Enter file title: ', 'new_title');
     if (!newTitle) return;
     const newData = mode ? data : JSON.stringify(Object.assign({}, {
@@ -93,38 +93,62 @@ const stay = (mode, data, errorCallback) => {
         data: newData
     }, (removeINFO) => {
         setNewTitle(newTitle);
-        console.log('ok' + removeINFO);
+        okCallback(removeINFO);
     }, (errorCode) => {
-        console.log('err' + errorCode)
         if (errorCode === ERRORS.NOT_UNIQUE_ERROR) //Название занято
-            stay(1, newData, errorCallback);
+            stay(1, newData, okCallback, errorCallback);
         else {
             return errorCallback(errorCode);
         }
     });
 }
 
-const saveData = (postData) => {
-    ajax_save(postData, () => {
-            document.getElementById('saveINFO').textContent = 'Last save: ' + new Date().toLocaleTimeString();
-        },
-        (errorCode) => {
-            document.getElementById('saveINFO').textContent = ERROR_MESSAGES[errorCode];
-        });
-}
-
-const save = () => {
+const save = (okCallback, errorCallback) => {
     const cookie = parseCookies(document.cookie);
-    console.log(cookie);
-    saveData({
+
+    ajax_save({
         title: tableTitle,
         status: cookie['status'],
         session: cookie['token'],
         data: JSON.stringify(Object.assign({}, {
             'size': [ROWS, COLS]
         }, innerTable.activeCeils))
-    })
+    }, okCallback, errorCallback);
+}
+
+const saveAs = (mode, data, okCallback, errorCallback) => {
+    const cookie = parseCookies(document.cookie);
+    const newTitle = prompt(mode === 1 ? 'Title is already used' : 'Enter file title: ', 'new_title');
+    if (!newTitle) return;
+    const newData = mode ? data : JSON.stringify(Object.assign({}, {
+        'size': [ROWS, COLS]
+    }, innerTable.activeCeils));
+
+    ajax_save({
+        title: newTitle,
+        status: cookie['status'],
+        session: cookie['token'],
+        data: newData
+    }, (saveInfo) => {
+        setNewTitle(newTitle);
+        okCallback(saveInfo);
+    }, (errorCode) => {
+        if (errorCode === ERRORS.NOT_UNIQUE_ERROR) //Название занято
+            saveAs(1, newData, okCallback, errorCallback);
+        else {
+            return errorCallback(errorCode);
+        }
+    });
 }
 
 //const mem = () => ajax_remove({session: parseCookies(document.cookie)['token']});
-setInterval(save, 600000 * 3); //30 минут
+setInterval(() => {
+    save(() => {
+        closeSideMenu(document.getElementById('sideMenu'));
+        document.getElementById('filesMenuUl').removeChild(document.getElementById('load_' + tableTitle));
+        addLoadOption(document.getElementById('sideMenuUl'), document.getElementById('filesMenuUl'),
+            tableTitle, dateToString(new Date()), 'front');
+    }, (error) => {
+        console.log('INTERVAL SAVE ERROR: ' + ERROR_MESSAGES[error]);
+    });
+}, 600000 * 3); //30 минут
