@@ -63,7 +63,7 @@ nav li {
 
 .top-menu li {
   display: inline-block;
-  padding: 10px 30px;
+  padding: 10px 15px;
   margin: 0;
   border-bottom: 1px solid;
 }
@@ -80,9 +80,11 @@ nav li {
   margin-left: 20px;
 }
 
-.top-menu a:after {
+.top-menu a:after,
+.top-menu label[for="sideMenu"]:after {
   display: block;
   content: "";
+  margin-top: 5px;
   height: 2px;
   width: 0%;
   background-color: #26154c;
@@ -90,7 +92,8 @@ nav li {
 }
 
 .top-menu a:hover:after,
-.top-menu a:focus:after {
+.top-menu a:focus:after,
+.top-menu label[for="sideMenu"]:hover:after  {
   width: 100%;
 }
 
@@ -112,9 +115,35 @@ ul.submenu > li > a {
   text-decoration: none;
 }
 
-ul.top-menu > li:hover > ul.submenu {
+ul.top-menu > li:hover > ul.submenu{
   display: block;
 }
+
+
+ul.submenu1 {
+  display: none;
+  position: inherit;
+  width: 200px;
+  top: 37px;
+  left: 0;
+  background-color: white;
+}
+ul.submenu1 > li {
+  display: block;
+}
+ul.submenu1 > li > a {
+  display: block;
+  color: #5c5c5c;
+  background-color: white;
+  text-decoration: none;
+}
+
+ul.top-menu > li:hover > ul.submenu1 {
+  display: block;
+}
+
+
+
 
 .back-button{
   height: 35px;
@@ -587,10 +616,127 @@ a#account{
 }
 a#account:hover:after,
 a#account:focus:after{
-color: #757575;
+  color: #757575;
 }
 
 .table{
-    margin-left: 20px;
-    height: 60vh;
+  margin-left: 20px;
+  height: 60vh;
 }
+
+#sideMenu {
+  position: relative;
+  transform: rotateY(20deg);
+}
+
+input#sideMenu {
+  display: none;
+}
+
+label[for="sideMenu"] {
+  cursor: pointer;
+}
+
+div#sideMenu {
+  position: fixed;
+  background: white;
+  top: 0;
+  bottom: 0;
+  width: 200px;
+  left: -340px;
+  z-index: 99;
+  color: black;
+  transition: .4s;
+  opacity: 0;
+}
+
+input#sideMenu:checked ~ div#sidemenu {
+  left: 0px;
+  transform: rotateY(0);
+  opacity: 1;
+}
+
+
+
+div#sideMenu ul.submenu {
+  display: block;
+  position: relative;
+}
+
+.top-menu label[for="sideMenu"],
+.top-menu li > a {
+  line-height: 1;
+  margin-left: 20px;
+  display: inline;
+}
+
+
+
+
+label[for="sideMenu"] {
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+#filesMenu {
+  position: relative;
+  transform: rotateY(20deg);
+}
+
+input#filesMenu {
+  display: none;
+}
+
+label[for="filesMenu"] {
+  cursor: pointer;
+}
+
+div#filesMenu {
+  position: fixed;
+  background: white;
+  top: 0;
+  bottom: 0;
+  width: 200px;
+  left: -340px;
+  z-index: 99;
+  color: black;
+  transition: .4s;
+  opacity: 0;
+}
+
+input#filesMenu:checked ~ div#filesMenu{
+  left: 0px;
+  transform: rotateY(0);
+  opacity: 1;
+}
+
+
+
+div#filesMenu ul.submenu1 {
+  display: block;
+  position: relative;
+}
+
+.top-menu label[for="filesMenu"],
+.top-menu li > a {
+  line-height: 1;
+  margin-left: 20px;
+  display: inline;
+}
+
+
+
+.top-menu label[for="filesMenu"],
+.top-menu li > a {
+  line-height: 1;
+  margin-left: 20px;
+  display: inline;
+}
+
+
+

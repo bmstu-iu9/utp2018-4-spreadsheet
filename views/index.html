@@ -14,6 +14,7 @@
     <div id="topbar" class="TopBarState">
       <div class = "flexitems" style="height: 48px">
         <button class="toMainPage" style="display: inline"></button>
+
         <h1 class = "PageName" id ="name" style="display:inline;">Table Name</h1>
         <a href="#" class="accountInf" id="account" style="display: inline;color: white;margin-left: 52%;font-size: 16px;font-weight: 600;">Sign in</a>
       </div>
@@ -162,12 +163,29 @@
       <nav>
         <ul class="top-menu">
           <li>
-            <a href="#">File</a>
-            <ul class="submenu">
-              <li><a href="#">New</a></li>
-              <li><a href="#">Open</a></li>
-              <li><a href="#">Create copy</a></li>
-            </ul>
+            <input type="checkbox" id="sideMenu">
+            <label for="sideMenu" style="line-height: 1; margin-right: 20px;"><!-- <a href="#"> -->File<!-- </a> --></label>
+            <div id="sideMenu">
+              <label for="sideMenu" style="width: 30px; height: 30px; background: #000; z-index: 100; display: inline-block; position: absolute; top: 0; left: 0; margin-left: 0;"></label>
+              <ul class="submenu">
+                <li><a href="#">New</a></li>
+
+
+                <li>
+                  <input type ="checkbox" id="filesMenu">
+                  <label for="filesMenu" style="line-height: 1; margin-right: 20px;"><!-- <a href="#"> -->Open<!-- </a> --></label>
+                  <div id="filesMenu">
+                    <label for="filesMenu" style="width: 30px; height: 30px; background: #000; z-index: 100; display: inline-block; position: absolute; top: 0; left: 0; margin-left: 40px;"></label>
+                    <ul class="submenu1">
+                      <li><a href="#">test</a></li>
+                    </ul>
+                  </div>
+                </li>
+
+
+                <li><a href="#">Create copy</a></li>
+              </ul>
+            </div>
           </li>
           <li><a href="#one">Edit</a></li>
           <li><a href="#two">Format</a></li>
