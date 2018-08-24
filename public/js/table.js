@@ -1332,6 +1332,8 @@ const initCell = (columnNumber, rowNumber) => {
             newInput.focus();
             isMultiHL = true;
 
+            let colorCell = newCell;
+
             const paintCells = () => {
                 const rowFlag = newCell.rowNum > curCell.rowNum;
                 const colFlag = newCell.colNum > curCell.colNum;
@@ -1421,10 +1423,41 @@ const initCell = (columnNumber, rowNumber) => {
             borderCells.push(id);
 
             document.onmousemove = (e) => {
-                if (curCell !== null) {
-                    bleachCells();
-                    paintCells();
-                }
+
+              if (e.target.className === 'main_cell') {
+                  curCell = e.target;
+              } else if (e.target.parentNode.className === 'main_cell') {
+                  curCell = e.target.parentNode;
+              } else if (e.pageY < getYCoord(mainTable.rows[0].cells[0])) {
+
+                  for (let i = 0; i <= COLS; i++) {
+                      const coordX1 = getXCoord(mainTable.rows[0].cells[i]);
+                      const coordX2 = mainTable.rows[0].cells[i].getBoundingClientRect().right + pageXOffset;
+                      if ((e.pageX > coordX1) && (e.pageX < coordX2)) {
+                          curCell = mainTable.rows[0].cells[i];
+                          break;
+                      }
+                  }
+
+              } else if (e.pageX < getXCoord(mainTable.rows[0].cells[0])) {
+
+                  for (let i = 0; i < ROWS; i++) {
+                      const coordY1 = getYCoord(mainTable.rows[i].cells[0]);
+                      const coordY2 = mainTable.rows[i].cells[0].getBoundingClientRect().bottom + pageYOffset;
+                      if ((e.pageY > coordY1) && (e.pageY < coordY2)) {
+                          curCell = mainTable.rows[i].cells[0];
+                          break;
+                      }
+                  }
+
+              }
+
+              if ((curCell !== null) && (curCell !== colorCell)) {
+                  bleachCells();
+                  paintCells();
+                  colorCell = curCell;
+              }
+
             }
 
             document.onmouseup = () => {
@@ -1434,12 +1467,7 @@ const initCell = (columnNumber, rowNumber) => {
             }
 
         }
-    }
 
-    newCell.onmouseenter = (e) => {
-        if (isMultiHL) {
-            curCell = e.target;
-        }
     }
 
     newCell.ondblclick = () => {
@@ -1512,12 +1540,18 @@ const addUpAndLeftEvents = (type, num) => {
   let prevColor = '';
 
   cell.onmouseenter = () => {
-      prevColor = getComputedStyle(cell).backgroundColor;
-      cell.style.backgroundColor = '#9fff9f';
+      if (!isMultiHL) {
+        prevColor = getComputedStyle(cell).backgroundColor;
+        cell.style.backgroundColor = '#9fff9f';
+      } else {
+        prevColor = '#c3c3c3';
+      }
   }
 
   cell.onmouseleave = () => {
-      cell.style.backgroundColor = prevColor;
+      if (!isMultiHL) {
+        cell.style.backgroundColor = prevColor;
+      }
   }
 
   if (type === 'up') {
@@ -1667,6 +1701,7 @@ const addCells = function (rows, cols) {
                 const cell = mainTable.rows[j].insertCell(-1);
                 cell.innerHTML = "<textarea id = '" + letter + (j + 1) + "' class = 'cell_input_area'/>";
                 cell.id = 'Cell_' + letter + (j + 1);
+                cell.className = 'main_cell';
                 initCell(currentLet.length - 1, j + 1);
                 //contextMenuListener(document.getElementById("" + letter + (j + 1)));
 
@@ -1750,6 +1785,7 @@ const addCells = function (rows, cols) {
                 const new_cell = row.insertCell(-1);
                 new_cell.innerHTML = "<textarea id = '" + letter + (i + 1) + "' class = 'cell_input_area'/>";
                 new_cell.id = 'Cell_' + letter + (i + 1);
+                new_cell.className = 'main_cell';
                 initCell(j, i + 1);
 
                 new_cell.onkeydown = function (e) {
