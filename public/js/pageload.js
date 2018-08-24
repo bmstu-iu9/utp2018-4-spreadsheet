@@ -42,6 +42,8 @@ const addLoadOption = (sideMenu, fileMenu, title, timeStamp, mode) => {
 
                     closeSideMenu(document.getElementById('filesMenu'));
                     closeSideMenu(document.getElementById('sideMenu'));
+                    
+                    removeFromSideMenu(sideMenu, 'stay_li');
                     addSaveOptions(sideMenu);
                 }, (error) => {
                     alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
@@ -103,6 +105,13 @@ const openSideMenu = (sideMenu, block) => {
     }
 }
 
+const removeFromSideMenu = (sideMenu, element_id) => {
+    const element = document.getElementById(element_id);
+    if (element) {
+        sideMenu.removeChild(element);
+    }
+}
+
 
 const addSaveOptions = (sideMenu) => {
     if (!document.getElementById('save_and_saveAs')) {
@@ -123,9 +132,9 @@ const addSaveOptions = (sideMenu) => {
             'Save As..', () => {
                 saveAs(0, null,
                     () => {
+                        closeSideMenu(document.getElementById('sideMenu'));
                         addLoadOption(document.getElementById('sideMenuUl'), document.getElementById('filesMenuUl'),
                             tableTitle, dateToString(new Date()), 'front');
-                        closeSideMenu(document.getElementById('sideMenu'))
                     },
                     (error) => {
                         alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
@@ -218,6 +227,7 @@ const loadTable = () => {
                                 closeSideMenu(document.getElementById('sideMenu'));
                                 addSaveOptions(sideMenu);
 
+                                removeFromSideMenu(sideMenu, 'stay_li');
                                 addLoadOption(sideMenu, document.getElementById('filesMenuUl'), tableTitle, dateToString(new Date()), 'front');
                             },
                             (error) => {
@@ -238,9 +248,9 @@ const loadTable = () => {
                             (info) => {
                                 addLoadOption(document.getElementById('sideMenuUl'), document.getElementById('filesMenuUl'),
                                     tableTitle, dateToString(new Date()), 'front');
-                                sideMenu.removeChild(document.getElementById('stay_li'));
                                 closeSideMenu(document.getElementById('sideMenu'));
 
+                                removeFromSideMenu(sideMenu, 'stay_li');
                                 addSaveOptions(sideMenu);
                             },
                             (error) => {
