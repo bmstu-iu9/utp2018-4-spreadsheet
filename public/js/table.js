@@ -303,6 +303,10 @@ const addCells = function(rows, cols){
 
             cell.firstChild.onfocus = function() {
               lastFocusedTextarea = document.activeElement;
+              document.getElementById("left-button").style.border = document.getElementById("center-button").style.border = document.getElementById("right-button").style.border = "2px solid #ffffff"
+              if(new_cell.firstChild.data){
+                document.getElementById("" + new_cell.firstChild.data + "-button").style.border = "2px solid #6bc961";
+              }
             };
 
 
