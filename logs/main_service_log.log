@@ -1,0 +1,3 @@
+[2018-8-25 11:07:34]  [35mMain Application[0m successfully [32mstarted[0m at 8080
+[2018-8-25 11:30:22]  [34mSAVE USER DATA[0m [31mFAILED[0m:SessionID tmn743les, Title: , Email: gaaveer@gmail.com, Error: TOKEN_UNDEFINED
+[2018-8-25 11:33:13]  [35mMain Application[0m successfully [32mstoped[0m at 8080
