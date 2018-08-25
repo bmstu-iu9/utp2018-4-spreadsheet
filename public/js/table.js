@@ -12,6 +12,7 @@ let letters = [65];
 let currentLet = [];
 let focusID = '';
 let lastFocusedTextarea = '';
+let somePoliticalDirections = ['left', 'center', 'right'];
 
 const clear = (index) => {
     for (let i = index; i < letters.length; i++) {
@@ -247,7 +248,7 @@ const initCell = (columnNumber, rowNumber) => {
             const oldInput = document.getElementById(focusID);
             const oldCell = document.getElementById('Cell_' + focusID);
 
-            if(!oldInput.data)
+            if(!oldInput.data && Number(oldInput.value))
               oldInput.style.textAlign = 'right';
             oldCell.style.outline = '';
         }
@@ -299,8 +300,9 @@ const addCells = function(rows, cols){
             cell.innerHTML = "<textarea id = '"+ letter + (j + 1) +"' class = 'cell_input_area'/>";
             cell.id = 'Cell_' + letter + (j + 1);
             initCell(currentLet.length - 1, j + 1);
+
             cell.firstChild.onfocus = function() {
-              alert("lol");
+              lastFocusedTextarea = document.activeElement;
             };
 
 
@@ -356,11 +358,12 @@ const addCells = function(rows, cols){
             //new_cell.firstChild.data = 0;
 
             new_cell.firstChild.onfocus = function() {
-              //if(!new_cell.firstChild.data)
-              //alert(new_cell.firstChild.data);
-              //new_cell.firstChild.data++;
-              // = parseInt(new_cell.firstChild.data) + 1;
               lastFocusedTextarea = document.activeElement;
+              document.getElementById("left-button").style.border = document.getElementById("center-button").style.border = document.getElementById("right-button").style.border = "2px solid #ffffff"
+              if(new_cell.firstChild.data){
+                //alert(new_cell.data);
+                document.getElementById("" + new_cell.firstChild.data + "-button").style.border = "2px solid #6bc961";
+              }
             };
 
             /*
@@ -405,16 +408,22 @@ mainDiv.onscroll = function() {
 
 // KHOPO4KU & DESIGH
 
-document.getElementById("left-button").addEventListener("click", e => {
-   document.getElementById("left-button").style.borderRadius = "5px 5px 5px 5px";
-   document.getElementById("left-button").style.border = "2px solid #6bc961";
-   lastFocusedTextarea.style.textAlign = lastFocusedTextarea.data = "left";
-});
+somePoliticalDirections.forEach( direction => {
+  document.getElementById(direction + "-button").addEventListener("click", e => {
+     if (lastFocusedTextarea.data != direction){
+       document.getElementById(direction + "-button").style.borderRadius = "5px 5px 5px 5px";
+       document.getElementById(direction + "-button").style.border = "2px solid #6bc961";
+       lastFocusedTextarea.style.textAlign = lastFocusedTextarea.data = direction;
+       somePoliticalDirections.forEach( directX => {
+         if(directX != direction){
+           document.getElementById(directX + "-button").style.border = "2px solid #ffffff"
+         }
+       });
+     } else {
+       lastFocusedTextarea.data = '';
+       lastFocusedTextarea.style.textAlign = 'left';
+       document.getElementById(direction + "-button").style.border = "2px solid #ffffff";
+     }
 
-document.getElementById("center-button").addEventListener("click", e => {
-   lastFocusedTextarea.style.textAlign = lastFocusedTextarea.data = "center";
-});
-
-document.getElementById("right-button").addEventListener("click", e => {
-   lastFocusedTextarea.style.textAlign = lastFocusedTextarea.data = "right";
+  });
 });
