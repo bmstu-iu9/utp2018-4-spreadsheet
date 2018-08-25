@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>LogIn in Data!</title>
+        <title>Auth in Data!</title>
         <!-- make background picture-->
         <script src="/js/config.js"></script>
 		<script src="/js/utils.js"></script>
@@ -33,7 +33,7 @@
 						<i class="fas fa-lock"></i>
                         <input type="password" placeholder="Password" name="password" id="pswrd" >
                     </label>
-                    <input type="submit" class="onEnter" />
+                    <!-- <input type="submit"  class="onEnter" /> -->
                     <a href="#" onclick="forPassword('pswrd', 'eye-icon', 'Password')" id="eye"><img src="/img/eye-regular.svg" id="eye-icon"></a>
                 </fieldset>
                 <p id="loginError"></p>
@@ -78,7 +78,7 @@
                     <i class="fas fa-lock" id="pass_icon"></i>
                     <input type="password" placeholder="Create a password" id="password" name="password" class="inputs"><br>
                 </label>
-                <input type="submit" class="onEnter" />
+                <!-- <input type="submit" class="onEnter" /> -->
                 <a href="#" onclick="forPassword('password', 'eye-icon_reg', 'Create a password')" id="eye_reg"><img src="/img/eye-regular.svg" id="eye-icon_reg"></a>
                 <p id="regError"></p>
                 <input type="button" value="Sign up" id="btn_reg" onclick="ajax_register(document.forms['regform'])"/>

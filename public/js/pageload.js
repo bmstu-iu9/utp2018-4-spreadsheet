@@ -168,6 +168,7 @@ const loadTable = () => {
                 document.getElementById('username').textContent = ERROR_MESSAGES[error ? error : data.error];
                 createTable(DEFAULT_ROWS, DEFAULT_COLS);
                 alert('Данные не будут сохраняться');
+                toLoad();
                 return;
             }
 
@@ -196,12 +197,15 @@ const loadTable = () => {
 
                 if (data.status === 'new_guest') {
                     createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                    toLoad();
                 } else if (data.status === 'guest') {
                     getSavedTable(null, (dataINFO) => {
                         const tableData = JSON.parse(dataINFO.data);
                         tableFromObject(tableData);
+                        toLoad();
                     }, () => {
-                        createTable(DEFAULT_ROWS, DEFAULT_COLS)
+                        createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                        toLoad();
                     });
                 }
             } else if (data.status === 'user') {
@@ -259,9 +263,11 @@ const loadTable = () => {
                             });
 
                     }, 'stay_li');
+                    toLoad();
                     openSideMenu(document.getElementById('sideMenu'), true);
                 }, () => {
                     createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                    toLoad();
                     openSideMenu(document.getElementById('sideMenu'), true);
                     console.log('No guest saves');
                 });
@@ -281,6 +287,7 @@ const loadTable = () => {
         },
         () => {
             createTable(DEFAULT_ROWS, DEFAULT_COLS);
+            toLoad();
         }
     );
 };
