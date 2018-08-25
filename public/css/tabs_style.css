@@ -757,3 +757,106 @@ input#sideMenu:checked ~ .close {
 }
 
 
+
+
+
+
+/*LOADING SCREEN*/
+#load_back {
+    display: none;
+    float: left;
+    z-index: 3;
+    position: absolute;
+    opacity: 0.9;
+    height: 200%;
+    width: 150%;
+}
+
+
+#wrap{
+    display: none;
+    position: relative;
+    z-index: 4;
+    margin-top: -220px;
+}
+
+.loading, .loading::before, .loading::after {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	border: 2px solid #4ae67e;
+	border-left-color: #4f0b8f;
+	border-radius: 80px;
+    -o-border-radius: 80px;
+	-ms-border-radius: 80px;
+    -webkit-border-radius: 80px;
+	-moz-border-radius: 80px;
+}
+
+.loading {
+    margin-top: 25%;
+	height: 94px;
+	width: 94px;
+	animation: loading-rotate 1300ms linear infinite;
+    -o-animation: loading-rotate 1300ms linear infinite;
+	-ms-animation: loading-rotate 1300ms linear infinite;
+    -webkit-animation: loading-rotate 1300ms linear infinite;
+	-moz-animation: loading-rotate 1300ms linear infinite;
+}
+
+.loading::before {
+	content: "";
+	margin: -43px 0 0 -43px;
+	height: 83px;
+	width: 83px;
+	animation: load-rotate 1300ms linear infinite;
+    -o-animation: loading-rotate 1300ms linear infinite;
+	-ms-animation: loading-rotate 1300ms linear infinite;
+    -webkit-animation: loading-rotate 1300ms linear infinite;
+	-moz-animation: loading-rotate 1300ms linear infinite;
+}
+
+.loading::after {
+	content: "";
+	margin: -54px 0 0 -54px;
+	height: 105px;
+	width: 105px;
+	animation: loading-rotate 2600ms linear infinite;
+    -o-animation: loading-rotate 2600ms linear infinite;
+	-ms-animation: loading-rotate 2600ms linear infinite;
+    -webkit-animation: loading-rotate 2600ms linear infinite;
+	-moz-animation: loading-rotate 2600ms linear infinite;
+}
+
+
+@keyframes loading-rotate {
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+@-o-keyframes loading-rotate {
+	100% {
+		-o-transform: rotate(360deg);
+	}
+}
+
+@-ms-keyframes loading-rotate {
+	100% {
+		-ms-transform: rotate(360deg);
+	}
+}
+
+@-webkit-keyframes loading-rotate {
+	100% {
+		-webkit-transform: rotate(360deg);
+	}
+}
+
+@-moz-keyframes loading-rotate {
+	100% {
+		-moz-transform: rotate(360deg);
+	}
+}
+
+
