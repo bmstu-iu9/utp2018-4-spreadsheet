@@ -141,6 +141,7 @@ const addExpansion = (letter, j) => {
 
 const addVerticalExpansion = (i) => {
     const newDiv = document.createElement('div');
+    newDiv['style'].zIndex = 1; //если поменять сломается блокировка :(
     newDiv['id'] = (i + 1);
     newDiv['className'] = 'modVertSymb';
     leftTable.rows[i].cells[0].appendChild(newDiv);

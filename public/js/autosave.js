@@ -34,6 +34,18 @@ const ajax_remove_guest = (okCallback, errorCallback) => {
         });
 }
 
+const ajax_remove_user = (title, okCallback, errorCallback) => {
+    sendXMLHttpRequest(config.host_main, config.port_main, 
+        '/remove_user_data?status='+USER_STATUS.USER+'&title='+title, 'GET', null,
+        (dataJSON, error) => {
+            if (dataJSON.error || error) {
+                return errorCallback(error ? error : dataJSON.error);
+            }
+
+            okCallback(dataJSON);
+        });
+}
+
 const transfer = (transferData, okCallback, errorCallback) => {
     sendXMLHttpRequest(config.host_main, config.port_main,
         '/check_user_title?title=' + transferData.title, 'GET', null,
@@ -43,7 +55,7 @@ const transfer = (transferData, okCallback, errorCallback) => {
             }
 
             sendXMLHttpRequest(config.host_main, config.port_main, '/save_user_data', 'POST',
-                'status=' + USER_STATUS.USER + '&session=' + transferData.session +
+                'status=' + transferData.status + '&session=' + transferData.session +
                 '&title=' + transferData.title + '&data=' + transferData.data,
                 (dataJSON, error) => {
                     if (dataJSON.error || error) {
@@ -57,6 +69,48 @@ const transfer = (transferData, okCallback, errorCallback) => {
         });
 }
 
+const updateTitle = (updateInfo, okCallback, errorCallback) => {
+    sendXMLHttpRequest(config.host_main, config.port_main,
+        '/check_user_title?title=' + updateInfo.newTitle, 'GET', null,
+        (dataJSON, error) => {
+            if (dataJSON.error || error) {
+                return errorCallback(error ? error : dataJSON.error);
+            }
+
+            sendXMLHttpRequest(confirm.host_main, config.port_main, '/rename_user_data', 'POST',
+                'status=' + updateInfo.status + '&session=' + updateInfo.session +
+                '&title=' + updateInfo.title + '&new_title=' + updateInfo.new_title,
+                (dataJSON, error) => {
+                    if (dataJSON.error || error) {
+                        return errorCallback(error ? error : dataJSON.error);
+                    }
+
+                    okCallback(dataJSON);
+                });
+        });
+}
+
+const rename = (mode, oldTitle, okCallback, errorCallback) => {
+    const cookie = parseCookies(document.cookie);
+    const newTitle = prompt(mode === 1 ? 'Title is already used' : 'Enter file title: ', 'new_title');
+    if (!newTitle) return;
+
+    updateTitle({
+        title: oldTitle,
+        new_title: newTitle,
+        status: cookie['status'],
+        session: cookie['token'],
+    }, (removeINFO) => {
+        okCallback(removeINFO);
+    }, (errorCode) => {
+        if (errorCode === ERRORS.NOT_UNIQUE_ERROR) //Название занято
+            rename(1, oldTitle, okCallback, errorCallback);
+        else {
+            return errorCallback(errorCode);
+        }
+    });
+}
+
 const new_table = (mode, okCallback, errorCallback) => {
     const cookie = parseCookies(document.cookie);
     const newTitle = prompt(mode === 1 ? 'Title is already used' : 'Enter file title: ', 'new_title');
@@ -64,6 +118,7 @@ const new_table = (mode, okCallback, errorCallback) => {
 
     transfer({
         title: newTitle,
+        status: cookie['status'],
         session: cookie['token'],
         data: JSON.stringify({
             'size': [DEFAULT_ROWS, DEFAULT_COLS]
@@ -81,6 +136,7 @@ const new_table = (mode, okCallback, errorCallback) => {
 }
 
 const stay = (mode, data, okCallback, errorCallback) => {
+    const cookie = parseCookies(document.cookie);
     const newTitle = prompt(mode ? 'Title is already used' : 'Enter file title: ', 'new_title');
     if (!newTitle) return;
     const newData = mode ? data : JSON.stringify(Object.assign({}, {
@@ -88,7 +144,8 @@ const stay = (mode, data, okCallback, errorCallback) => {
     }, innerTable.activeCeils));
 
     transfer({
-        session: parseCookies(document.cookie)['token'],
+        session: cookie['token'],
+        status: cookie['status'],
         title: newTitle,
         data: newData
     }, (removeINFO) => {

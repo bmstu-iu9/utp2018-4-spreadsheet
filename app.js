@@ -14,6 +14,7 @@ const loadUserData = require('./routes/load_user_data').loadUserData;
 const saveUserData = require('./routes/save_user_data').saveUserData;
 const checkUserTitle = require('./routes/check_user_title').checkUserTitle;
 const removeUserData = require('./routes/remove_user_data').removeUserData;
+const renameUserData = require('./routes/rename_user_data').renameUserData;
 const publicResource = require('./routes/public').publicResource;
 const render = require('./app/render').render;
 const CONFIG = require('./config/main_config.json');
@@ -55,6 +56,14 @@ const server = http.createServer((req, res) => {
             });
             req.on('end', () => {
                 register(qs.parse(body), res);
+            });
+        } else if (parsedURL.pathname === '/rename_user_data' && req.method == 'POST') {
+            let body = '';
+            req.on('data', (data) => {
+                body += data;
+            });
+            req.on('end', () => {
+                renameUserData(qs.parse(body), res);
             });
         } else if (parsedURL.pathname.match(/\.(html|css|js|png|jpg|svg|ico)$/)) {
             publicResource(req, res);

@@ -42,7 +42,12 @@ const loadUserTitlesHandle = (body, response) => {
             return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
         }
 
-        const titles = rows.map(e => { return{ title: e.title, timeStamp: e.timeStamp} });
+        const titles = rows.map(e => {
+            return {
+                title: e.title,
+                timeStamp: e.timeStamp
+            }
+        });
         logs.log(`Load user titles \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}`);
         return returnJSON({
             titles: titles,
@@ -212,6 +217,26 @@ const loadUserHandle = (body, response) => {
     });
 }
 
+/**
+ * Rename users's file
+ * @param {Object} body //Object with email & title & new title for rename
+ * @param {http.ServerResponse} response 
+ */
+const renameUserHandle = (body, response) => {
+    saveClient.run(`UPDATE saves_user SET Title=? WHERE Title=? AND Email=?`, [body.new_title, body.title, body.email],
+        (err) => {
+            if (err) {
+                logs.log(`Rename USER FILE \x1b[31mFAILED\x1b[0m: Title: ${body.title}, New Title ${body.new_title}, Email: ${body.email}, Database error: ${err.message}`);
+                return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
+            }
+    
+            logs.log(`Rename USER FILE \x1b[32mSUCCESS\x1b[0m: Title: ${body.title}, New Title: ${body.new_title}, Email: ${body.email}`);
+            return returnJSON({
+                error: null
+            }, response);
+        });
+}
+
 //Starts server, which works only with POST requests
 const server = http.createServer((req, res) => {
         const path = url.parse(req.url, true)
@@ -238,6 +263,8 @@ const server = http.createServer((req, res) => {
                     loadUserHandle(qs.parse(body), res);
                 } else if (path.path === '/titles') {
                     loadUserTitlesHandle(qs.parse(body), res);
+                } else if (path.path === '/rename') {
+                    renameUserHandle(qs.parse(body), res);
                 } else {
                     res.writeHead(404, {
                         'Content-Type': 'text/plain'
