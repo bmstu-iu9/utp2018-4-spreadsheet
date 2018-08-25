@@ -360,3 +360,7 @@ input {
     height: 18px;
     color: #808080;
 }
+
+.onEnter {
+    display: none;
+}

@@ -21,7 +21,7 @@
         <div class="log_form" id="log_form">
             <img src="/img/whiteLogoSmall.png" id="logo"> <!-- make transparent-->
 
-            <form id="loginform" action="" method="POST">
+            <form id="loginform" action="" method="POST" onsubmit="ajax_auth(document.forms['loginform'])">
                 <h1 id="formHead">Sign in</h1>
                 <fieldset id="loginFields">
                     <label>
@@ -33,6 +33,7 @@
 						<i class="fas fa-lock"></i>
                         <input type="password" placeholder="Password" name="password" id="pswrd" >
                     </label>
+                    <input type="submit" class="onEnter" />
                     <a href="#" onclick="forPassword('pswrd', 'eye-icon', 'Password')" id="eye"><img src="/img/eye-regular.svg" id="eye-icon"></a>
                 </fieldset>
                 <p id="loginError"></p>
@@ -49,7 +50,7 @@
             
             <img src="/img/whiteLogoSmall.png" id="logo">
             
-            <form id="regform" action="" method="POST">
+            <form id="regform" action="" method="POST" onsubmit="ajax_register(document.forms['regform'])">
                     <h1 id="regHead">Create an account</h1>
                 <label>
                     <p class="textfields" id="firstP">First name</p>
@@ -77,6 +78,7 @@
                     <i class="fas fa-lock" id="pass_icon"></i>
                     <input type="password" placeholder="Create a password" id="password" name="password" class="inputs"><br>
                 </label>
+                <input type="submit" class="onEnter" />
                 <a href="#" onclick="forPassword('password', 'eye-icon_reg', 'Create a password')" id="eye_reg"><img src="/img/eye-regular.svg" id="eye-icon_reg"></a>
                 <p id="regError"></p>
                 <input type="button" value="Sign up" id="btn_reg" onclick="ajax_register(document.forms['regform'])"/>
