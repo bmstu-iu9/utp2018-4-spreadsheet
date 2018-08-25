@@ -1,5 +1,0 @@
-[2018-8-25 11:07:34]  [35mSave service[0m successfully [32mstarted[0m at 8082
-[2018-8-25 11:07:34]  [35msqlite3[0m client connected [32msuccessfully[0m
-[2018-8-25 11:30:22]  Save USER [31mFAILED[0m: Title is empty.
-[2018-8-25 11:33:13]  [35mSave service[0m successfully [32mstoped[0m at 8082
-[2018-8-25 11:33:13]  [35msqlite3[0m client connection closed [32msuccessfully[0m
