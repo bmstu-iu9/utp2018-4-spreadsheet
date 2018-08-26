@@ -448,9 +448,86 @@ class Table {
 
 }
 
+class StringSetWitnSearch {
+    constructor(args) {
+        this.elems = new Array(...args);
+        this.begin = 0;
+        this.end = this.elems.length - 1;
+        this.prefix = '';
+    }
 
+    add(str) {
+        this.elems.push(str);
+    }
 
-const POSSIBLE_FUNCTIONS = new Set(["SUM", "MUL"]);
+    has(str) {
+        let beg = 0;
+        let end = this.elems.length - 1;
+        let mid = Math.floor((end + beg) / 2);
+
+        while (this.elems[mid] != str && beg < end) {
+            if (str < this.elems[mid]) {
+                end = mid - 1;
+            } else if (str > this.elems[mid]) {
+                beg = mid + 1;
+            }
+
+            mid = Math.floor((end + beg) / 2);
+        }
+        return (this.elems[mid] != str) ? false : true;
+    }
+
+    binSearchBegByPrefix(str, beg, end) {
+        let mid = Math.floor((end + beg) / 2);
+
+        while (this.elems[mid] != str && beg < end) {
+            if (str < this.elems[mid]) {
+                end = mid - 1;
+            } else if (str > this.elems[mid]) {
+                beg = mid + 1;
+            }
+
+            mid = Math.floor((end + beg) / 2);
+        }
+        return (str > this.elems[mid]) ? mid + 1 : mid;
+    }
+
+    binSearchEndByPrefix(str, beg, end) {
+        str += '\uffff';                                 //hack
+        let mid = Math.floor((end + beg) / 2);
+
+        while (this.elems[mid] != str && beg < end) {
+            if (str < this.elems[mid]) {
+                end = mid - 1;
+            } else if (str > this.elems[mid]) {
+                beg = mid + 1;
+            }
+
+            mid = Math.floor((end + beg) / 2);
+        }
+        return (str > this.elems[mid]) ? mid : mid - 1;
+    }
+
+    addLetter(letter) {
+        this.prefix += letter;
+        this.begin = this.binSearchBegByPrefix(this.prefix, this.begin, this.end);
+        this.end = this.binSearchEndByPrefix(this.prefix, this.begin, this.end);
+        return this.elems.slice(this.begin, this.end);
+    };
+
+    removeLetter(){
+        this.prefix = this.prefix.substring(0, this.prefix.length - 1);
+        this.begin = this.binSearchBegByPrefix(this.prefix, 0, this.begin);
+        this.end = this.binSearchEndByPrefix(this.prefix, this.begin, this.elems.length - 1);
+        return this.elems.slice(this.begin, this.end);
+    }
+
+    prepareToWork() {
+        this.elems.sort();
+    }
+}
+
+const POSSIBLE_FUNCTIONS = new StringSetWitnSearch(["SUM", "MUL"]);
 
 const OPERATOR = (first, oper, second) => { //TODO: bigNums
     if (oper === undefined && second === undefined) {
@@ -575,6 +652,7 @@ const SIGN = funcConstructor(Math.sign, 'SIGN', 1, 1);
 
 const RAND = funcConstructor(Math.random, 'RAND', 1, 1);
 
+POSSIBLE_FUNCTIONS.prepareToWork();
 
 const isCircDepend = (startCeil) => {
     let depth_stack = new Stack();
