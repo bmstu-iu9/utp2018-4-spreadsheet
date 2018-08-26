@@ -363,7 +363,10 @@ const paintCells = () => {
             const id = currentLet[j] + (i + 1);
 
             if ((i !== startCell.rowNum) || (j !== startCell.colNum)) {
-                grayCells.push({ cell: mainTable.rows[i].cells[j], id: id });
+                grayCells.push({
+                    cell: mainTable.rows[i].cells[j],
+                    id: id
+                });
                 mainTable.rows[i].cells[j].style.backgroundColor = '#c3c3c3';
                 document.getElementById(id).style.backgroundColor = '#c3c3c3';
             }
@@ -521,50 +524,52 @@ const initCell = (columnNumber, rowNumber) => {
 
             document.onmousemove = (e) => {
 
-              stateScroll = (mainDiv.scrollLeft && mainDiv.scrollTop)? 3 :
-                                   (mainDiv.scrollLeft)? 2 :
-                                   (mainDiv.scrollTop)? 1 :
-                                   0;
+                stateScroll = (mainDiv.scrollLeft && mainDiv.scrollTop) ? 3 :
+                    (mainDiv.scrollLeft) ? 2 :
+                    (mainDiv.scrollTop) ? 1 :
+                    0;
 
-              currentX = e.clientX;
-              currentY = e.clientY;
+                currentX = e.clientX;
+                currentY = e.clientY;
 
-              if (e.target.className === 'main_cell') {
-                  curCell = e.target;
-              } else if (e.target.parentNode.className === 'main_cell') {
-                  curCell = e.target.parentNode;
-              } /*else if (!isScrolling) {
-                    isScrolling = true;
-                    mainDiv.onscroll();
-              }*//* else if ((e.pageY < minY) && (e.pageX < minX)) {
-                  curCell = mainTable.rows[0].cells[0];
-              } else if (e.pageY < minY) {
-                  const elem = document.elementFromPoint(e.pageX, minY + 1);
+                if (e.target.className === 'main_cell') {
+                    curCell = e.target;
+                } else if (e.target.parentNode.className === 'main_cell') {
+                    curCell = e.target.parentNode;
+                }
+                /*else if (!isScrolling) {
+                                   isScrolling = true;
+                                   mainDiv.onscroll();
+                             }*/
+                /* else if ((e.pageY < minY) && (e.pageX < minX)) {
+                                  curCell = mainTable.rows[0].cells[0];
+                              } else if (e.pageY < minY) {
+                                  const elem = document.elementFromPoint(e.pageX, minY + 1);
 
-                  curCell = (elem.className === 'main_cell')? mainTable.rows[0].cells[elem.colNum] :
-                                  (elem.parentNode.className === 'main_cell')? mainTable.rows[0].cells[elem.parentNode.colNum] :
-                                  curCell;
+                                  curCell = (elem.className === 'main_cell')? mainTable.rows[0].cells[elem.colNum] :
+                                                  (elem.parentNode.className === 'main_cell')? mainTable.rows[0].cells[elem.parentNode.colNum] :
+                                                  curCell;
 
-              } else if (e.pageX < minX) {
-                  const elem = document.elementFromPoint(minX + 1, e.pageY);
+                              } else if (e.pageX < minX) {
+                                  const elem = document.elementFromPoint(minX + 1, e.pageY);
 
-                  curCell = (elem.className === 'main_cell')? mainTable.rows[elem.rowNum].cells[0] :
-                                  (elem.parentNode.className === 'main_cell')? mainTable.rows[elem.parentNode.rowNum].cells[0] :
-                                  curCell;
+                                  curCell = (elem.className === 'main_cell')? mainTable.rows[elem.rowNum].cells[0] :
+                                                  (elem.parentNode.className === 'main_cell')? mainTable.rows[elem.parentNode.rowNum].cells[0] :
+                                                  curCell;
 
-              } else if (e.clientY > mainDiv.clientHeight + mainDiv.getBoundingClientRect().top) {
+                              } else if (e.clientY > mainDiv.clientHeight + mainDiv.getBoundingClientRect().top) {
 
-                  if (!isScrolling) {
-                    isScrolling = true;
-                    mainDiv.onscroll();
-                  }
-              }*/
+                                  if (!isScrolling) {
+                                    isScrolling = true;
+                                    mainDiv.onscroll();
+                                  }
+                              }*/
 
-              if ((curCell !== null) && (curCell !== colorCell)) {
-                  bleachCells();
-                  paintCells();
-                  colorCell = curCell;
-              }
+                if ((curCell !== null) && (curCell !== colorCell)) {
+                    bleachCells();
+                    paintCells();
+                    colorCell = curCell;
+                }
 
             }
 
