@@ -10,6 +10,7 @@
   border: 1px solid #000;
   cursor: cell;
   outline-offset: -1px;
+  margin: 1px;
 }
 
 .left-div{
