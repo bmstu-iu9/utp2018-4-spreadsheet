@@ -25,7 +25,7 @@ const colorAutoConfig = {
         },
 
         logoButton : {
-            'background' : 'url("../img/IconMin_White.png") center center / 100% 100%'
+            'background' : 'url("../img/IconMin_Green.png") center center / 100% 100%'
         }
     },
 

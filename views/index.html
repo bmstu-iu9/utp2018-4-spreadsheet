@@ -1,6 +1,7 @@
 <div class="back">
   <html xmlns="http://www.w3.org/1999/html">
   <head>
+
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <title>Data!</title>
@@ -10,28 +11,57 @@
   </head>
 
   <div>
-      <img id="load_back" src="/img/backB.png">
-      <div class="wrapper" id="wrap">
-           <div class="loading"></div>
-      </div>
-      <script src="/js/loading.js"></script>
-      <script>toLoad();</script>
+    <img id="load_back" src="/img/backB.png">
+    <div class="wrapper" id="wrap">
+      <div class="loading"></div>
+    </div>
+    <script src="/js/loading.js"></script>
+    <script>toLoad();</script>
   </div>
 
   <div id="topBarContainer" class = "TopBarContainer">
     <div id="topbar" class="TopBarState">
       <div class = "flexitems" style="height: 48px">
-          <button class="toMainPage" id="logoButton" style="display: inline"></button>
-          <h1 class = "PageName" id ="name"></h1>
+        <button class="toMainPage" id="logoButton" style="display: inline"></button>
+        <h1 class = "PageName" id ="name"></h1>
+        <div class="userInf">
           <h1 class = "UserName" id ="username"></h1>
           <h1 class = "UserName">|</h1>
           <a href="#" class="accountInf" id="account"></a>
-          <span id="saveINFO"></span>
-          <span id="titles"></span>
-          <span id="log"></span> </p>
+        </div>
+        <span id="saveINFO"></span>
+        <span id="titles"></span>
+        <span id="log"></span> </p>
       </div>
     </div>
   </div>
+
+  <div class="menu">
+    <nav>
+      <ul class="top-menu">
+        <li>
+          <input type="checkbox" id="sideMenu">
+          <label for="sideMenu" style="line-height: 1; margin-right: 20px;"><!-- <a href="#"> -->File<!-- </a> --></label>
+          <label id='close' for="sideMenu" class="close"></label>
+          <div id="sideMenu">
+            <p id="recentlyUpdated">File</p>
+            <ul id="sideMenuUl" class="submenu">
+              <div id="filesMenu">
+                <p id="recentlyUpdated">Recently Updated</p>
+                <label id="closeFileMenuButton" onclick="closeSideMenu(document.getElementById('filesMenu'))"
+                       style="width: 35px; height: 35px; z-index: 100; display: inline-block; position: absolute; top: 0; left: 0;"></label>
+                <ul id='filesMenuUl' class="submenu1">
+                </ul>
+              </div>
+            </ul>
+          </div>
+        </li>
+        <li><a href="#one">Edit</a></li>
+        <li><a href="#two">Format</a></li>
+      </ul>
+    </nav>
+  </div>
+
   <div id="tab/three" class="abs tabs block">
     <p class="abs">
       &lt;div <span style="color: #444">id="tab/three"</span>&gt;
@@ -87,22 +117,6 @@
     </ul>
   </div>
   <div id="two" class="abs block">
-    <div>
-      <nav>
-        <ul class="top-menu">
-          <li>
-            <a href="#">File</a>
-            <ul class="submenu">
-              <li><a href="#">New</a></li>
-              <li><a href="#">Open</a></li>
-              <li><a href="#">Create copy</a></li>
-            </ul>
-          </li>
-          <li><a href="#one">Edit</a></li>
-          <li><a href="#two">Format</a></li>
-        </ul>
-      </nav>
-    </div>
 
     <div class="cellsettingstoolbar" style="display: block;">
       <table cellspacing="0" cellpadding="0">
@@ -170,31 +184,7 @@
     </section>
   </div>
   <div id="one" class="abs block">
-    <div>
-      <nav>
-        <ul class="top-menu">
-          <li>
-            <input type="checkbox" id="sideMenu">
-            <label for="sideMenu" style="line-height: 1; margin-right: 20px;"><!-- <a href="#"> -->File<!-- </a> --></label>
-            <label id='close' for="sideMenu" class="close"></label>
-            <div id="sideMenu">
-              <p id="recentlyUpdated">File</p>
-              <ul id="sideMenuUl" class="submenu">
-                <div id="filesMenu">
-                  <p id="recentlyUpdated">Recently Updated</p>
-                  <label id="closeFileMenuButton" onclick="closeSideMenu(document.getElementById('filesMenu'))"
-                        style="width: 35px; height: 35px; z-index: 100; display: inline-block; position: absolute; top: 0; left: 0;"></label>
-                  <ul id='filesMenuUl' class="submenu1">
-                  </ul>
-                </div>
-              </ul>
-            </div>
-          </li>
-          <li><a href="#one">Edit</a></li>
-          <li><a href="#two">Format</a></li>
-        </ul>
-      </nav>
-    </div>
+
     <div class="toolbar">
       <button class="back-button" title="Cancel"></button>
       <button class="forward-button" title="Forward"></button>
@@ -228,6 +218,32 @@
       <div id = "main-div" class = "scroll-table">
         <table id = "main-table"></table>
       </div>
+
+      <nav id = "context-menu" class="context-menu">
+        <ul class="context-menu_items">
+          <li class="context-menu_item">
+            <a href="DanyaLy4schiy" class="context-menu_link" data-action="cut">
+              <i class="fa fa-chechnya"></i> Вырезать
+            </a>
+          </li>
+          <li class="context-menu_item">
+            <a href="DanyaLy4schiy" class="context-menu_link" data-action="copy">
+              <i class="fa fa-copy"></i> Копировать
+            </a>
+          </li>
+          <li class="context-menu_item">
+            <a href="DanyaLy4schiy" class="context-menu_link" data-action="paste">
+              <i class="fa fa-paste"></i> Вставить
+            </a>
+          </li>
+          <li class="context-menu_item">
+            <a href="DanyaLy4schiy" class="context-menu_link" data-action="delete">
+              <i class="fa fa-delete"></i> Удалить
+            </a>
+          </li>
+        </ul>
+      </nav>
+
       <script src="/js/config.js"></script>
       <script src="/js/colorConfig.js"></script>
       <script src="/js/utils.js"></script>
@@ -237,4 +253,4 @@
       <script src="/js/pageload.js"></script>
     </div>
   </div>
-</html>
+  </html>
