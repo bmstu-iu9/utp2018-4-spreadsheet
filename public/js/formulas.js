@@ -1,4 +1,4 @@
-'use strict'; 
+'use strict';
 
 //codes of errors
 const OK = 0;

@@ -35,8 +35,8 @@ const ajax_remove_guest = (okCallback, errorCallback) => {
 }
 
 const ajax_remove_user = (title, okCallback, errorCallback) => {
-    sendXMLHttpRequest(config.host_main, config.port_main, 
-        '/remove_user_data?status='+USER_STATUS.USER+'&title='+title, 'GET', null,
+    sendXMLHttpRequest(config.host_main, config.port_main,
+        '/remove_user_data?status=' + USER_STATUS.USER + '&title=' + title, 'GET', null,
         (dataJSON, error) => {
             if (dataJSON.error || error) {
                 return errorCallback(error ? error : dataJSON.error);

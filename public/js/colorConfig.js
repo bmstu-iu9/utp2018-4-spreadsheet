@@ -4,14 +4,14 @@ let userColorCode = null;
 
 const colorManualCofig = {
     [USER_STATUS.GUEST]: {
-        cell : {
-            'outline' : '3px solid #6bc961',
+        cell: {
+            'outline': '3px solid #6bc961',
         }
     },
 
     [USER_STATUS.USER]: {
-        cell : {
-            'outline' : '3px solid #5271ff',
+        cell: {
+            'outline': '3px solid #5271ff',
         }
     }
 }
@@ -24,19 +24,19 @@ const colorAutoConfig = {
             'color': '#FFFFFF',
         },
 
-        logoButton : {
-            'background' : 'url("../img/IconMin_Green.png") center center / 100% 100%'
+        logoButton: {
+            'background': 'url("../img/IconMin_Green.png") center center / 100% 100%'
         }
     },
 
     [USER_STATUS.USER]: {
         topBarContainer: {
             'backgroundColor': '#5271ff',
-            'color' : '#FFFFFF',
+            'color': '#FFFFFF',
         },
 
-        logoButton : {
-            'background' : 'url("../img/IconMin_White.png") center center / 100% 100%'
+        logoButton: {
+            'background': 'url("../img/IconMin_White.png") center center / 100% 100%'
         }
     }
 }

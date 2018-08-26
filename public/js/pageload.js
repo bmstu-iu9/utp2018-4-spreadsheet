@@ -42,7 +42,7 @@ const addLoadOption = (sideMenu, fileMenu, title, timeStamp, mode) => {
 
                     closeSideMenu(document.getElementById('filesMenu'));
                     closeSideMenu(document.getElementById('sideMenu'));
-                    
+
                     removeFromSideMenu(sideMenu, 'stay_li');
                     addSaveOptions(sideMenu);
                 }, (error) => {
