@@ -8,12 +8,12 @@ const upDiv = document.getElementById('up-div');
 const leftDiv = document.getElementById('left-div');
 
 let DEFAULT_ROWS = 50,
-    DEFAULT_COLS = 26;
+     DEFAULT_COLS = 26;
 let ROWS = 0,
-    COLS = 0;
+     COLS = 0;
 let letters = [65];
 let currentLet = [];
-let focusID = ''; //ID клетки в фокусе
+let focusID = '';
 let isMultiHL = false;
 let curCell = null;
 let grayCells = [];
@@ -29,6 +29,7 @@ let stateScroll = -1;
 
 const horScrollSpeed = 30;
 const vertScrollSpeed = 15;
+
 const innerTable = new Table(DEFAULT_COLS, DEFAULT_ROWS);
 
 const convNumtoId = (x, y) => {
@@ -270,30 +271,6 @@ const addDecorLeftDiv = (rowNum) => {
     leftTable.rows[rowNum].cells[0].appendChild(leftDiv);
 }
 
-/*const addDecor = (colNum, rowNum) => {
-    const letter = currentLet[colNum];
-
-    const top = document.createElement('div');
-    top.id = 'main_top_' + letter + (rowNum + 1);
-    top.className = 'main_top';
-    mainTable.rows[rowNum].cells[colNum].appendChild(top);
-
-    const left = document.createElement('div');
-    left.id = 'main_left_' + letter + (rowNum + 1);
-    left.className = 'main_left';
-    mainTable.rows[rowNum].cells[colNum].appendChild(left);
-
-    const right = document.createElement('div');
-    right.id = 'main_right_' + letter + (rowNum + 1);
-    right.className = 'main_right';
-    mainTable.rows[rowNum].cells[colNum].appendChild(right);
-
-    const bottom = document.createElement('div');
-    bottom.id = 'main_bottom_' + letter + (rowNum + 1);
-    bottom.className = 'main_bottom';
-    mainTable.rows[rowNum].cells[colNum].appendChild(bottom);
-}*/
-
 const bleachCells = () => {
     while (grayCells.length !== 0) {
         const obj = grayCells.pop();
@@ -320,11 +297,14 @@ const bleachCells = () => {
             mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style.boxShadow = 'none';
             mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style.zIndex = 3;
         }
-
-        mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style.boxShadow = 'none';
-        mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style.zIndex = 3;
-        mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style.boxShadow = 'none';
-        mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style.zIndex = 3;
+        if (cell.colNum + 1 <= COLS) {
+            mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style.boxShadow = 'none';
+            mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style.zIndex = 3;
+        }
+        if (cell.rowNum + 1 < ROWS) {
+            mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style.boxShadow = 'none';
+            mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style.zIndex = 3;
+        }
     }
 
     while (selUpCells.length !== 0) {
@@ -429,7 +409,6 @@ const initCell = (columnNumber, rowNumber) => {
     newInput.editMode = false;
     newInput.hasOldValue = false;
 
-    //addDecor(columnNumber, rowNumber - 1);
     newCell.colNum = columnNumber;
     newCell.rowNum = rowNumber - 1;
 
@@ -450,14 +429,21 @@ const initCell = (columnNumber, rowNumber) => {
                 elem.blur();
             }
             if (event.key == 'Escape') {
+                const cell = document.getElementById('Cell_' + elem.id);
                 console.log(elem.value);
                 elem.value = '';
                 elem.editMode = false;
                 elem.style.cursor = 'cell';
-                document.getElementById('main_top_' + elem.id).style.backgroundColor = '#6bc961';
-                document.getElementById('main_left_' + elem.id).style.backgroundColor = '#6bc961';
-                document.getElementById('main_right_' + elem.id).style.backgroundColor = '#6bc961';
-                document.getElementById('main_bottom_' + elem.id).style.backgroundColor = '#6bc961';
+
+                if (cell.rowNum) {
+                    mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] = '0px 3px 0px 0px #6bc961';
+                }
+                if (cell.colNum) {
+                    mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px #6bc961';
+                }
+
+                mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['box-shadow'] = '-2px 0px 0px 0px #6bc961';
+                mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['box-shadow'] = '0px -2px 0px 0px #6bc961';
             }
         }
     }(newInput))
@@ -487,9 +473,6 @@ const initCell = (columnNumber, rowNumber) => {
             isMultiHL = true;
             startCell = newCell;
             colorCell = newCell;
-
-            const minX = getXCoord(mainTable.rows[0].cells[0]); //delthis
-            const minY = getYCoord(mainTable.rows[0].cells[0]); //andthis
 
             bleachCells();
 
@@ -587,17 +570,23 @@ const initCell = (columnNumber, rowNumber) => {
 
     }
 
-    /*newCell.ondblclick = () => {
+    newCell.ondblclick = () => {
         newInput.editMode = true;
         newInput.focus();
 
         newInput.style.cursor = 'text';
         newInput.selectionStart = newInput.selectionEnd = newInput.value.length;
-        document.getElementById('main_top_' + id).style.backgroundColor = '#0080ff';
-        document.getElementById('main_left_' + id).style.backgroundColor = '#0080ff';
-        document.getElementById('main_right_' + id).style.backgroundColor = '#0080ff';
-        document.getElementById('main_bottom_' + id).style.backgroundColor = '#0080ff';
-    }*/
+
+        if (newCell.rowNum) {
+            mainTable.rows[newCell.rowNum - 1].cells[newCell.colNum].style['box-shadow'] = '0px 3px 0px 0px #0080ff';
+        }
+        if (newCell.colNum) {
+            mainTable.rows[newCell.rowNum].cells[newCell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px #0080ff';
+        }
+
+        mainTable.rows[newCell.rowNum].cells[newCell.colNum + 1].style['box-shadow'] = '-2px 0px 0px 0px #0080ff';
+        mainTable.rows[newCell.rowNum + 1].cells[newCell.colNum].style['box-shadow'] = '0px -2px 0px 0px #0080ff';
+    }
 
     newInput.addEventListener('keydown', (e) => {
         let dx = 0;
@@ -710,30 +699,36 @@ const addUpAndLeftEvents = (type, num) => {
 
                 for (let i = 0; i < ROWS; i++) {
                     const id = currentLet[num] + (i + 1);
+                    const cell = mainTable.rows[i].cells[num];
 
                     if (i === 0) {
-                        borderCells.push(id);
+                        borderCells.push(cell);
                         grayCells.push({
-                            cell: mainTable.rows[i].cells[num],
+                            cell: cell,
                             id: id
                         });
-                        document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
-                        document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
-                        document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
+
+                        if (cell.colNum) {
+                            mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px #6bc961';
+                            mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['z-index'] = 4;
+                        }
+                        mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['box-shadow'] = '-2px 0px 0px 0px #6bc961';
+                        mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['z-index'] = 4;
                     } else {
+                        borderCells.push(cell);
                         grayCells.push({
-                            cell: mainTable.rows[i].cells[num],
+                            cell: cell,
                             id: id
                         });
-                        mainTable.rows[i].cells[num].style.backgroundColor = '#c3c3c3';
+                        cell.style.backgroundColor = '#c3c3c3';
                         document.getElementById(id).style.backgroundColor = '#c3c3c3';
 
-                        borderCells.push(id);
-                        document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
-                        document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
-                        if (i === ROWS - 1) {
-                            document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
+                        if (cell.colNum) {
+                            mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px #6bc961';
+                            mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['z-index'] = 4;
                         }
+                        mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['box-shadow'] = '-2px 0px 0px 0px #6bc961';
+                        mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['z-index'] = 4;
                     }
 
                     leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
@@ -780,31 +775,37 @@ const addUpAndLeftEvents = (type, num) => {
                 });
 
                 for (let i = 0; i <= COLS; i++) {
+                    const cell = mainTable.rows[num - 1].cells[i];
                     const id = currentLet[i] + num;
 
                     if (i === 0) {
-                        borderCells.push(id);
+                        borderCells.push(cell);
                         grayCells.push({
-                            cell: mainTable.rows[num - 1].cells[i],
+                            cell: cell,
                             id: id
                         });
-                        document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
-                        document.getElementById('main_left_' + id).style.backgroundColor = '#6bc961';
-                        document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
+
+                        if (cell.rowNum) {
+                            mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] = '0px 3px 0px 0px #6bc961';
+                            mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['z-index'] = 4;
+                        }
+                        mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['box-shadow'] = '0px -2px 0px 0px #6bc961';
+                        mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['z-index'] = 4;
                     } else {
+                        borderCells.push(cell);
                         grayCells.push({
-                            cell: mainTable.rows[num - 1].cells[i],
+                            cell: cell,
                             id: id
                         });
-                        mainTable.rows[num - 1].cells[i].style.backgroundColor = '#c3c3c3';
+                        cell.style.backgroundColor = '#c3c3c3';
                         document.getElementById(id).style.backgroundColor = '#c3c3c3';
 
-                        borderCells.push(id);
-                        document.getElementById('main_top_' + id).style.backgroundColor = '#6bc961';
-                        document.getElementById('main_bottom_' + id).style.backgroundColor = '#6bc961';
-                        if (i === COLS) {
-                            document.getElementById('main_right_' + id).style.backgroundColor = '#6bc961';
+                        if (cell.rowNum) {
+                            mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] = '0px 3px 0px 0px #6bc961';
+                            mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['z-index'] = 4;
                         }
+                        mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['box-shadow'] = '0px -2px 0px 0px #6bc961';
+                        mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['z-index'] = 4;
                     }
 
                     upTable.rows[0].cells[i].style.backgroundColor = '#c3c3c3';
@@ -831,7 +832,7 @@ const addCells = function (rows, cols) {
             new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
             new_cell.id = 'Cell_' + letter;
             addDecorUpDiv(currentLet.length - 1);
-            //addUpAndLeftEvents('up', currentLet.length - 1);
+            addUpAndLeftEvents('up', currentLet.length - 1);
 
             for (let j = 0; j < ROWS; j++) {
 
@@ -840,7 +841,6 @@ const addCells = function (rows, cols) {
                 cell.id = 'Cell_' + letter + (j + 1);
                 cell.className = 'main_cell';
                 initCell(currentLet.length - 1, j + 1);
-                //contextMenuListener(document.getElementById("" + letter + (j + 1)));
 
                 const curId = letter + (j + 1);
                 const prevId = currentLet[currentLet.length - 2] + (j + 1);
@@ -858,15 +858,20 @@ const addCells = function (rows, cols) {
                     });
                     cell.style.backgroundColor = '#c3c3c3';
                     document.getElementById(curId).style.backgroundColor = '#c3c3c3';
+                    borderCells.push(cell);
 
-                    borderCells.push(curId);
-                    document.getElementById('main_top_' + curId).style.backgroundColor = '#6bc961';
-                    document.getElementById('main_right_' + curId).style.backgroundColor = '#6bc961';
-                    document.getElementById('main_bottom_' + curId).style.backgroundColor = '#6bc961';
-                    document.getElementById('main_right_' + prevId).style.backgroundColor = 'transparent';
+                    if (cell.rowNum) {
+                        mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] = '0px 3px 0px 0px #6bc961';
+                        mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['z-index'] = 4;
+                    }
 
                     upTable.rows[0].cells[i].style.backgroundColor = '#c3c3c3';
                     document.getElementById('up_' + i).style.backgroundColor = '#6bc961';
+                }
+
+                if (j && document.getElementById('Cell_' + j).isSelected) {
+                    cell.style['box-shadow'] = '0px -2px 0px 0px #6bc961';
+                    cell.style['z-index'] = 4;
                 }
 
                 cell.onkeydown = function (e) {
@@ -897,7 +902,7 @@ const addCells = function (rows, cols) {
                 new_cell.innerHTML = `<div align = "center" id = "${letter + 0}" class = "up"> ${letter} </div>`;
                 new_cell.id = 'Cell_' + letter;
                 addDecorUpDiv(j);
-                //addUpAndLeftEvents('up', j);
+                addUpAndLeftEvents('up', j);
                 addExpansion(letter, j);
             }
         }
@@ -910,7 +915,7 @@ const addCells = function (rows, cols) {
             left_cell.innerHTML = `<div align = "center" id = "${'@' + (i + 1)}" class = "left"> ${i + 1} </div>`;
             left_cell.id = 'Cell_' + (i + 1);
             addDecorLeftDiv(i);
-            //addUpAndLeftEvents('left', i + 1);
+            addUpAndLeftEvents('left', i + 1);
             addVerticalExpansion(i);
 
             for (let j = 0; j <= COLS + cols; j++) {
@@ -954,18 +959,22 @@ const addCells = function (rows, cols) {
                         });
                         new_cell.style.backgroundColor = '#c3c3c3';
                         document.getElementById(curId).style.backgroundColor = '#c3c3c3';
+                        borderCells.push(new_cell);
 
-                        borderCells.push(curId);
-                        document.getElementById('main_left_' + curId).style.backgroundColor = '#6bc961';
-                        document.getElementById('main_right_' + curId).style.backgroundColor = '#6bc961';
-                        document.getElementById('main_bottom_' + curId).style.backgroundColor = '#6bc961';
-                        document.getElementById('main_bottom_' + prevId).style.backgroundColor = 'transparent';
+                        if (new_cell.colNum) {
+                            mainTable.rows[new_cell.rowNum].cells[new_cell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px #6bc961';
+                            mainTable.rows[new_cell.rowNum].cells[new_cell.colNum - 1].style['z-index'] = 4;
+                        }
 
                         leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
                         document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
                     }
+
+                    if (j && document.getElementById('Cell_' + currentLet[j - 1]).isSelected) {
+                        new_cell.style.boxShadow = '-2px 0px 0px 0px #6bc961';
+                        new_cell.style['z-index'] = 4;
+                    }
                 }
-                //contextMenuListener(document.getElementById("" + letter + (i + 1)));
             }
         }
     }
@@ -975,6 +984,30 @@ const addCells = function (rows, cols) {
 }
 
 addCells(DEFAULT_ROWS, DEFAULT_COLS);
+
+mainDiv.onscroll = function () {
+    upDiv.scrollLeft = this.scrollLeft;
+    leftDiv.scrollTop = this.scrollTop;
+
+    if (mainDiv.scrollLeft !== upDiv.scrollLeft) {
+        mainDiv.scrollLeft = upDiv.scrollLeft;
+    }
+    if (mainDiv.scrollTop !== leftDiv.scrollTop) {
+        mainDiv.scrollTop = leftDiv.scrollTop;
+    }
+
+    const moreCellsOnY = mainDiv.scrollHeight - mainDiv.clientHeight;
+    const moreCellsOnX = mainDiv.scrollWidth - mainDiv.clientWidth;
+    const percentY = (mainDiv.scrollTop / moreCellsOnY) * 100;
+    const percentX = (mainDiv.scrollLeft / moreCellsOnX) * 100;
+
+    if (percentY > 80) {
+        addCells(5, 0);
+    }
+    if (percentX > 80) {
+        addCells(0, 5);
+    }
+}
 
 /*mainDiv.onscroll = function () {
     upDiv.scrollLeft = this.scrollLeft;
