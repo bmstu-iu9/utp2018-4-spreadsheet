@@ -519,11 +519,10 @@ const initCell = (columnNumber, rowNumber) => {
                     curCell = e.target;
                 } else if (e.target.parentNode.className === 'main_cell') {
                     curCell = e.target.parentNode;
+                } else if (!isScrolling) {
+                    isScrolling = true;
+                    mainDiv.onscroll();
                 }
-                /*else if (!isScrolling) {
-                                   isScrolling = true;
-                                   mainDiv.onscroll();
-                             }*/
                 /* else if ((e.pageY < minY) && (e.pageX < minX)) {
                                   curCell = mainTable.rows[0].cells[0];
                               } else if (e.pageY < minY) {
@@ -985,30 +984,6 @@ const addCells = function (rows, cols) {
 
 addCells(DEFAULT_ROWS, DEFAULT_COLS);
 
-mainDiv.onscroll = function () {
-    upDiv.scrollLeft = this.scrollLeft;
-    leftDiv.scrollTop = this.scrollTop;
-
-    if (mainDiv.scrollLeft !== upDiv.scrollLeft) {
-        mainDiv.scrollLeft = upDiv.scrollLeft;
-    }
-    if (mainDiv.scrollTop !== leftDiv.scrollTop) {
-        mainDiv.scrollTop = leftDiv.scrollTop;
-    }
-
-    const moreCellsOnY = mainDiv.scrollHeight - mainDiv.clientHeight;
-    const moreCellsOnX = mainDiv.scrollWidth - mainDiv.clientWidth;
-    const percentY = (mainDiv.scrollTop / moreCellsOnY) * 100;
-    const percentX = (mainDiv.scrollLeft / moreCellsOnX) * 100;
-
-    if (percentY > 80) {
-        addCells(5, 0);
-    }
-    if (percentX > 80) {
-        addCells(0, 5);
-    }
-}
-
 /*mainDiv.onscroll = function () {
     upDiv.scrollLeft = this.scrollLeft;
     leftDiv.scrollTop = this.scrollTop;
@@ -1031,8 +1006,32 @@ mainDiv.onscroll = function () {
     if (percentX > 80) {
         addCells(0, 5);
     }
+}*/
 
-    /*const condLeft = currentX < mainTable.rows[0].cells[0].getBoundingClientRect().left + mainDiv.scrollLeft;
+mainDiv.onscroll = function () {
+    upDiv.scrollLeft = this.scrollLeft;
+    leftDiv.scrollTop = this.scrollTop;
+
+    if (mainDiv.scrollLeft !== upDiv.scrollLeft) {
+        mainDiv.scrollLeft = upDiv.scrollLeft;
+    }
+    if (mainDiv.scrollTop !== leftDiv.scrollTop) {
+        mainDiv.scrollTop = leftDiv.scrollTop;
+    }
+
+    const moreCellsOnY = mainDiv.scrollHeight - mainDiv.clientHeight;
+    const moreCellsOnX = mainDiv.scrollWidth - mainDiv.clientWidth;
+    const percentY = (mainDiv.scrollTop / moreCellsOnY) * 100;
+    const percentX = (mainDiv.scrollLeft / moreCellsOnX) * 100;
+
+    if (percentY > 80) {
+        addCells(5, 0);
+    }
+    if (percentX > 80) {
+        addCells(0, 5);
+    }
+
+    const condLeft = currentX < mainTable.rows[0].cells[0].getBoundingClientRect().left + mainDiv.scrollLeft;
     const condUp = currentY < mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop;
     const condBot = currentY > mainDiv.clientHeight + mainDiv.getBoundingClientRect().top;
     const condRight = currentX > mainDiv.clientWidth + mainDiv.getBoundingClientRect().left;
@@ -1143,7 +1142,7 @@ mainDiv.onscroll = function () {
              colorCell = curCell;
          }
 
-         if (mainDiv.scrollTop - 15 <= 0) {
+         if (mainDiv.scrollTop - vertScrollSpeed <= 0) {
             mainDiv.scrollTop = 0;
             stateScroll = 0;
             isScrolling = false;
@@ -1246,7 +1245,7 @@ mainDiv.onscroll = function () {
             colorCell = curCell;
         }
 
-        if (mainDiv.scrollLeft - 15 <= 0) {
+        if (mainDiv.scrollLeft - horScrollSpeed <= 0) {
            mainDiv.scrollLeft = 0;
            stateScroll = 0;
            isScrolling = false;
@@ -1272,9 +1271,105 @@ mainDiv.onscroll = function () {
            colorCell = curCell;
         }
 
-        stateScroll = 1;
-        mainDiv.scrollBy(0, 15);
-        leftDiv.scrollBy(0, 15);
+        stateScroll = 3;
+        mainDiv.scrollBy(0, vertScrollSpeed);
+        leftDiv.scrollBy(0, vertScrollSpeed);
+
+      } else if (condRight) {
+        const elem = document.elementFromPoint(mainDiv.clientWidth +
+                             mainDiv.getBoundingClientRect().left -
+                             (mainDiv.offsetWidth - mainDiv.clientWidth) / 2, currentY);
+
+        curCell = (elem === null)? null :
+                        (elem.className === 'main_cell')? elem :
+                        (elem.parentNode.className === 'main_cell')? elem.parentNode :
+                        curCell;
+
+        if ((curCell !== null) && (curCell !== colorCell)) {
+           bleachCells();
+           paintCells();
+           colorCell = curCell;
+        }
+
+        stateScroll = 2;
+        mainDiv.scrollBy(horScrollSpeed, 0);
+        leftDiv.scrollBy(horScrollSpeed, 0);
+
+      } else {
+        isScrolling = false;
+      }
+
+    } else if (stateScroll === 3) {
+
+      if (condUp) {
+        const elem = document.elementFromPoint(currentX,
+                 mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop + 1);
+
+        curCell = (elem === null)? null :
+                        (elem.className === 'main_cell')? elem :
+                        (elem.parentNode.className === 'main_cell')? elem.parentNode :
+                        curCell;
+
+         if ((curCell !== null) && (curCell !== colorCell)) {
+             bleachCells();
+             paintCells();
+             colorCell = curCell;
+         }
+
+         if (mainDiv.scrollTop - vertScrollSpeed <= 0) {
+            mainDiv.scrollTop = 0;
+            stateScroll = 2;
+            isScrolling = false;
+         } else {
+           stateScroll = 3;
+           mainDiv.scrollBy(0, -vertScrollSpeed);
+           leftDiv.scrollBy(0, -vertScrollSpeed);
+         }
+
+      } else if (condLeft) {
+         const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
+                              mainDiv.scrollLeft + 1, currentY);
+
+        curCell = (elem === null)? null :
+                        (elem.className === 'main_cell')? elem :
+                        (elem.parentNode.className === 'main_cell')? elem.parentNode :
+                        curCell;
+
+        if ((curCell !== null) && (curCell !== colorCell)) {
+            bleachCells();
+            paintCells();
+            colorCell = curCell;
+        }
+
+        if (mainDiv.scrollLeft - horScrollSpeed <= 0) {
+           mainDiv.scrollLeft = 0;
+           stateScroll = 1;
+           isScrolling = false;
+        } else {
+          stateScroll = 3;
+          mainDiv.scrollBy(-horScrollSpeed, 0);
+          upDiv.scrollBy(-horScrollSpeed, 0);
+        }
+
+      } else if (condBot) {
+        const elem = document.elementFromPoint(currentX,
+                             mainDiv.clientHeight + mainDiv.getBoundingClientRect().top -
+                             (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
+
+        curCell = (elem === null)? null :
+                        (elem.className === 'main_cell')? elem :
+                        (elem.parentNode.className === 'main_cell')? elem.parentNode :
+                        curCell;
+
+        if ((curCell !== null) && (curCell !== colorCell)) {
+           bleachCells();
+           paintCells();
+           colorCell = curCell;
+        }
+
+        stateScroll = 3;
+        mainDiv.scrollBy(0, vertScrollSpeed);
+        leftDiv.scrollBy(0, vertScrollSpeed);
 
       } else if (condRight) {
         const elem = document.elementFromPoint(mainDiv.clientWidth +
@@ -1293,43 +1388,12 @@ mainDiv.onscroll = function () {
         }
 
         stateScroll = 3;
-        mainDiv.scrollBy(15, 0);
-        leftDiv.scrollBy(15, 0);
+        mainDiv.scrollBy(horScrollSpeed, 0);
+        leftDiv.scrollBy(horScrollSpeed, 0);
 
       } else {
         isScrolling = false;
       }
-
     }
 
-    /*if (condBot) {
-
-        const elem = (condLeft)?
-                             document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left + 1,
-                             mainDiv.clientHeight + mainDiv.getBoundingClientRect().top -
-                             (mainDiv.offsetHeight - mainDiv.clientHeight) / 2)
-                             :
-                             document.elementFromPoint(currentX,
-                             mainDiv.clientHeight + mainDiv.getBoundingClientRect().top -
-                             (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
-
-        curCell = (condLeft)?
-                        (elem.className === 'main_cell')? elem :
-                        (elem.parentNode.className === 'main_cell')? elem.parentNode :
-                        curCell
-                        :
-                        (elem.className === 'main_cell')? elem :
-                        (elem.parentNode.className === 'main_cell')? elem.parentNode :
-                        curCell;
-
-        bleachCells();
-        paintCells();
-        colorCell = curCell;
-
-        mainDiv.scrollBy(0, 15);
-        leftDiv.scrollBy(0, 15);
-    } else {
-        isScrolling = false;
-    }*/
-
-//}
+}
