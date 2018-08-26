@@ -314,13 +314,17 @@ const bleachCells = () => {
 
         if (cell.rowNum) {
             mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style.boxShadow = 'none';
+            mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style.zIndex = 3;
         }
         if (cell.colNum) {
             mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style.boxShadow = 'none';
+            mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style.zIndex = 3;
         }
 
         mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style.boxShadow = 'none';
+        mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style.zIndex = 3;
         mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style.boxShadow = 'none';
+        mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style.zIndex = 3;
     }
 
     while (selUpCells.length !== 0) {
@@ -392,16 +396,20 @@ const paintCells = () => {
 const paintBorders = (cell, top, left, right, bottom) => {
 
     if ((top) && (cell.rowNum)) {
-        mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] = '0px 2px 0px 0px #6bc961';
+        mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] = '0px 3px 0px 0px #6bc961';
+        mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['z-index'] = 4;
     }
     if ((left) && (cell.colNum)) {
-        mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['box-shadow'] = '2px 0px 0px 0px #6bc961';
+        mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px #6bc961';
+        mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['z-index'] = 4;
     }
     if (right) {
         mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['box-shadow'] = '-2px 0px 0px 0px #6bc961';
+        mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['z-index'] = 4;
     }
     if (bottom) {
         mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['box-shadow'] = '0px -2px 0px 0px #6bc961';
+        mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['z-index'] = 4;
     }
 
 }

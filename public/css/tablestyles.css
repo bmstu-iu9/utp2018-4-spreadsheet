@@ -11,6 +11,8 @@
   cursor: cell;
   outline-offset: -1px;
   margin: 1px;
+
+  z-index: 3;
 }
 
 .left-div{
@@ -84,7 +86,7 @@ textarea {
     resize: none;
     font-size: 14px;
     padding: 4px;
-    wrap: none;
+    /* wrap: none; */
     vertical-align: top;
 }
 
