@@ -4,14 +4,34 @@ let userColorCode = null;
 
 const colorManualCofig = {
     [USER_STATUS.GUEST]: {
+        up: {
+            'backgroundColor': '#6bc961',
+        },
+
+        left: {
+            'backgroundColor': '#6bc961',
+        },
+
         cell: {
-            'outline': '3px solid #6bc961',
+            'box-shadow': '#6bc961',
+            'selectedHeaderBackgroundColor': '#bbffbb',
+            'hoverHeaderBackgroundColor' : '#9fff9f',
         }
     },
 
     [USER_STATUS.USER]: {
+        up: {
+            'backgroundColor': '#5271ff',
+        },
+
+        left: {
+            'backgroundColor': '#5271ff',
+        },
+
         cell: {
-            'outline': '3px solid #5271ff',
+            'box-shadow': '#5271ff',
+            'selectedHeaderBackgroundColor': '#bbbbff',
+            'hoverHeaderBackgroundColor' : '#b7c4ff',
         }
     }
 }
@@ -19,24 +39,34 @@ const colorManualCofig = {
 
 const colorAutoConfig = {
     [USER_STATUS.GUEST]: {
-        topBarContainer: {
-            'backgroundColor': '#69C95A',
-            'color': '#FFFFFF',
-        },
+        ids: {
+            topBarContainer: {
+                'backgroundColor': '#69C95A',
+                'color': '#FFFFFF',
+            },
 
-        logoButton: {
-            'background': 'url("../img/IconMin_Green.png") center center / 100% 100%'
+            logoButton: {
+                'background': 'url("../img/IconMin_Green.png") center center / 100% 100%'
+            }
+        },
+        classes: {
+            'context-menu_link': 'context-menu_link_guest',
         }
     },
 
     [USER_STATUS.USER]: {
-        topBarContainer: {
-            'backgroundColor': '#5271ff',
-            'color': '#FFFFFF',
-        },
+        ids: {
+            topBarContainer: {
+                'backgroundColor': '#5271ff',
+                'color': '#FFFFFF',
+            },
 
-        logoButton: {
-            'background': 'url("../img/IconMin_White.png") center center / 100% 100%'
+            logoButton: {
+                'background': 'url("../img/IconMin_White.png") center center / 100% 100%'
+            }
+        },
+        classes: {
+            'context-menu_link': 'context-menu_link_user',
         }
     }
 }
@@ -45,15 +75,24 @@ const colorAutoConfig = {
 const setColorScheme = (code) => {
     userColorCode = code;
 
-    for (let elementID in colorAutoConfig[code]) {
-        if (colorAutoConfig[code].hasOwnProperty(elementID)) {
-            const element = colorAutoConfig[code][elementID];
+    for (let elementID in colorAutoConfig[code]['ids']) {
+        if (colorAutoConfig[code]['ids'].hasOwnProperty(elementID)) {
+            const element = colorAutoConfig[code]['ids'][elementID];
             const elementDOM = document.getElementById(elementID);
             for (let property in element) {
                 if (element.hasOwnProperty(property)) {
                     console.log(`Set ${property} of ${elementID} to ${element[property]}`);
                     elementDOM.style[property] = element[property];
                 }
+            }
+        }
+    }
+
+    for (let className in colorAutoConfig[code]['classes']) {
+        if (colorAutoConfig[code]['classes'].hasOwnProperty(className)) {
+            const elements = document.getElementsByClassName(className);
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].classList.add(colorAutoConfig[code]['classes'][className]);
             }
         }
     }

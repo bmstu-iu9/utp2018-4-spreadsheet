@@ -62,9 +62,6 @@ class Stack {
     }
 }
 
-const NONE = 0;
-const PUSH = 1;
-const POP = 2;
 
 class ActionStack {
     constructor(cap) {
@@ -214,6 +211,74 @@ const convCoord = (str) => {
     };
 }
 
+function colName(n) {
+    let ordA = 'A'.charCodeAt(0);
+    let ordZ = 'Z'.charCodeAt(0);
+    let len = ordZ - ordA + 1;
+
+    let s = "";
+    while (n >= 0) {
+        s = String.fromCharCode(n % len + ordA) + s;
+        n = Math.floor(n / len) - 1;
+    }
+    return s;
+}
+
+function transform(str) {
+    try {
+        str = str.toUpperCase();
+        let res = '${';
+        let coord = convCoord(str);
+        if (str[0] == '$') {
+            res += "'$" + colName(coord.x) + "'";
+        } else {
+            res += 'colName(' + coord.x + ' + delta_x)'
+        }
+        res += ' + '
+        if (str.includes('$') && str.lastIndexOf('$') !== 0) {
+            console.log(res.includes('$'), str.lastIndexOf('$') !== 0)
+            res += "'$' + " + (coord.y + 1);
+        } else {
+            res += '(' + (coord.y + 1) + ' + delta_y) '
+        }
+        return res + '}';
+    } catch (e) {
+        return str;
+    }
+}
+
+function build(str, x, y) {
+
+    if (str === '' || str[0] !== '=') {
+        return (x, y) => str;
+    } else {
+        let formula = `(x, y) =>{
+                        const delta_x = x - ${x};
+                        const delta_y = y - ${y};
+                        return \``
+        let pt = 0;
+        let old_pt = 0;
+        while (pt < str.length) {
+            old_pt = pt;
+            while (pt < str.length && (isAlphabetic(str[pt]) || isNumeric(str[pt]) || str[pt] == '$')) {
+                pt++;
+            }
+
+            formula += transform(str.substring(pt, old_pt));
+
+            old_pt = pt;
+            while (pt < str.length && !(isAlphabetic(str[pt]) || isNumeric(str[pt]) || str[pt] == '$')) {
+                pt++;
+            }
+
+            formula += str.substring(pt, old_pt);
+        }
+        formula += '`;}'
+        console.log(formula);
+        return eval(formula);
+    }
+}
+
 class Table {
 
     constructor(x, y, action_memo = 50) {
@@ -228,6 +293,7 @@ class Table {
         console.log('ALL CREATED');
         this.toUpdate = new Stack();
         this.actions = new ActionStack(action_memo);
+        this.copied = null;
     }
 
     createCeilIfNeed(x, y) {
@@ -292,8 +358,6 @@ class Table {
         let depth_stack = new Stack();
         let usage_array = new Array();
         while (!this.toUpdate.isEmpty()) {
-
-
             if (this.toUpdate.top().colour !== WHITE) {
                 this.toUpdate.pop();
                 continue;
@@ -371,11 +435,106 @@ class Table {
         return change;
     }
 
+    copy(x, y) {
+        this.copied = build(this.field[x][y].realText, x, y);
+    }
+
+    paste(x, y) {
+        if (this.copied != null)
+            this.setCeil(x, y, this.copied(x, y));
+    }
+
+    cut(x, y) {
+        this.copied = build(this.field[x][y].realText, x, y);
+        this.setCeil(x, y, '')
+    }
+
+    deleteCopy(x, y) {
+        this.copied = null;
+    }
+
 }
 
+class StringSetWitnSearch {
+    constructor(args) {
+        this.elems = new Array(...args);
+        this.begin = 0;
+        this.end = this.elems.length - 1;
+        this.prefix = '';
+    }
 
+    add(str) {
+        this.elems.push(str);
+    }
 
-const POSSIBLE_FUNCTIONS = new Set(["SUM", "MUL"]);
+    has(str) {
+        let beg = 0;
+        let end = this.elems.length - 1;
+        let mid = Math.floor((end + beg) / 2);
+
+        while (this.elems[mid] != str && beg < end) {
+            if (str < this.elems[mid]) {
+                end = mid - 1;
+            } else if (str > this.elems[mid]) {
+                beg = mid + 1;
+            }
+
+            mid = Math.floor((end + beg) / 2);
+        }
+        return (this.elems[mid] != str) ? false : true;
+    }
+
+    binSearchBegByPrefix(str, beg, end) {
+        let mid = Math.floor((end + beg) / 2);
+
+        while (this.elems[mid] != str && beg < end) {
+            if (str < this.elems[mid]) {
+                end = mid - 1;
+            } else if (str > this.elems[mid]) {
+                beg = mid + 1;
+            }
+
+            mid = Math.floor((end + beg) / 2);
+        }
+        return (str > this.elems[mid]) ? mid + 1 : mid;
+    }
+
+    binSearchEndByPrefix(str, beg, end) {
+        str += '\uffff'; //hack
+        let mid = Math.floor((end + beg) / 2);
+
+        while (this.elems[mid] != str && beg < end) {
+            if (str < this.elems[mid]) {
+                end = mid - 1;
+            } else if (str > this.elems[mid]) {
+                beg = mid + 1;
+            }
+
+            mid = Math.floor((end + beg) / 2);
+        }
+        return (str > this.elems[mid]) ? mid : mid - 1;
+    }
+
+    addLetter(letter) {
+        this.prefix += letter;
+        this.begin = this.binSearchBegByPrefix(this.prefix, this.begin, this.end);
+        this.end = this.binSearchEndByPrefix(this.prefix, this.begin, this.end);
+        return this.elems.slice(this.begin, this.end);
+    };
+
+    removeLetter() {
+        this.prefix = this.prefix.substring(0, this.prefix.length - 1);
+        this.begin = this.binSearchBegByPrefix(this.prefix, 0, this.begin);
+        this.end = this.binSearchEndByPrefix(this.prefix, this.begin, this.elems.length - 1);
+        return this.elems.slice(this.begin, this.end);
+    }
+
+    prepareToWork() {
+        this.elems.sort();
+    }
+}
+
+const POSSIBLE_FUNCTIONS = new StringSetWitnSearch(["SUM", "MUL"]);
 
 const OPERATOR = (first, oper, second) => { //TODO: bigNums
     if (oper === undefined && second === undefined) {
@@ -500,6 +659,7 @@ const SIGN = funcConstructor(Math.sign, 'SIGN', 1, 1);
 
 const RAND = funcConstructor(Math.random, 'RAND', 1, 1);
 
+POSSIBLE_FUNCTIONS.prepareToWork();
 
 const isCircDepend = (startCeil) => {
     let depth_stack = new Stack();
@@ -672,12 +832,12 @@ class Tokens {
     }
 }
 
-//<E>  ::= <T> <E’>. 
-//<E’> ::= + <T> <E’> | - <T> <E’> | . 
-//<T>  ::= <F> <T’>. 
-//<T’> ::= * <F> <T’> | / <F> <T’> | . 
+//<E>  ::= <T> <E’>.
+//<E’> ::= + <T> <E’> | - <T> <E’> | .
+//<T>  ::= <F> <T’>.
+//<T’> ::= * <F> <T’> | / <F> <T’> | .
 //<F>  ::= <number> | <ceil> | ( <E> ) | - <F> | + <F> |  <func> ( <B> ).
-//<B>  ::= <E> ; <B> | <E> | .  
+//<B>  ::= <E> ; <B> | <E> | .
 //TODO: update scheme
 
 const mustBe = (tokens, token) => {

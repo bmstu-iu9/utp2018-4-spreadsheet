@@ -10,6 +10,8 @@
   border: 1px solid #000;
   cursor: cell;
   outline-offset: -1px;
+  margin: 1px;
+  z-index: 3;
 }
 
 .up-div{
@@ -74,12 +76,6 @@
   width: 666px;
 }
 
-/* .table{
-    background-color: #fff;
-    margin-left: 20px;
-    height: 77vh;
-} */
-
 textarea {
     border: none;
     cursor: cell;
@@ -89,8 +85,8 @@ textarea {
     overflow: hidden;
     resize: none;
     font-size: 14px;
-    padding: 5px;
-    wrap: none;
+    padding: 4px;
+    /* wrap: none; */
     vertical-align: top;
 }
 
@@ -116,11 +112,11 @@ td {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    z-index: 666;
+    z-index: 66;
     height: 100%;
     width: 3px;
     top: 0px;
-    left: 105px;
+    right: -2px;
 }
 
 .modVertSymb {
@@ -129,9 +125,88 @@ td {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    z-index: 666;
+    z-index: 66;
     height: 3px;
     width: 100%;
-    top: 21px;
+    bottom: -2px;
     left: 0px;
+}
+
+.context-menu {
+  display: none;
+  position: absolute;
+  z-index: 67;
+  padding: 12px 0;
+  width: 240px;
+  background-color: #fff;
+  border: solid 1px #dfdfdf;
+  box-shadow: 1px 1px 2px #cfcfcf;
+}
+
+.context-menu--active {
+  display: block;
+}
+
+.context-menu_items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.context-menu_item {
+  display: block;
+  margin-bottom: 4px;
+  padding: 0;
+}
+
+.context-menu_item:last-child {
+  margin-bottom: 0;
+}
+
+.context-menu_link {
+  display: block;
+  padding: 4px 12px;
+  text-decoration: none;
+}
+
+.context-menu_link_user {
+  color: #5271ff;
+}
+
+.context-menu_link_guest {
+  color: #5271ff;
+}
+
+.context-menu_link_guest:hover {
+  color: #fff;
+  background-color: #35b729;
+}
+
+.context-menu_link_user:hover {
+  color: #fff;
+  background-color: #5271ff;
+}
+
+.decorUp {
+    position: absolute;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    z-index: 66;
+    height: 3px;
+    width: 100%;
+    left: 0px;
+    bottom: -1px;
+}
+
+.decorLeft {
+    position: absolute;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    z-index: 66;
+    height: 100%;
+    width: 3px;
+    top: 0px;
+    right: -1px;
 }
