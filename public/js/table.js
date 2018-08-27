@@ -305,6 +305,7 @@ const addCells = function(rows, cols){
             cell.firstChild.onfocus = function() {
               lastFocusedTextarea = document.activeElement;
               let thisTextarea = cell.firstChild;
+
               somePoliticalDirections.forEach(direction => {
                   document.getElementById(direction + "-button").style.border = "2px solid #ffffff";
               });
@@ -379,6 +380,8 @@ const addCells = function(rows, cols){
             new_cell.firstChild.onfocus = function() {
               lastFocusedTextarea = document.activeElement;
               let thisTextarea = new_cell.firstChild;
+              if(!thisTextarea.style.fontFamily)
+                thisTextarea.style.fontFamily = 'sans-serif';
               somePoliticalDirections.forEach(direction => {
                   document.getElementById(direction + "-button").style.border = "2px solid #ffffff";
               });

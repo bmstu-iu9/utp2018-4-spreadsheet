@@ -1,5 +1,8 @@
 .scroll-table {
-  width: 97%;
+  width: -moz-calc(100% - 40px);
+  width: -webkit-calc(100% - 40px);
+  width: -o-calc(100% - 40px);
+  width: calc(100% - 40px);
   float: left;
   overflow: auto;
   height: 97%;
@@ -15,7 +18,10 @@
 .up-div{
   float: left;
   overflow: hidden;
-  width: 97%;
+  width: -moz-calc(100% - 40px);
+  width: -webkit-calc(100% - 40px);
+  width: -o-calc(100% - 40px);
+  width: calc(100% - 40px);
 }
 
 .up-div table{
@@ -41,7 +47,7 @@
 
 .left-div{
   overflow: hidden;
-  width: 3%;
+  width: 40px;
   height: 95%;
   float: left;
   //border: 1px solid #555;
@@ -64,7 +70,7 @@
 
 .null-div {
   float: left;
-  width: 3%;
+  width: 40px;
 }
 
 .null-div td {
