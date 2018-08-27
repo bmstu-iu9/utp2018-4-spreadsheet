@@ -496,7 +496,7 @@ class StringSetWitnSearch {
     }
 
     binSearchEndByPrefix(str, beg, end) {
-        str += '\uffff';                                 //hack
+        str += '\uffff'; //hack
         let mid = Math.floor((end + beg) / 2);
 
         while (this.elems[mid] != str && beg < end) {
@@ -518,8 +518,13 @@ class StringSetWitnSearch {
         return this.elems.slice(this.begin, this.end + 1);
     };
 
+<<<<<<< HEAD
     removeLetters(am) {
         this.prefix = this.prefix.substring(0, (this.prefix.length - am) > 0 ? (this.prefix.length - am) : 0);
+=======
+    removeLetter() {
+        this.prefix = this.prefix.substring(0, this.prefix.length - 1);
+>>>>>>> b66c3557d21eddb869482e93cb4d5d0cdfe5f94b
         this.begin = this.binSearchBegByPrefix(this.prefix, 0, this.begin);
         this.end = this.binSearchEndByPrefix(this.prefix, this.begin, this.elems.length - 1);
         return this.elems.slice(this.begin, this.end + 1);

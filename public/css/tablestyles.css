@@ -11,6 +11,7 @@
   cursor: cell;
   outline-offset: -1px;
   margin: 1px;
+  z-index: 3;
 }
 
 .left-div{
@@ -84,7 +85,7 @@ textarea {
     resize: none;
     font-size: 14px;
     padding: 4px;
-    wrap: none;
+    /* wrap: none; */
     vertical-align: top;
 }
 
@@ -110,7 +111,7 @@ td {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    z-index: 666;
+    z-index: 66;
     height: 100%;
     width: 3px;
     top: 0px;
@@ -123,7 +124,7 @@ td {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    z-index: 666;
+    z-index: 66;
     height: 3px;
     width: 100%;
     bottom: -2px;
@@ -133,7 +134,7 @@ td {
 .context-menu {
   display: none;
   position: absolute;
-  z-index: 667;
+  z-index: 67;
   padding: 12px 0;
   width: 240px;
   background-color: #fff;
@@ -177,7 +178,7 @@ td {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    z-index: 666;
+    z-index: 66;
     height: 3px;
     width: 100%;
     left: 0px;
@@ -189,57 +190,9 @@ td {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    z-index: 666;
+    z-index: 66;
     height: 100%;
     width: 3px;
     top: 0px;
     right: -1px;
-}
-
-.main_top {
-    position: absolute;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    z-index: 500;
-    height: 2px;
-    width: 100%;
-    top: 0px;
-    left: 0px;
-}
-
-.main_left {
-    position: absolute;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    z-index: 500;
-    height: 100%;
-    width: 2px;
-    top: 0px;
-    left: 0px;
-}
-
-.main_right {
-    position: absolute;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    z-index: 500;
-    height: 100%;
-    width: 2px;
-    top: 0px;
-    right: 0px;
-}
-
-.main_bottom {
-    position: absolute;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    z-index: 500;
-    height: 2px;
-    width: 100%;
-    bottom: 0px;
-    left: 0px;
 }

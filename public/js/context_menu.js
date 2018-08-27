@@ -14,10 +14,10 @@ class ContextMenu {
     _getPosition(e) {
         let posX = 0;
         let posY = 0;
-    
+
         if (!e)
             e = window.event;
-    
+
         if (e.pageX || e.pageY) {
             posX = e.pageX;
             posY = e.pageY;
@@ -27,7 +27,7 @@ class ContextMenu {
             posY = e.clientY + document.body.scrollTop +
                 document.documentElement.scrollTop;
         }
-    
+
         return {
             x: posX,
             y: posY
@@ -38,19 +38,19 @@ class ContextMenu {
         const clickCoords = this._getPosition(e);
         const clickCoordsX = clickCoords.x;
         const clickCoordsY = clickCoords.y;
-    
+
         this.menuWidth = this.menu.offsetWidth + 15;
         this.menuHeight = this.menu.offsetHeight + 15;
-    
+
         this.windowWidth = window.innerWidth;
         this.windowHeight = window.innerHeight;
-    
+
         if ((this.windowWidth - clickCoordsX) < this.menuWidth) {
             this.menu.style.left = this.windowWidth - this.menuWidth + "px";
         } else {
             this.menu.style.left = clickCoordsX + "px";
         }
-    
+
         if ((this.windowHeight - clickCoordsY) < this.menuHeight) {
             this.menu.style.top = this.windowHeight - this.menuHeight + "px";
         } else {
@@ -73,4 +73,3 @@ class ContextMenu {
         }
     }
 }
-

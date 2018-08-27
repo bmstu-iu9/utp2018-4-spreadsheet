@@ -23,7 +23,7 @@ const updateTables = () => {
 
 /**
  * Отвечает за действия в контекстном меню
- * @param {*} link 
+ * @param {*} link
  */
 const menuItemListener = link => {
     const cell = itemInContext;
@@ -68,7 +68,7 @@ const menuItemListener = link => {
 
 /**
  * Вставка из буфера обмена работает только на хромиуме 66+
- * @param {Cell} cell 
+ * @param {Cell} cell
  */
 const tryToPasteFromClipboard = cell => {
     if (navigator.clipboard) {
@@ -86,8 +86,8 @@ const tryToPasteFromClipboard = cell => {
 
 /**
  * Копировать и вырезать через буфер обмена
- * @param {Cell} cell 
- * @param {String} command 
+ * @param {Cell} cell
+ * @param {String} command
  */
 const tryToSmthToClipboard = (cell, command) => {
     cell.focus();
@@ -102,8 +102,8 @@ const tryToSmthToClipboard = (cell, command) => {
 
 /**
  * Определяет был ли клик внутри элемента с классом className
- * @param {Event} e 
- * @param {String} className 
+ * @param {Event} e
+ * @param {String} className
  */
 const clickInsideElement = (e, className) => {
     let el = e.srcElement || e.target;
@@ -132,31 +132,6 @@ window.onresize = function (e) {
     contextMenu.contextMenuOff();
 };
 //************************* */
-
-//Добавлнеие ячеек при скроле
-mainDiv.onscroll = function () {
-    upDiv.scrollLeft = this.scrollLeft;
-    leftDiv.scrollTop = this.scrollTop;
-
-    if (mainDiv.scrollLeft !== upDiv.scrollLeft) {
-        mainDiv.scrollLeft = upDiv.scrollLeft;
-    }
-
-    if (mainDiv.scrollTop !== leftDiv.scrollTop) {
-        mainDiv.scrollTop = leftDiv.scrollTop;
-    }
-
-    const moreCellsOnY = mainDiv.scrollHeight - mainDiv.clientHeight;
-    const moreCellsOnX = mainDiv.scrollWidth - mainDiv.clientWidth;
-    const percentY = (mainDiv.scrollTop / moreCellsOnY) * 100;
-    const percentX = (mainDiv.scrollLeft / moreCellsOnX) * 100;
-    if (percentY > 80) {
-        addCells(5, 0);
-    }
-    if (percentX > 80) {
-        addCells(0, 5);
-    }
-}
 
 //Вызов контекстного меню на ПКМ
 document.addEventListener('contextmenu', e => {
