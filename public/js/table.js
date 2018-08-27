@@ -13,6 +13,7 @@ let currentLet = [];
 let focusID = '';
 let lastFocusedTextarea = '';
 let somePoliticalDirections = ['left', 'center', 'right'];
+let someStyles = ['bold', 'italics', 'underline'];
 
 const clear = (index) => {
     for (let i = index; i < letters.length; i++) {
@@ -248,13 +249,13 @@ const initCell = (columnNumber, rowNumber) => {
             const oldInput = document.getElementById(focusID);
             const oldCell = document.getElementById('Cell_' + focusID);
 
-            if(!oldInput.data && Number(oldInput.value))
+            if(!oldInput.getAttribute('data-style') && Number(oldInput.value))
               oldInput.style.textAlign = 'right';
             oldCell.style.outline = '';
         }
 
         focusID = newInput.id;
-        if(!newInput.data)
+        if(!newInput.getAttribute('data-style'))
           newInput.style.textAlign = 'left';
         newCell.style.outline = '3px solid #6bc961'
     }
@@ -303,9 +304,24 @@ const addCells = function(rows, cols){
 
             cell.firstChild.onfocus = function() {
               lastFocusedTextarea = document.activeElement;
-              document.getElementById("left-button").style.border = document.getElementById("center-button").style.border = document.getElementById("right-button").style.border = "2px solid #ffffff"
-              if(new_cell.firstChild.data){
-                document.getElementById("" + new_cell.firstChild.data + "-button").style.border = "2px solid #6bc961";
+              let thisTextarea = cell.firstChild;
+              somePoliticalDirections.forEach(direction => {
+                  document.getElementById(direction + "-button").style.border = "2px solid #ffffff";
+              });
+              someStyles.forEach(style => {
+                  document.getElementById(style + "-button").style.border = "2px solid #ffffff";
+              });
+              if (thisTextarea.getAttribute('data-style')){
+                document.getElementById("" + new_cell.firstChild.getAttribute('data-style') + "-button").style.border = "2px solid #6bc961";
+              }
+              if (thisTextarea.style.fontWeight == 'bold'){
+                document.getElementById("bold-button").style.border = "2px solid #6bc961";
+              }
+              if (thisTextarea.style.fontStyle == 'italic'){
+                document.getElementById("italics-button").style.border = "2px solid #6bc961";
+              }
+              if (thisTextarea.style.textDecoration == 'underline'){
+                document.getElementById("underline-button").style.border = "2px solid #6bc961";
               }
             };
 
@@ -359,23 +375,31 @@ const addCells = function(rows, cols){
             new_cell.id = 'Cell_' + letter + (i + 1);
             initCell(j, i + 1);
 
-            //new_cell.firstChild.data = 0;
 
             new_cell.firstChild.onfocus = function() {
               lastFocusedTextarea = document.activeElement;
-              document.getElementById("left-button").style.border = document.getElementById("center-button").style.border = document.getElementById("right-button").style.border = "2px solid #ffffff"
-              if(new_cell.firstChild.data){
-                //alert(new_cell.data);
-                document.getElementById("" + new_cell.firstChild.data + "-button").style.border = "2px solid #6bc961";
+              let thisTextarea = new_cell.firstChild;
+              somePoliticalDirections.forEach(direction => {
+                  document.getElementById(direction + "-button").style.border = "2px solid #ffffff";
+              });
+              someStyles.forEach(style => {
+                  document.getElementById(style + "-button").style.border = "2px solid #ffffff";
+              });
+              if (thisTextarea.getAttribute('data-style')){
+                document.getElementById("" + new_cell.firstChild.getAttribute('data-style') + "-button").style.border = "2px solid #6bc961";
               }
+              if (thisTextarea.style.fontWeight == 'bold'){
+                document.getElementById("bold-button").style.border = "2px solid #6bc961";
+              }
+              if (thisTextarea.style.fontStyle == 'italic'){
+                document.getElementById("italics-button").style.border = "2px solid #6bc961";
+              }
+              if (thisTextarea.style.textDecoration == 'underline'){
+                document.getElementById("underline-button").style.border = "2px solid #6bc961";
+              }
+
             };
 
-            /*
-            new_cell.firstChild.onblur = function() {
-              //console.log(document.activeElement.id);
-              //new_cell.firstChild.data = 0;
-            };
-            */
 
             if (i >= DEFAULT_ROWS) {
                 const inp = document.getElementById(letter + (i + 1));
@@ -412,19 +436,51 @@ mainDiv.onscroll = function() {
 
 // KHOPO4KU & DESIGH
 
+
+document.getElementById("bold-button").addEventListener("click", e => {
+   if (lastFocusedTextarea.style.fontWeight != 'bold'){
+     document.getElementById("bold-button").style.border = "2px solid #6bc961";
+     lastFocusedTextarea.style.fontWeight = 'bold';
+   } else {
+     lastFocusedTextarea.style.fontWeight = 'normal';
+     document.getElementById("bold-button").style.border = "2px solid #ffffff";
+   }
+});
+
+document.getElementById("italics-button").addEventListener("click", e => {
+   if (lastFocusedTextarea.style.fontStyle != 'italic'){
+     document.getElementById("italics-button").style.border = "2px solid #6bc961";
+     lastFocusedTextarea.style.fontStyle = 'italic';
+   } else {
+     lastFocusedTextarea.style.fontStyle = 'normal';
+     document.getElementById("italics-button").style.border = "2px solid #ffffff";
+   }
+});
+
+document.getElementById("underline-button").addEventListener("click", e => {
+   if (lastFocusedTextarea.style.textDecoration != 'underline'){
+     document.getElementById("underline-button").style.border = "2px solid #6bc961";
+     lastFocusedTextarea.style.textDecoration = 'underline';
+   } else {
+     lastFocusedTextarea.style.textDecoration = 'none';
+     document.getElementById("underline-button").style.border = "2px solid #ffffff";
+   }
+});
+
+
 somePoliticalDirections.forEach( direction => {
   document.getElementById(direction + "-button").addEventListener("click", e => {
-     if (lastFocusedTextarea.data != direction){
-       document.getElementById(direction + "-button").style.borderRadius = "5px 5px 5px 5px";
+     if (lastFocusedTextarea.getAttribute('data-style') != direction){
        document.getElementById(direction + "-button").style.border = "2px solid #6bc961";
-       lastFocusedTextarea.style.textAlign = lastFocusedTextarea.data = direction;
+       lastFocusedTextarea.style.textAlign = direction;
+       lastFocusedTextarea.setAttribute('data-style', direction);
        somePoliticalDirections.forEach( directX => {
          if(directX != direction){
            document.getElementById(directX + "-button").style.border = "2px solid #ffffff"
          }
        });
      } else {
-       lastFocusedTextarea.data = '';
+       lastFocusedTextarea.setAttribute('data-style', '');
        lastFocusedTextarea.style.textAlign = 'left';
        document.getElementById(direction + "-button").style.border = "2px solid #ffffff";
      }

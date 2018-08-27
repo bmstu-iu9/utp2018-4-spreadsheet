@@ -42,7 +42,7 @@
 .left-div{
   overflow: hidden;
   width: 3%;
-  height: 96%;
+  height: 95%;
   float: left;
   //border: 1px solid #555;
 }
@@ -77,7 +77,14 @@
 .table{
     background-color: #fff;
     margin-left: 20px;
-    height: 67vh;
+    /* Firefox */
+    height: -moz-calc(100% - 205px);
+    /* WebKit */
+    height: -webkit-calc(100% - 205px);
+    /* Opera */
+    height: -o-calc(100% - 205px);
+    /* Standard */
+    height: calc(100% - 205px);
 }
 
 textarea {

@@ -319,6 +319,24 @@ a:visited {
   margin-top: 10px;
 }
 
+.font-settings button{
+  border-radius: 5px 5px 5px 5px;
+  border : 2px solid #ffffff;
+}
+
+.font-settings button:focus {
+  outline: none;
+}
+
+select:focus {
+  outline: none;
+}
+
+.horizontally button{
+  border-radius: 5px 5px 5px 5px;
+  border : 2px solid #ffffff;
+}
+
 .horizontally button:focus {
   outline: none;
 }
@@ -737,6 +755,3 @@ div#filesMenu ul.submenu1 {
   margin-left: 20px;
   display: inline;
 }
-
-
-
