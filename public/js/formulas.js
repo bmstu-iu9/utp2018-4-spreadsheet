@@ -72,7 +72,7 @@ class ActionStack {
     }
 
     do(x) {
-        console.log('do', 'curPos:', this.curPos, 'lastPush:', this.lastPush, 'lim', this.lim);
+        //console.log('do', 'curPos:', this.curPos, 'lastPush:', this.lastPush, 'lim', this.lim);
         this.stack[this.curPos] = x;
         this.curPos = (this.curPos + 1) % this.stack.length;
         this.lastPush = this.curPos;
@@ -82,7 +82,7 @@ class ActionStack {
     }
 
     undo() {
-        console.log('undo', 'curPos:', this.curPos, 'lastPush:', this.lastPush, 'lim', this.lim);
+        //console.log('undo', 'curPos:', this.curPos, 'lastPush:', this.lastPush, 'lim', this.lim);
         if (this.curPos === this.lim) {
             return false;
         } else {
@@ -92,7 +92,7 @@ class ActionStack {
     }
 
     redo() {
-        console.log('redo', 'curPos:', this.curPos, 'lastPush:', this.lastPush, 'lim', this.lim);
+        //console.log('redo', 'curPos:', this.curPos, 'lastPush:', this.lastPush, 'lim', this.lim);
         if (this.curPos === this.lastPush) {
             return false;
         } else {
@@ -131,7 +131,7 @@ class Ceil {
         this.dependencies = new Set();
         this.receivers = new Set();
         this.func = null;
-        console.log("created ceil")
+        //console.log("created ceil")
     }
 
     toString() {
@@ -184,7 +184,7 @@ const isSpaceChar = (str) => {
 }
 
 const convCoord = (str) => {
-    console.log(str)
+    //console.log(str)
     str = str.toUpperCase();
     let beg = 0;
     if (str[0] === "$") beg = 1;
@@ -236,7 +236,7 @@ function transform(str) {
         }
         res += ' + '
         if (str.includes('$') && str.lastIndexOf('$') !== 0) {
-            console.log(res.includes('$'), str.lastIndexOf('$') !== 0)
+            //console.log(res.includes('$'), str.lastIndexOf('$') !== 0)
             res += "'$' + " + (coord.y + 1);
         } else {
             res += '(' + (coord.y + 1) + ' + delta_y) '
@@ -274,7 +274,7 @@ function build(str, x, y) {
             formula += str.substring(pt, old_pt);
         }
         formula += '`;}'
-        console.log(formula);
+        //console.log(formula);
         return eval(formula);
     }
 }
@@ -289,7 +289,7 @@ class Table {
                 this.field[i][j] = new Ceil(i, j);
             }
         }
-        console.log('ALL CREATED');
+        //console.log('ALL CREATED');
         this.toUpdate = new Stack();
         this.actions = new ActionStack(action_memo);
         this.copied = null;
@@ -344,9 +344,9 @@ class Table {
     }
 
     update() {
-        console.log(this.field[0][0].receivers)
-        console.log(this.field[0][1].receivers)
-        console.log(this.field[1][1].receivers)
+        //console.log(this.field[0][0].receivers)
+        //console.log(this.field[0][1].receivers)
+        //console.log(this.field[1][1].receivers)
         let rightOrderedUPD = new Stack();
         let depth_stack = new Stack();
         let usage_array = new Array();
@@ -360,19 +360,19 @@ class Table {
             this.toUpdate.pop();
 
             while (!depth_stack.isEmpty()) {
-                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TRACKING UPDATE")
+                //console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TRACKING UPDATE")
                 if (depth_stack.top().colour === WHITE) {
                     depth_stack.top().colour = GREY;
-                    console.log(depth_stack.top().x, depth_stack.top().y, 'not popped');
+                    //console.log(depth_stack.top().x, depth_stack.top().y, 'not popped');
                     depth_stack.top().receivers.forEach(ceil => {
-                        console.log(ceil.x, ceil.y, 'watching', ceil.colour);
+                        //console.log(ceil.x, ceil.y, 'watching', ceil.colour);
                         if (ceil.colour === WHITE) {
                             depth_stack.push(ceil);
                             usage_array.push(ceil);
                         }
                     })
                 } else {
-                    console.log(depth_stack.top().x, depth_stack.top().y, 'popped');
+                    //console.log(depth_stack.top().x, depth_stack.top().y, 'popped');
                     depth_stack.top().colour = BLACK;
                     rightOrderedUPD.push(depth_stack.pop());
                 }
@@ -408,7 +408,7 @@ class Table {
                 y: curCeil.y
             });
         }
-        console.log('res:', res);
+        //console.log('res:', res);
         return res;
     }
 
@@ -481,6 +481,8 @@ class StringSetWitnSearch {
         let mid = Math.floor((end + beg) / 2);
 
         while (this.elems[mid] != str && beg < end) {
+            console.log(str, this.elems[mid], '>', str > this.elems[mid], '=', str == this.elems[mid])
+            console.log(str, beg, this.elems[beg], mid, this.elems[mid], end, this.elems[end]);
             if (str < this.elems[mid]) {
                 end = mid - 1;
             } else if (str > this.elems[mid]) {
@@ -489,6 +491,7 @@ class StringSetWitnSearch {
 
             mid = Math.floor((end + beg) / 2);
         }
+        console.log(mid, this.elems[mid], (str > this.elems[mid]) ? mid + 1 : mid, this.elems[(str > this.elems[mid]) ? mid + 1 : mid]);
         return (str > this.elems[mid]) ? mid + 1 : mid;
     }
 
@@ -508,22 +511,37 @@ class StringSetWitnSearch {
         return (str > this.elems[mid]) ? mid : mid - 1;
     }
 
-    addLetter(letter) {
-        this.prefix += letter;
+    addLetters(letters) {
+        this.prefix += letters.toUpperCase();
         this.begin = this.binSearchBegByPrefix(this.prefix, this.begin, this.end);
         this.end = this.binSearchEndByPrefix(this.prefix, this.begin, this.end);
-        return this.elems.slice(this.begin, this.end);
+        return this.elems.slice(this.begin, this.end + 1);
     };
 
-    removeLetter(){
-        this.prefix = this.prefix.substring(0, this.prefix.length - 1);
+    removeLetters(am) {
+        this.prefix = this.prefix.substring(0, (this.prefix.length - am) > 0 ? (this.prefix.length - am) : 0);
         this.begin = this.binSearchBegByPrefix(this.prefix, 0, this.begin);
         this.end = this.binSearchEndByPrefix(this.prefix, this.begin, this.elems.length - 1);
-        return this.elems.slice(this.begin, this.end);
+        return this.elems.slice(this.begin, this.end + 1);
+    }
+
+    setPrefix(prefix){
+        this.clear;
+        this.prefix = prefix;
+        this.begin = this.binSearchBegByPrefix(this.prefix, this.begin, this.end);
+        this.end = this.binSearchEndByPrefix(this.prefix, this.begin, this.end);
+        return this.elems.slice(this.begin, this.end + 1);
+    }
+
+    clean() {
+        this.prefix = '';
+        this.begin = 0;
+        this.end = this.elems.length - 1;
     }
 
     prepareToWork() {
         this.elems.sort();
+        this.end = this.elems.length - 1;
     }
 }
 
@@ -664,7 +682,7 @@ const isCircDepend = (startCeil) => {
     startCeil.colour = GREY;
 
     while (!depth_stack.isEmpty()) {
-        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TRACKING CIRCULAR")
+        //console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TRACKING CIRCULAR")
         if (depth_stack.top().colour === BLACK) {
             depth_stack.pop();
         } else {
@@ -692,7 +710,7 @@ const isCircDepend = (startCeil) => {
 }
 
 const ceilInsert = (table, ceil, text) => {
-    console.log('ceilInsert')
+    //console.log('ceilInsert')
     ceil.dependencies.forEach(x => x.receivers.delete(ceil));
     ceil.dependencies.clear();
     ceil.error = null;
@@ -768,7 +786,7 @@ const tokenize = (formula) => {
             }
             tokens.push(temp);
         } else {
-            console.log("kek lol kek lol")
+            //console.log("kek lol kek lol")
             throw new FormulaError(
                 WRONG_SYMBOL,
                 "wrong symb: " + formula[ptL],
@@ -777,7 +795,7 @@ const tokenize = (formula) => {
         }
     }
 
-    console.log("ALL OK");
+    //console.log("ALL OK");
     return new Tokens(tokens, positions);
 
 }
@@ -834,7 +852,7 @@ class Tokens {
 //TODO: update scheme
 
 const mustBe = (tokens, token) => {
-    console.log("MUSTBE " + "empty: " + tokens.isEmpty())
+    //console.log("MUSTBE " + "empty: " + tokens.isEmpty())
     if (tokens.isEmpty()) {
         throw new FormulaError(
             EXPECTED_EXACT,
@@ -853,21 +871,21 @@ const mustBe = (tokens, token) => {
 }
 
 const parseAndCreate = (table, ceil, tokens) => {
-    console.log('parseAndCreate')
+    //console.log('parseAndCreate')
     let func = parseAddBeg(table, ceil, tokens);
     func = '(table) => { return (() => (' + func + '))}'; //"(d) => {return (() => pow2(d.x))}"
-    console.log(func)
+    //console.log(func)
 
     return eval(func)(table);
 }
 
 const parseAddBeg = (table, ceil, tokens) => {
-    console.log('parseAddBeg');
+    //console.log('parseAddBeg');
     return parseAddEnd(table, ceil, tokens, parseMulBeg(table, ceil, tokens));
 }
 
 const parseAddEnd = (table, ceil, tokens, funcStr) => {
-    console.log('parseAddEnd' + ' ' + funcStr)
+    //console.log('parseAddEnd' + ' ' + funcStr)
     if (!tokens.isEmpty()) {
         if (tokens.peek().token === '+' || tokens.peek().token === '-') {
             funcStr = 'OPERATOR(' + funcStr + ', \'' + tokens.next().token + '\', ';
@@ -891,12 +909,12 @@ const parseAddEnd = (table, ceil, tokens, funcStr) => {
 }
 
 const parseMulBeg = (table, ceil, tokens) => {
-    console.log('parseMulBeg')
+    //console.log('parseMulBeg')
     return parseMulEnd(table, ceil, tokens, parseElem(table, ceil, tokens));
 }
 
 const parseMulEnd = (table, ceil, tokens, funcStr) => {
-    console.log('parseMulEnd' + ' ' + funcStr)
+    //console.log('parseMulEnd' + ' ' + funcStr)
     if (!tokens.isEmpty()) {
         if (tokens.peek().token === '*' || tokens.peek().token === '/') {
             funcStr = 'OPERATOR(' + funcStr + ', \'' + tokens.next().token + '\', ';
@@ -915,11 +933,11 @@ const parseMulEnd = (table, ceil, tokens, funcStr) => {
 }
 
 const parseElem = (table, ceil, tokens) => {
-    console.log('parseElem' + ' ')
+    //console.log('parseElem' + ' ')
     let funcStr = '';
     if (!tokens.isEmpty()) {
         if (isNumeric(tokens.peek().token[0])) {
-            console.log("OK : " + tokens.peek().token)
+            //console.log("OK : " + tokens.peek().token)
             return tokens.next().token;
         } else if (isAlphabetic(tokens.peek().token[0]) || tokens.peek().token[0] == '$') {
             if (POSSIBLE_FUNCTIONS.has(tokens.peek().token)) {
@@ -935,7 +953,7 @@ const parseElem = (table, ceil, tokens) => {
                 x = coord.x;
                 y = coord.y;
             } catch (e) {
-                console.log(e)
+                //console.log(e)
                 throw new FormulaError(
                     EXPECTED_IDENTIFIER,
                     "expected identifier, found: " + tokens.peek().token,
@@ -967,7 +985,7 @@ const parseElem = (table, ceil, tokens) => {
 }
 
 const parseArgs = (table, ceil, tokens) => {
-    console.log('parseArgs')
+    //console.log('parseArgs')
     let cur = '';
     let funcStr = '';
     let temp = '';
@@ -995,7 +1013,7 @@ const parseArgs = (table, ceil, tokens) => {
                 let s2 = Math.min(firstCoord.y, secondCoord.y);
                 let f1 = Math.max(firstCoord.x, secondCoord.x);
                 let f2 = Math.max(firstCoord.y, secondCoord.y);
-                console.log('KKKEEEKKK', s1, s2, f1, f2);
+                //console.log('KKKEEEKKK', s1, s2, f1, f2);
                 for (; s1 <= f1; s1++) {
                     for (let i = s2; i <= f2; i++) {
                         funcStr += 'table.getInnerCeil(' + s1 + ',' + i + ').get()';
@@ -1008,8 +1026,8 @@ const parseArgs = (table, ceil, tokens) => {
                     }
                 }
             } catch (e) {
-                console.log(e);
-                console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+                //console.log(e);
+                //console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!');
                 throw new FormulaError(
                     EXPECTED_CELL,
                     'expected: *cell*:*cell*, found: ' + next1 + ':' + next2,
