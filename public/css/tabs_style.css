@@ -283,7 +283,7 @@ a:visited {
 
 .horizontally, .font-settings, .font-family {
     display: flex;
-    margin-top: 15px;
+    margin-top: 25px;
 }
 
 .horizontally .left {
@@ -317,7 +317,7 @@ a:visited {
 }
 
 .horizontally {
-    margin-left: 40px;
+    margin-left: 20px;
 }
 
 .horizontally button {
@@ -333,13 +333,43 @@ a:visited {
 }
 
 .font-family {
-    margin-left: 30px;
+    margin-left: 35px;
 }
 
 .filling {
-    margin-left: 20px;
-    margin-top: 15px;
-    background: url('../img/fill-drip-solid.svg');
+/*
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+*/
+    margin-left: 25px;
+    margin-top: 25px;
+    background: url('../img/fill-drip-solid.svg') center center / 100% 100%;
+    background-repeat: no-repeat;
+}
+
+/*
+.filling::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+.filling::-webkit-color-swatch {
+    border: none;
+    border-radius: 100%;
+}
+*/
+
+.font-color {
+    display: flex;
+    margin-left: 15px;
+    margin-top: 25px;
+    background: url('../img/palette-solid.svg') center center / 100% 100%;
+    background-repeat: no-repeat;
+}
+
+.font-size {
+    display: flex;
+    margin-left: 25px;
+    margin-top: 25px;
 }
 #one {
   display: block;
