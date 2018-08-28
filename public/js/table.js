@@ -591,26 +591,29 @@ const initCell = (columnNumber, rowNumber) => {
 
     newCell.colNum = columnNumber;
     newCell.rowNum = rowNumber - 1;
-
+    newCell.onclick = (e) => {
+        POSSIBLE_FUNCTIONS.clean();
+        autoCompleteMenu.autoCompleteOff();
+    }
     newInput.onkeydown = (e) => {
         let evtobj = window.event ? event : e
         if (evtobj.code === 'KeyZ' && evtobj.ctrlKey && evtobj.shiftKey) {
-            console.log('REDO');
+            //console.log('REDO');
             evtobj.preventDefault();
         } else if (evtobj.code === 'KeyZ' && evtobj.ctrlKey) {
-            console.log('UNDO');
+            //console.log('UNDO');
             evtobj.preventDefault();
         }
     };
     newInput.addEventListener("keydown", function (elem) {
         return (event) => {
-            console.log(newInput.id, 'code=', event.code, 'key=', event.key);
-            if (event.key == 'Enter') {
+            //console.log(newInput.id, 'code=', event.code, 'key=', event.key);
+            if (event.key == 'Enter' && !autoCompleteMenu.isActive()) {
                 elem.blur();
             }
             if (event.key == 'Escape') {
                 const cell = document.getElementById('Cell_' + elem.id);
-                console.log(elem.value);
+                //console.log(elem.value);
                 elem.value = '';
                 elem.editMode = false;
                 elem.style.cursor = 'cell';
@@ -629,20 +632,26 @@ const initCell = (columnNumber, rowNumber) => {
     }(newInput))
     newInput.onfocus = function (elem) {
         return () => {
-            console.log('onfocus')
+            //console.log('onfocus')
             let coord = convCoord(elem.id)
             elem.value = innerTable.getCeil(coord.x, coord.y).realText;
         };
     }(newInput);
     newInput.onblur = function (elem) {
         return () => {
-            console.log('onblur')
+            //console.log('onblur')
+            POSSIBLE_FUNCTIONS.clean();
+            autoCompleteMenu.autoCompleteOff();
             let coord = convCoord(elem.id);
             innerTable.setCeil(coord.x, coord.y, elem.value);
             updateTables();
             elem.value = innerTable.getCeil(coord.x, coord.y).toDisplay;
         };
     }(newInput);
+    newInput.onclick = (e) => {
+        POSSIBLE_FUNCTIONS.clean();
+        autoCompleteMenu.autoCompleteOff();
+    }
 
     const activateFormulaMode = () => {
         newInput.editMode = false;
@@ -860,6 +869,7 @@ const initCell = (columnNumber, rowNumber) => {
 
     }
 
+
     newInput.addEventListener('keydown', (e) => {
         let dx = 0;
         let dy = 0;
@@ -909,6 +919,27 @@ const initCell = (columnNumber, rowNumber) => {
                 formulaBuf = newInput.value;
             }*/
 
+        } else if (autoCompleteMenu.isActive()) {
+            //console.log('ACTIVATED')
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                autoCompleteMenu.choseTargeted();
+                return;
+            } else if (e.key === 'Tab' && e.shiftKey) {
+                e.preventDefault();
+                dx = (columnNumber ? -1 : 0);
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                dx = 1;
+            }else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                autoCompleteMenu.switchUp();
+                return;
+            }else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                autoCompleteMenu.switchDown();
+                return;
+            }
         } else {
 
             if (e.key === 'Enter' || e.key === 'ArrowDown') {
@@ -949,7 +980,46 @@ const initCell = (columnNumber, rowNumber) => {
             document.dispatchEvent(new Event('mouseup'));
             low_input.focus();
         }
+
+        //FOR CHROME <3
+        if (newInput.value[0] === '=' && newInput.selectionStart === newInput.selectionEnd) {
+            //console.log('simb:', newInput.value[newInput.selectionStart], newInput.selectionStart)
+            if (e.key.length == 1 && isAlphabetic(e.key) && !isAlphabetic(newInput.value[newInput.selectionStart]) && !isNumeric(newInput.value[newInput.selectionStart])) {
+                let beg = newInput.selectionStart;
+                if (!POSSIBLE_FUNCTIONS.charged())
+                    while (beg > 0 && isAlphabetic(newInput.value[beg - 1])) beg--;
+                let cur_concurrence = POSSIBLE_FUNCTIONS.addLetters(newInput.value.substring(beg, newInput.selectionStart) + e.key);
+                autoCompleteMenu.autoCompleteMenuOn(newCell, newInput);
+                autoCompleteMenu.changeFields(cur_concurrence);
+            } else if (e.key === ')' && newInput.value[newInput.selectionStart] === ')') {
+                newInput.selectionStart++;
+                e.preventDefault();
+            } else if (e.key === 'Backspace' && !isAlphabetic(newInput.value[newInput.selectionStart]) && !isNumeric(newInput.value[newInput.selectionStart])) {
+
+                //console.log('BACKSPACE')
+                if (!POSSIBLE_FUNCTIONS.charged()) {
+                    let beg = newInput.selectionStart - 1;
+                    while (beg > 0 && isAlphabetic(newInput.value[beg - 1])) beg--;
+                    POSSIBLE_FUNCTIONS.addLetters(newInput.value.substring(beg, newInput.selectionStart));
+                }
+                let cur_concurrence = POSSIBLE_FUNCTIONS.removeLetters(1);
+                if (POSSIBLE_FUNCTIONS.charged()) {
+                    autoCompleteMenu.autoCompleteMenuOn(newCell, newInput);
+                    autoCompleteMenu.changeFields(cur_concurrence);
+                } else {
+                    autoCompleteMenu.autoCompleteOff();
+                }
+            } else if (e.key !== 'Delete') {
+                POSSIBLE_FUNCTIONS.clean();
+                autoCompleteMenu.autoCompleteOff();
+            }
+        }
     });
+
+
+    // newInput.addEventListener('keydown', (e) => {
+
+    // });
 }
 
 const addUpAndLeftEvents = (type, num) => {
@@ -1339,77 +1409,77 @@ mainDiv.onscroll = function () {
             isScrolling = false;
 
         } else if (condUp && condRight) {
-          const elem = document.elementFromPoint(mainDiv.clientWidth +
-              mainDiv.getBoundingClientRect().left -
-              (mainDiv.offsetWidth - mainDiv.clientWidth) / 2,
-              mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop + 1);
+            const elem = document.elementFromPoint(mainDiv.clientWidth +
+                mainDiv.getBoundingClientRect().left -
+                (mainDiv.offsetWidth - mainDiv.clientWidth) / 2,
+                mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop + 1);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          stateScroll = 2;
-          mainDiv.scrollBy(horScrollSpeed, 0);
-          upDiv.scrollBy(horScrollSpeed, 0);
+            stateScroll = 2;
+            mainDiv.scrollBy(horScrollSpeed, 0);
+            upDiv.scrollBy(horScrollSpeed, 0);
 
         } else if (condBot && condLeft) {
-          const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
-              mainDiv.scrollLeft + 1,
-              mainDiv.clientHeight + mainDiv.getBoundingClientRect().top -
-              (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
+            const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
+                mainDiv.scrollLeft + 1,
+                mainDiv.clientHeight + mainDiv.getBoundingClientRect().top -
+                (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          stateScroll = 1;
-          mainDiv.scrollBy(0, vertScrollSpeed);
-          leftDiv.scrollBy(0, vertScrollSpeed);
+            stateScroll = 1;
+            mainDiv.scrollBy(0, vertScrollSpeed);
+            leftDiv.scrollBy(0, vertScrollSpeed);
 
         } else if (condBot && condRight) {
-          const elem = document.elementFromPoint(mainDiv.clientWidth +
-              mainDiv.getBoundingClientRect().left -
-              (mainDiv.offsetWidth - mainDiv.clientWidth) / 2,
-              mainDiv.clientHeight + mainDiv.getBoundingClientRect().top -
-              (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
+            const elem = document.elementFromPoint(mainDiv.clientWidth +
+                mainDiv.getBoundingClientRect().left -
+                (mainDiv.offsetWidth - mainDiv.clientWidth) / 2,
+                mainDiv.clientHeight + mainDiv.getBoundingClientRect().top -
+                (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          stateScroll = 3;
-          mainDiv.scrollBy(horScrollSpeed, vertScrollSpeed);
-          upDiv.scrollBy(horScrollSpeed, 0);
-          leftDiv.scrollBy(0, vertScrollSpeed);
+            stateScroll = 3;
+            mainDiv.scrollBy(horScrollSpeed, vertScrollSpeed);
+            upDiv.scrollBy(horScrollSpeed, 0);
+            leftDiv.scrollBy(0, vertScrollSpeed);
 
         } else if (condUp) {
             const elem = document.elementFromPoint(currentX, mainTable.rows[0].cells[0].getBoundingClientRect().top + 1);
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[0].cells[elem.colNum] :
-                (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1424,8 +1494,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[elem.rowNum].cells[0] :
-                (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1442,8 +1512,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1462,8 +1532,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1482,102 +1552,102 @@ mainDiv.onscroll = function () {
     } else if (stateScroll === 1) {
 
         if (condUp && condLeft) {
-          const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
-              mainDiv.scrollLeft + 1,
-              mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop + 1);
+            const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
+                mainDiv.scrollLeft + 1,
+                mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop + 1);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          if (mainDiv.scrollTop - vertScrollSpeed <= 0) {
-              mainDiv.scrollTop = 0;
-              stateScroll = 0;
-              isScrolling = false;
-          } else {
-              stateScroll = 1;
-              mainDiv.scrollBy(0, -vertScrollSpeed);
-              leftDiv.scrollBy(0, -vertScrollSpeed);
-          }
+            if (mainDiv.scrollTop - vertScrollSpeed <= 0) {
+                mainDiv.scrollTop = 0;
+                stateScroll = 0;
+                isScrolling = false;
+            } else {
+                stateScroll = 1;
+                mainDiv.scrollBy(0, -vertScrollSpeed);
+                leftDiv.scrollBy(0, -vertScrollSpeed);
+            }
 
         } else if (condUp && condRight) {
-          const elem = document.elementFromPoint(mainDiv.clientWidth +
-              mainDiv.getBoundingClientRect().left -
-              (mainDiv.offsetWidth - mainDiv.clientWidth) / 2,
-              mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop + 1);
+            const elem = document.elementFromPoint(mainDiv.clientWidth +
+                mainDiv.getBoundingClientRect().left -
+                (mainDiv.offsetWidth - mainDiv.clientWidth) / 2,
+                mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop + 1);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          if (mainDiv.scrollTop - vertScrollSpeed <= 0) {
-              mainDiv.scrollTop = 0;
-              stateScroll = 2;
-              isScrolling = false;
-          } else {
-              stateScroll = 3;
-              mainDiv.scrollBy(horScrollSpeed, -vertScrollSpeed);
-              leftDiv.scrollBy(0, -vertScrollSpeed);
-              upDiv.scrollBy(horScrollSpeed, 0);
-          }
+            if (mainDiv.scrollTop - vertScrollSpeed <= 0) {
+                mainDiv.scrollTop = 0;
+                stateScroll = 2;
+                isScrolling = false;
+            } else {
+                stateScroll = 3;
+                mainDiv.scrollBy(horScrollSpeed, -vertScrollSpeed);
+                leftDiv.scrollBy(0, -vertScrollSpeed);
+                upDiv.scrollBy(horScrollSpeed, 0);
+            }
 
         } else if (condBot && condLeft) {
-          const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
-              mainDiv.scrollLeft + 1,
-              mainDiv.clientHeight + mainDiv.getBoundingClientRect().top -
-              (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
+            const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
+                mainDiv.scrollLeft + 1,
+                mainDiv.clientHeight + mainDiv.getBoundingClientRect().top -
+                (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          stateScroll = 1;
-          mainDiv.scrollBy(0, vertScrollSpeed);
-          leftDiv.scrollBy(0, vertScrollSpeed);
+            stateScroll = 1;
+            mainDiv.scrollBy(0, vertScrollSpeed);
+            leftDiv.scrollBy(0, vertScrollSpeed);
 
         } else if (condBot && condRight) {
-          const elem = document.elementFromPoint(mainDiv.clientWidth +
-              mainDiv.getBoundingClientRect().left -
-              (mainDiv.offsetWidth - mainDiv.clientWidth) / 2, mainDiv.clientHeight +
-              mainDiv.getBoundingClientRect().top -
-              (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
+            const elem = document.elementFromPoint(mainDiv.clientWidth +
+                mainDiv.getBoundingClientRect().left -
+                (mainDiv.offsetWidth - mainDiv.clientWidth) / 2, mainDiv.clientHeight +
+                mainDiv.getBoundingClientRect().top -
+                (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          stateScroll = 3;
-          mainDiv.scrollBy(horScrollSpeed, vertScrollSpeed);
-          upDiv.scrollBy(horScrollSpeed, 0);
-          leftDiv.scrollBy(0, vertScrollSpeed);
+            stateScroll = 3;
+            mainDiv.scrollBy(horScrollSpeed, vertScrollSpeed);
+            upDiv.scrollBy(horScrollSpeed, 0);
+            leftDiv.scrollBy(0, vertScrollSpeed);
 
         } else if (condUp) {
             const elem = document.elementFromPoint(currentX,
@@ -1585,8 +1655,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1609,8 +1679,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[elem.rowNum].cells[0] :
-                (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1627,8 +1697,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1647,8 +1717,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1667,108 +1737,108 @@ mainDiv.onscroll = function () {
     } else if (stateScroll === 2) {
 
         if (condUp && condLeft) {
-          const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
-              mainDiv.scrollLeft + 1, mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop + 1);
+            const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
+                mainDiv.scrollLeft + 1, mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop + 1);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          if (mainDiv.scrollLeft - horScrollSpeed <= 0) {
-              mainDiv.scrollLeft = 0;
-              stateScroll = 0;
-              isScrolling = false;
-          } else {
-              stateScroll = 2;
-              mainDiv.scrollBy(-horScrollSpeed, 0);
-              upDiv.scrollBy(-horScrollSpeed, 0);
-          }
+            if (mainDiv.scrollLeft - horScrollSpeed <= 0) {
+                mainDiv.scrollLeft = 0;
+                stateScroll = 0;
+                isScrolling = false;
+            } else {
+                stateScroll = 2;
+                mainDiv.scrollBy(-horScrollSpeed, 0);
+                upDiv.scrollBy(-horScrollSpeed, 0);
+            }
 
         } else if (condUp && condRight) {
-          const elem = document.elementFromPoint(mainDiv.clientWidth +
-              mainDiv.getBoundingClientRect().left -
-              (mainDiv.offsetWidth - mainDiv.clientWidth) / 2, mainTable.rows[0].cells[0].getBoundingClientRect().top +
-              mainDiv.scrollTop + 1);
+            const elem = document.elementFromPoint(mainDiv.clientWidth +
+                mainDiv.getBoundingClientRect().left -
+                (mainDiv.offsetWidth - mainDiv.clientWidth) / 2, mainTable.rows[0].cells[0].getBoundingClientRect().top +
+                mainDiv.scrollTop + 1);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          stateScroll = 2;
-          mainDiv.scrollBy(horScrollSpeed, 0);
-          upDiv.scrollBy(horScrollSpeed, 0);
+            stateScroll = 2;
+            mainDiv.scrollBy(horScrollSpeed, 0);
+            upDiv.scrollBy(horScrollSpeed, 0);
 
         } else if (condBot && condLeft) {
-          const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
-              mainDiv.scrollLeft + 1, mainDiv.clientHeight + mainDiv.getBoundingClientRect().top -
-              (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
+            const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
+                mainDiv.scrollLeft + 1, mainDiv.clientHeight + mainDiv.getBoundingClientRect().top -
+                (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          if (mainDiv.scrollLeft - horScrollSpeed <= 0) {
-              mainDiv.scrollLeft = 0;
-              stateScroll = 1;
-              isScrolling = false;
-          } else {
-              stateScroll = 3;
-              mainDiv.scrollBy(-horScrollSpeed, vertScrollSpeed);
-              upDiv.scrollBy(-horScrollSpeed, 0);
-              leftDiv.scrollBy(0, vertScrollSpeed);
-          }
+            if (mainDiv.scrollLeft - horScrollSpeed <= 0) {
+                mainDiv.scrollLeft = 0;
+                stateScroll = 1;
+                isScrolling = false;
+            } else {
+                stateScroll = 3;
+                mainDiv.scrollBy(-horScrollSpeed, vertScrollSpeed);
+                upDiv.scrollBy(-horScrollSpeed, 0);
+                leftDiv.scrollBy(0, vertScrollSpeed);
+            }
 
         } else if (condBot && condRight) {
-          const elem = document.elementFromPoint(mainDiv.clientWidth +
-              mainDiv.getBoundingClientRect().left -
-              (mainDiv.offsetWidth - mainDiv.clientWidth) / 2, mainDiv.clientHeight +
-              mainDiv.getBoundingClientRect().top -
-              (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
+            const elem = document.elementFromPoint(mainDiv.clientWidth +
+                mainDiv.getBoundingClientRect().left -
+                (mainDiv.offsetWidth - mainDiv.clientWidth) / 2, mainDiv.clientHeight +
+                mainDiv.getBoundingClientRect().top -
+                (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          stateScroll = 3;
-          mainDiv.scrollBy(horScrollSpeed, vertScrollSpeed);
-          upDiv.scrollBy(horScrollSpeed, 0);
-          leftDiv.scrollBy(0, vertScrollSpeed);
+            stateScroll = 3;
+            mainDiv.scrollBy(horScrollSpeed, vertScrollSpeed);
+            upDiv.scrollBy(horScrollSpeed, 0);
+            leftDiv.scrollBy(0, vertScrollSpeed);
 
         } else if (condUp) {
             const elem = document.elementFromPoint(currentX, mainTable.rows[0].cells[0].getBoundingClientRect().top + 1);
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[0].cells[elem.colNum] :
-                (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1784,8 +1854,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1810,8 +1880,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1830,8 +1900,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1850,121 +1920,121 @@ mainDiv.onscroll = function () {
     } else if (stateScroll === 3) {
 
         if (condUp && condLeft) {
-          const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
-              mainDiv.scrollLeft + 1,
-              mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop + 1);
+            const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
+                mainDiv.scrollLeft + 1,
+                mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop + 1);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          if ((mainDiv.scrollTop - vertScrollSpeed <=0) && (mainDiv.scrollLeft - horScrollSpeed <= 0)) {
-              mainDiv.scrollTop = mainDiv.scrollLeft = 0;
-              stateScroll = 0;
-              isScrolling = false;
-          } else if (mainDiv.scrollTop - vertScrollSpeed <= 0) {
-              mainDiv.scrollTop = 0;
-              stateScroll = 2;
-              mainDiv.scrollBy(-horScrollSpeed, 0);
-              upDiv.scrollBy(-horScrollSpeed, 0);
-          } else if (mainDiv.scrollLeft - horScrollSpeed <= 0) {
-              mainDiv.scrollLeft = 0;
-              stateScroll = 1;
-              mainDiv.scrollBy(0, -vertScrollSpeed);
-              leftDiv.scrollBy(0, -vertScrollSpeed);
-          } else {
-              stateScroll = 3;
-              mainDiv.scrollBy(-horScrollSpeed, -vertScrollSpeed);
-              upDiv.scrollBy(-horScrollSpeed, 0);
-              leftDiv.scrollBy(0, -vertScrollSpeed);
-          }
+            if ((mainDiv.scrollTop - vertScrollSpeed <= 0) && (mainDiv.scrollLeft - horScrollSpeed <= 0)) {
+                mainDiv.scrollTop = mainDiv.scrollLeft = 0;
+                stateScroll = 0;
+                isScrolling = false;
+            } else if (mainDiv.scrollTop - vertScrollSpeed <= 0) {
+                mainDiv.scrollTop = 0;
+                stateScroll = 2;
+                mainDiv.scrollBy(-horScrollSpeed, 0);
+                upDiv.scrollBy(-horScrollSpeed, 0);
+            } else if (mainDiv.scrollLeft - horScrollSpeed <= 0) {
+                mainDiv.scrollLeft = 0;
+                stateScroll = 1;
+                mainDiv.scrollBy(0, -vertScrollSpeed);
+                leftDiv.scrollBy(0, -vertScrollSpeed);
+            } else {
+                stateScroll = 3;
+                mainDiv.scrollBy(-horScrollSpeed, -vertScrollSpeed);
+                upDiv.scrollBy(-horScrollSpeed, 0);
+                leftDiv.scrollBy(0, -vertScrollSpeed);
+            }
 
         } else if (condUp && condRight) {
-          const elem = document.elementFromPoint(mainDiv.clientWidth +
-              mainDiv.getBoundingClientRect().left -
-              (mainDiv.offsetWidth - mainDiv.clientWidth) / 2,
-              mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop + 1);
+            const elem = document.elementFromPoint(mainDiv.clientWidth +
+                mainDiv.getBoundingClientRect().left -
+                (mainDiv.offsetWidth - mainDiv.clientWidth) / 2,
+                mainTable.rows[0].cells[0].getBoundingClientRect().top + mainDiv.scrollTop + 1);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          if (mainDiv.scrollTop - vertScrollSpeed <= 0) {
-              mainDiv.scrollTop = 0;
-              stateScroll = 2;
-              mainDiv.scrollBy(horScrollSpeed, 0);
-              upDiv.scrollBy(horScrollSpeed, 0);
-          } else {
-              stateScroll = 3;
-              mainDiv.scrollBy(horScrollSpeed, -vertScrollSpeed);
-              upDiv.scrollBy(horScrollSpeed, 0);
-              leftDiv.scrollBy(0, -vertScrollSpeed);
-          }
+            if (mainDiv.scrollTop - vertScrollSpeed <= 0) {
+                mainDiv.scrollTop = 0;
+                stateScroll = 2;
+                mainDiv.scrollBy(horScrollSpeed, 0);
+                upDiv.scrollBy(horScrollSpeed, 0);
+            } else {
+                stateScroll = 3;
+                mainDiv.scrollBy(horScrollSpeed, -vertScrollSpeed);
+                upDiv.scrollBy(horScrollSpeed, 0);
+                leftDiv.scrollBy(0, -vertScrollSpeed);
+            }
 
         } else if (condBot && condLeft) {
-          const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
-              mainDiv.scrollLeft + 1, mainDiv.clientHeight + mainDiv.getBoundingClientRect().top -
-              (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
+            const elem = document.elementFromPoint(mainTable.rows[0].cells[0].getBoundingClientRect().left +
+                mainDiv.scrollLeft + 1, mainDiv.clientHeight + mainDiv.getBoundingClientRect().top -
+                (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          if (mainDiv.scrollLeft - horScrollSpeed <= 0) {
-              mainDiv.scrollLeft = 0;
-              stateScroll = 1;
-              mainDiv.scrollBy(0, vertScrollSpeed);
-              leftDiv.scrollBy(0, vertScrollSpeed);
-          } else {
-              stateScroll = 3;
-              mainDiv.scrollBy(-horScrollSpeed, vertScrollSpeed);
-              upDiv.scrollBy(-horScrollSpeed, 0);
-              leftDiv.scrollBy(0, vertScrollSpeed);
-          }
+            if (mainDiv.scrollLeft - horScrollSpeed <= 0) {
+                mainDiv.scrollLeft = 0;
+                stateScroll = 1;
+                mainDiv.scrollBy(0, vertScrollSpeed);
+                leftDiv.scrollBy(0, vertScrollSpeed);
+            } else {
+                stateScroll = 3;
+                mainDiv.scrollBy(-horScrollSpeed, vertScrollSpeed);
+                upDiv.scrollBy(-horScrollSpeed, 0);
+                leftDiv.scrollBy(0, vertScrollSpeed);
+            }
 
         } else if (condBot && condRight) {
-          const elem = document.elementFromPoint(mainDiv.clientWidth +
-              mainDiv.getBoundingClientRect().left -
-              (mainDiv.offsetWidth - mainDiv.clientWidth) / 2, mainDiv.clientHeight +
-              mainDiv.getBoundingClientRect().top -
-              (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
+            const elem = document.elementFromPoint(mainDiv.clientWidth +
+                mainDiv.getBoundingClientRect().left -
+                (mainDiv.offsetWidth - mainDiv.clientWidth) / 2, mainDiv.clientHeight +
+                mainDiv.getBoundingClientRect().top -
+                (mainDiv.offsetHeight - mainDiv.clientHeight) / 2);
 
-          curCell = (elem === null) ? null :
-              (elem.className === 'main_cell') ? elem :
-              (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-              curCell;
+            curCell = (elem === null) ? null :
+                (elem.className === 'main_cell') ? elem :
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
+            if ((curCell !== null) && (curCell !== colorCell)) {
+                bleachCells();
+                paintCells();
+                colorCell = curCell;
+            }
 
-          stateScroll = 3;
-          mainDiv.scrollBy(horScrollSpeed, vertScrollSpeed);
-          upDiv.scrollBy(horScrollSpeed, 0);
-          leftDiv.scrollBy(0, vertScrollSpeed);
+            stateScroll = 3;
+            mainDiv.scrollBy(horScrollSpeed, vertScrollSpeed);
+            upDiv.scrollBy(horScrollSpeed, 0);
+            leftDiv.scrollBy(0, vertScrollSpeed);
 
         } else if (condUp) {
             const elem = document.elementFromPoint(currentX,
@@ -1972,8 +2042,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1997,8 +2067,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2023,8 +2093,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2043,8 +2113,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2065,3 +2135,29 @@ mainDiv.onscroll = function () {
     }
 
 }
+
+const autoCompleteListener = link => {
+    const cell = itemInContext;
+
+    autoCompleteMenu.paste(link.getAttribute("data-action"), POSSIBLE_FUNCTIONS.prefix.length);
+    POSSIBLE_FUNCTIONS.clean();
+    contextMenu.contextMenuOff();
+}
+
+document.addEventListener('mousedown', e => {
+    /* e.preventDefault();
+    e.stopPropagation(); */
+    //console.log('loool');
+    let clickeElIsLink = clickInsideElement(e, 'auto-complete-menu_link');
+
+    if (clickeElIsLink) {
+        e.preventDefault();
+        e.stopPropagation();
+        autoCompleteListener(clickeElIsLink);
+    } else {
+        let button = e.which || e.button;
+        if (button === 1) {
+            contextMenu.contextMenuOff();
+        }
+    }
+});

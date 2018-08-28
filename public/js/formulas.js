@@ -163,13 +163,13 @@ const coordFromLetters = (str) => {
 }
 
 const isAlphabetic = (str) => {
-    return ('A'.charCodeAt(0) <= str.charCodeAt(0) && str.charCodeAt(0) <= 'Z'.charCodeAt(0) ||
+    return str !== undefined && ('A'.charCodeAt(0) <= str.charCodeAt(0) && str.charCodeAt(0) <= 'Z'.charCodeAt(0) ||
         'a'.charCodeAt(0) <= str.charCodeAt(0) && str.charCodeAt(0) <= 'z'.charCodeAt(0)
     );
 }
 
 const isNumeric = (str) => {
-    return ('0'.charCodeAt(0) <= str.charCodeAt(0) && str.charCodeAt(0) <= '9'.charCodeAt(0));
+    return str !== undefined && ('0'.charCodeAt(0) <= str.charCodeAt(0) && str.charCodeAt(0) <= '9'.charCodeAt(0));
 }
 
 const isSpecial = (str) => {
@@ -515,6 +515,7 @@ class StringSetWitnSearch {
         this.prefix += letters.toUpperCase();
         this.begin = this.binSearchBegByPrefix(this.prefix, this.begin, this.end);
         this.end = this.binSearchEndByPrefix(this.prefix, this.begin, this.end);
+        console.log('BORDERS:', this.begin, this.end + 1)
         return this.elems.slice(this.begin, this.end + 1);
     };
 
@@ -523,6 +524,10 @@ class StringSetWitnSearch {
         this.begin = this.binSearchBegByPrefix(this.prefix, 0, this.begin);
         this.end = this.binSearchEndByPrefix(this.prefix, this.begin, this.elems.length - 1);
         return this.elems.slice(this.begin, this.end + 1);
+    }
+
+    charged(){
+        return this.prefix.length > 0;
     }
 
     setPrefix(prefix){
@@ -609,12 +614,13 @@ const funcConstructor = (func, funcName, min_arg, max_arg) => {
             );
         }
 
-        if (max_arg !== undefined && args.length < max_arg) {
+        if (max_arg !== undefined && args.length > max_arg) {
             throw new FormulaError(
                 WRONG_ARGS_AMOUNT,
                 'expected less then ' + max_arg + ' arguments',
             );
         }
+        console.log('ERROR', args.length < min_arg, max_arg !== undefined && args.length > max_arg, min_arg, max_arg)
 
         for (let arg in args) {
             if (isNaN(arg)) {
@@ -626,7 +632,7 @@ const funcConstructor = (func, funcName, min_arg, max_arg) => {
         }
 
         let res = func(...args);
-        if (isNaN(res)) {
+        if (res === undefined || res === NaN) {
             throw new FormulaError(
                 UNDEFINED,
                 funcName + ' result undefined',
@@ -669,6 +675,8 @@ const MIN = funcConstructor(Math.min, 'MIN', 1);
 const SIGN = funcConstructor(Math.sign, 'SIGN', 1, 1);
 
 const RAND = funcConstructor(Math.random, 'RAND', 1, 1);
+
+const AHTOH = funcConstructor(() => 'AHTOH <3', 'AHTOH', 0, 0);
 
 POSSIBLE_FUNCTIONS.prepareToWork();
 
