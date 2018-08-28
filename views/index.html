@@ -29,9 +29,6 @@
           <h1 class = "UserName">|</h1>
           <a href="#" class="accountInf" id="account"></a>
         </div>
-        <span id="saveINFO"></span>
-        <span id="titles"></span>
-        <span id="log"></span> </p>
       </div>
     </div>
   </div>
@@ -75,6 +72,69 @@
         <li><a href="#two">Format</a></li>
       </ul>
     </nav>
+  </div>
+  
+
+  <div class="table" >
+    <link rel="stylesheet" type="text/css" href="/css/tablestyles.css" >
+    <div class = "null-div">
+      <table>
+        <tr>
+          <td></td>
+        </tr>
+      </table>
+      <!-- для общности сделаем таблицей -->
+    </div>
+    <div class = "up-div" id = "up-div">
+      <meta charset="utf8"/>
+      <table id = "up-table"></table>
+    </div>
+    <!-- <div class = "great-table"> -->
+    <div class = "left-div" id = "left-div">
+      <table id = "left-table" width = 100%></table>
+    </div>
+    <div id = "main-div" class = "scroll-table">
+      <table id = "main-table"></table>
+    </div>
+
+    <nav id = "context-menu-cell" class="context-menu">
+      <ul class="context-menu_items">
+        <li class="context-menu_item">
+          <a href="#" class="context-menu-cell_link" data-action="cut">
+            <i class="fa fa-chechnya"></i> Вырезать
+          </a>
+        </li>
+        <li class="context-menu_item">
+          <a href="#" class="context-menu-cell_link" data-action="copy">
+            <i class="fa fa-copy"></i> Копировать
+          </a>
+        </li>
+        <li class="context-menu_item">
+          <a href="#" class="context-menu-cell_link" data-action="paste">
+            <i class="fa fa-paste"></i> Вставить
+          </a>
+        </li>
+        <li class="context-menu_item">
+          <a href="#" class="context-menu-cell_link" data-action="delete">
+            <i class="fa fa-delete"></i> Удалить
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/colorConfig.js"></script>
+    <script src="/js/context_menu.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/autosave.js"></script>
+    <script src="/js/formulas.js"></script>
+    <script src="/js/table.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/pageload.js"></script>
+  </div>
+
+  <div class="input">
+    <input type="text" size="60" value="" class="form-control input-sm" id="format-input">
   </div>
 
   <div id="tab/three" class="abs tabs block">
@@ -132,46 +192,21 @@
     </ul>
   </div>
   <div id="two" class="abs block">
-
-    <div class="cellsettingstoolbar" style="display: block;">
-      <table cellspacing="0" cellpadding="0">
-        <tbody>
-        <tr>
-          <td>
-            <div class="currint_number">Свойства ячейки: <span id="currient_number"></span></div>
-          </td>
-        </tr>
-        <tr>
-          <td>  <button class="savecell">Save as: A1</button> <button class="cancel" href="#one" >Cancel</button>   </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="input">
-      <input type="text" size="60" value="" class="form-control input-sm">
-    </div>
-    <section class="format">
-      <div class="transformtext">
+      
+      <div class="format-topbar">
         <div class="alignment">
-          <h2>Aligment:</h2>
           <div class="horizontally">
             <button class='left' title="left"></button>
             <button class='center'title="center"></button>
             <button class='right' title="right"></button>
           </div>
-        </div>
-        <div class="font">
-          <h2>Font settings:</h2>
-          <div class="font-settings">
+            <div class="font-settings">
             <button class='left' title="bold"></button>
             <button class='center'title="italics"></button>
             <button class='right' title="color"></button>
           </div>
-        </div>
-        <div class="font-family">
-          <h2>Font family:</h2>
-          <div class="font-selecter">
+            <button class="filling" title="fill"></button>
+            <div class="font-family">
             <select>
               <option selected disabled>Font family</option>
               <option value="">Default</option>
@@ -179,24 +214,9 @@
               <option value="">Courier</option>
               <option value="">Verdana</option>
             </select>
-          </div>
+        </div>
         </div>
       </div>
-      <div class="example_text">
-        <div style="width:100px;height:100px;overflow:hidden;border:1px solid black;background-color:#EEE;padding:6px;">
-          <table cellspacing="0" cellpadding="0">
-            <tbody>
-            <tr>
-              <td id="sample-text" style="height: 100px; width: 100px; background-color: rgb(255, 255, 255); font-size: small; padding: 2px 2px 1px; vertical-align: top; text-align: left;">
-                <div>Это<br>пример</div>
-                <div style="text-align: right;">9.8765<br>-1234.5</div>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
   </div>
   <div id="one" class="abs block">
 
@@ -209,65 +229,9 @@
       <button class="lock-button" title="Lock"></button>
       <button class="unlock-button" title="Unlock"></button>
     </div>
-    <div class="input">
+    <!-- <div class="input">
       <input type="text" size="60" value="" class="form-control input-sm">
-    </div>
-    <div class="table" >
-      <link rel="stylesheet" type="text/css" href="/css/tablestyles.css" >
-      <div class = "null-div">
-        <table>
-          <tr>
-            <td></td>
-          </tr>
-        </table>
-        <!-- для общности сделаем таблицей -->
-      </div>
-      <div class = "up-div" id = "up-div">
-        <meta charset="utf8"/>
-        <table id = "up-table"></table>
-      </div>
-      <!-- <div class = "great-table"> -->
-      <div class = "left-div" id = "left-div">
-        <table id = "left-table" width = 100%></table>
-      </div>
-      <div id = "main-div" class = "scroll-table">
-        <table id = "main-table"></table>
-      </div>
+    </div> -->
 
-      <nav id = "context-menu-cell" class="context-menu">
-        <ul class="context-menu_items">
-          <li class="context-menu_item">
-            <a href="#" class="context-menu-cell_link" data-action="cut">
-              <i class="fa fa-chechnya"></i> Вырезать
-            </a>
-          </li>
-          <li class="context-menu_item">
-            <a href="#" class="context-menu-cell_link" data-action="copy">
-              <i class="fa fa-copy"></i> Копировать
-            </a>
-          </li>
-          <li class="context-menu_item">
-            <a href="#" class="context-menu-cell_link" data-action="paste">
-              <i class="fa fa-paste"></i> Вставить
-            </a>
-          </li>
-          <li class="context-menu_item">
-            <a href="#" class="context-menu-cell_link" data-action="delete">
-              <i class="fa fa-delete"></i> Удалить
-            </a>
-          </li>
-        </ul>
-      </nav>
-  
-      <script src="/js/config.js"></script>
-      <script src="/js/colorConfig.js"></script>
-      <script src="/js/context_menu.js"></script>
-      <script src="/js/utils.js"></script>
-      <script src="/js/autosave.js"></script>
-      <script src="/js/formulas.js"></script>
-      <script src="/js/table.js"></script>
-      <script src="/js/index.js"></script>
-      <script src="/js/pageload.js"></script>
-    </div>
   </div>
   </html>

@@ -266,54 +266,25 @@ a:hover {
 a:visited {
   font-weight: bold;
 }
-
-
-.format {
-  border: 1px solid black;
-  min-height: 80vh;
-  padding: 0 0 0 20px;
-  display: flex;
+.format-topbar {
+    min-width: 500px;
+    width: 45%;
 }
 
-.example-text{
-  border		: 1.5px solid black;
-  resize: none;
-  width: 176px;
-  height: 67px;
-  margin-top: 60px;
-  font-size:16px
-}
-
-.transformtext {
-  min-width: 500px;
-  width: 45%;
+.format-topbar button {
+    width: 25px;
+    height: 25px;
 }
 
 .alignment {
-  margin-bottom: 20px;
-  display: flex;
-
+    display: flex;
+    color: #222222;
 }
 
-.font{
-  display: flex;
+.horizontally, .font-settings, .font-family {
+    display: flex;
+    margin-top: 15px;
 }
-
-.transformtext .horizontally,
-.transformtext .vertical {
-  margin-left: 20px;
-  margin-top: 10px;
-}
-
-.format button {
-  width: 25px;
-  height: 25px;
-}
-
-.font-settings{
-  margin-top: 10px;
-}
-
 
 .horizontally .left {
   background: url('../img/align-to-left.svg') center center / 100% 100% ;
@@ -330,68 +301,46 @@ a:visited {
   box-sizing: content-box;;
 }
 
-.font.transformtext{
-  color: #000000;
-}
-
-.format{
-  margin-left: 20px;
-  margin-top: 10px;
-  margin-right: 20px;
-}
-
-.alignment{
-  margin-top: 60px;
-  margin-left:20px;
-}
-
-.font{
-  margin-top: 35px;
-  margin-left:20px;
-}
-
-
-.format{
-  background: white;
-}
-
-.font .left{
+.font-settings .left{
   background: url('../img/font-symbol-of-letter-a.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 }
 
-.font .center{
+.font-settings .center{
   background: url('../img/italicize-text.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 }
 
-.font .right{
+.font-settings .right{
   background: url('../img/font.svg') center center / 100% 100% ;
   box-sizing: content-box;;
 }
 
-.font .font-settings{
-  margin-left: 20px;
+.horizontally {
+    margin-left: 40px;
 }
 
-.font-family{
-  margin-left: 20px;
-  margin-top: 35px;
+.horizontally button {
+    margin-left: 5px;
 }
 
-.font button{
-  width: 25px;
-  height: 25px;
+.font-settings {
+    margin-left: 25px;
 }
 
-.font {
-  color: #222222;
+.font-settings button {
+    margin-left: 5px;
 }
 
-.alignment{
-  color: #222222;
+.font-family {
+    margin-left: 30px;
 }
 
+.filling {
+    margin-left: 20px;
+    margin-top: 15px;
+    background: url('../img/fill-drip-solid.svg');
+}
 #one {
   display: block;
 }
@@ -599,7 +548,7 @@ textarea.form-control {
   position: absolute;
 
   margin-left:5px;
-  margin-top: 11px;
+  /* margin-top: 11px; */
   /* margin-bottom: 15px; */
 }
 
@@ -902,4 +851,11 @@ a#account{
   font-size: 20px;
   color: white;
   margin-right: 0px;
+}
+
+#format-input {
+    position: absolute;
+    top: 160px;
+    width: 98vw;
+    margin-top: 10px;
 }
