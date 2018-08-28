@@ -418,22 +418,22 @@ const initCell = (columnNumber, rowNumber) => {
     newInput.onkeydown = (e) => {
         let evtobj = window.event ? event : e
         if (evtobj.code === 'KeyZ' && evtobj.ctrlKey && evtobj.shiftKey) {
-            console.log('REDO');
+            //console.log('REDO');
             evtobj.preventDefault();
         } else if (evtobj.code === 'KeyZ' && evtobj.ctrlKey) {
-            console.log('UNDO');
+            //console.log('UNDO');
             evtobj.preventDefault();
         }
     };
     newInput.addEventListener("keydown", function (elem) {
         return (event) => {
-            console.log(newInput.id, 'code=', event.code, 'key=', event.key);
+            //console.log(newInput.id, 'code=', event.code, 'key=', event.key);
             if (event.key == 'Enter' && !autoCompleteMenu.isActive()) {
                 elem.blur();
             }
             if (event.key == 'Escape') {
                 const cell = document.getElementById('Cell_' + elem.id);
-                console.log(elem.value);
+                //console.log(elem.value);
                 elem.value = '';
                 elem.editMode = false;
                 elem.style.cursor = 'cell';
@@ -452,14 +452,14 @@ const initCell = (columnNumber, rowNumber) => {
     }(newInput))
     newInput.onfocus = function (elem) {
         return () => {
-            console.log('onfocus')
+            //console.log('onfocus')
             let coord = convCoord(elem.id)
             elem.value = innerTable.getCeil(coord.x, coord.y).realText;
         };
     }(newInput);
     newInput.onblur = function (elem) {
         return () => {
-            console.log('onblur')
+            //console.log('onblur')
             POSSIBLE_FUNCTIONS.clean();
             autoCompleteMenu.autoCompleteOff();
             let coord = convCoord(elem.id);
@@ -474,7 +474,7 @@ const initCell = (columnNumber, rowNumber) => {
     }
 
     newCell.onmousedown = (e) => {
-        console.log('keeeek', e.target == newCell || e.target == newInput)
+        //console.log('keeeek', e.target == newCell || e.target == newInput)
 
         if (!newInput.editMode) {
             e.preventDefault();
@@ -574,67 +574,10 @@ const initCell = (columnNumber, rowNumber) => {
         mainTable.rows[newCell.rowNum + 1].cells[newCell.colNum].style['box-shadow'] = '0px -2px 0px 0px #0080ff';
     }
 
-    newInput.addEventListener('keypress', (e) => {
-        if (newInput.value[0] === '=' && newInput.selectionStart === newInput.selectionEnd) {
-            console.log('simb:', newInput.value[newInput.selectionStart], newInput.selectionStart)
-            if (e.key.length == 1 && isAlphabetic(e.key) && !isAlphabetic(newInput.value[newInput.selectionStart]) && !isNumeric(newInput.value[newInput.selectionStart])) {
-                let beg = newInput.selectionStart;
-                if (!POSSIBLE_FUNCTIONS.charged())
-                    while (beg > 0 && isAlphabetic(newInput.value[beg - 1])) beg--;
-                let cur_concurrence = POSSIBLE_FUNCTIONS.addLetters(newInput.value.substring(beg, newInput.selectionStart) + e.key);
-                autoCompleteMenu.autoCompleteMenuOn(newCell, newInput);
-                autoCompleteMenu.changeFields(cur_concurrence);
-            } else if (e.key === ')' && newInput.value[newInput.selectionStart] === ')') {
-                newInput.selectionStart++;
-                e.preventDefault();
-            } else if (e.key === 'Backspace' && !isAlphabetic(newInput.value[newInput.selectionStart]) && !isNumeric(newInput.value[newInput.selectionStart])) {
-
-                console.log('BACKSPACE')
-                if (!POSSIBLE_FUNCTIONS.charged()) {
-                    let beg = newInput.selectionStart - 1;
-                    while (beg > 0 && isAlphabetic(newInput.value[beg - 1])) beg--;
-                    POSSIBLE_FUNCTIONS.addLetters(newInput.value.substring(beg, newInput.selectionStart));
-                }
-                let cur_concurrence = POSSIBLE_FUNCTIONS.removeLetters(1);
-                autoCompleteMenu.autoCompleteMenuOn(newCell, newInput);
-                autoCompleteMenu.changeFields(cur_concurrence);
-            } else if (e.key !== 'Delete') {
-                POSSIBLE_FUNCTIONS.clean();
-                autoCompleteMenu.autoCompleteOff();
-            }
-        }
-    })
-
+    
     newInput.addEventListener('keydown', (e) => {
         let dx = 0;
         let dy = 0;
-
-        /* if (newInput.value[0] === '=' && newInput.selectionStart === newInput.selectionEnd) {
-            if (isAlphabetic(e.key) && !newInput.value[newInput.selectionStart]) {
-                let beg = newInput.selectionStart;
-                if (!POSSIBLE_FUNCTIONS.charged())
-                    while (beg > 0 && isAlphabetic(newInput.value[beg - 1])) beg--;
-                console.log('beg:', beg);
-                let cur_concurrence = POSSIBLE_FUNCTIONS.addLetters(newInput.value.substring(beg, newInput.selectionStart) + e.key);
-                console.log(cur_concurrence, POSSIBLE_FUNCTIONS.begin, POSSIBLE_FUNCTIONS.end);
-                autoCompleteMenu.autoCompleteMenuOn(newCell, newInput);
-                autoCompleteMenu.changeFields(cur_concurrence);
-                console.log(newInput.selectionStart, newInput.selectionEnd);
-            } else if (e.key === 'Backspace' && newInput.selectionStart === newInput.selectionEnd) {
-                if (newInput.value.length > 0) {
-                    let beg = newInput.selectionStart;
-                    if (!POSSIBLE_FUNCTIONS.charged())
-                        while (beg > 0 && isAlphabetic(newInput.value[beg - 1])) beg--;
-                    let cur_concurrence = POSSIBLE_FUNCTIONS.removeLetters(1);
-                    console.log(cur_concurrence, POSSIBLE_FUNCTIONS.begin, POSSIBLE_FUNCTIONS.end);
-                    autoCompleteMenu.autoCompleteMenuOn(newCell, newInput);
-                    autoCompleteMenu.changeFields(cur_concurrence);
-                }
-            } else {
-                POSSIBLE_FUNCTIONS.clean();
-                autoCompleteMenu.autoCompleteOff();
-            }
-        } */
 
         if (newInput.editMode) {
             if (e.key === 'Enter') {
@@ -648,7 +591,7 @@ const initCell = (columnNumber, rowNumber) => {
                 dx = 1;
             }
         } else if (autoCompleteMenu.isActive()) {
-            console.log('ACTIVATED')
+            //console.log('ACTIVATED')
             if (e.key === 'Enter') {
                 e.preventDefault();
                 autoCompleteMenu.choseTargeted();
@@ -662,9 +605,11 @@ const initCell = (columnNumber, rowNumber) => {
             }else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 autoCompleteMenu.switchUp();
+                return;
             }else if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 autoCompleteMenu.switchDown();
+                return;
             }
         } else {
             if (e.key === 'Enter' || e.key === 'ArrowDown') {
@@ -700,7 +645,46 @@ const initCell = (columnNumber, rowNumber) => {
             document.dispatchEvent(new Event('mouseup'));
             low_input.focus();
         }
+
+        //FOR CHROME <3
+        if (newInput.value[0] === '=' && newInput.selectionStart === newInput.selectionEnd) {
+            //console.log('simb:', newInput.value[newInput.selectionStart], newInput.selectionStart)
+            if (e.key.length == 1 && isAlphabetic(e.key) && !isAlphabetic(newInput.value[newInput.selectionStart]) && !isNumeric(newInput.value[newInput.selectionStart])) {
+                let beg = newInput.selectionStart;
+                if (!POSSIBLE_FUNCTIONS.charged())
+                    while (beg > 0 && isAlphabetic(newInput.value[beg - 1])) beg--;
+                let cur_concurrence = POSSIBLE_FUNCTIONS.addLetters(newInput.value.substring(beg, newInput.selectionStart) + e.key);
+                autoCompleteMenu.autoCompleteMenuOn(newCell, newInput);
+                autoCompleteMenu.changeFields(cur_concurrence);
+            } else if (e.key === ')' && newInput.value[newInput.selectionStart] === ')') {
+                newInput.selectionStart++;
+                e.preventDefault();
+            } else if (e.key === 'Backspace' && !isAlphabetic(newInput.value[newInput.selectionStart]) && !isNumeric(newInput.value[newInput.selectionStart])) {
+
+                //console.log('BACKSPACE')
+                if (!POSSIBLE_FUNCTIONS.charged()) {
+                    let beg = newInput.selectionStart - 1;
+                    while (beg > 0 && isAlphabetic(newInput.value[beg - 1])) beg--;
+                    POSSIBLE_FUNCTIONS.addLetters(newInput.value.substring(beg, newInput.selectionStart));
+                }
+                let cur_concurrence = POSSIBLE_FUNCTIONS.removeLetters(1);
+                if (POSSIBLE_FUNCTIONS.charged()) {
+                    autoCompleteMenu.autoCompleteMenuOn(newCell, newInput);
+                    autoCompleteMenu.changeFields(cur_concurrence);
+                } else {
+                    autoCompleteMenu.autoCompleteOff();
+                }
+            } else if (e.key !== 'Delete') {
+                POSSIBLE_FUNCTIONS.clean();
+                autoCompleteMenu.autoCompleteOff();
+            }
+        }
     });
+
+
+    // newInput.addEventListener('keydown', (e) => {
+        
+    // });
 }
 
 const addUpAndLeftEvents = (type, num) => {
@@ -1827,7 +1811,7 @@ const autoCompleteListener = link => {
 document.addEventListener('mousedown', e => {
     /* e.preventDefault();
     e.stopPropagation(); */
-    console.log('loool');
+    //console.log('loool');
     let clickeElIsLink = clickInsideElement(e, 'auto-complete-menu_link');
 
     if (clickeElIsLink) {

@@ -632,7 +632,7 @@ const funcConstructor = (func, funcName, min_arg, max_arg) => {
         }
 
         let res = func(...args);
-        if (isNaN(res)) {
+        if (res === undefined || res === NaN) {
             throw new FormulaError(
                 UNDEFINED,
                 funcName + ' result undefined',
@@ -675,6 +675,8 @@ const MIN = funcConstructor(Math.min, 'MIN', 1);
 const SIGN = funcConstructor(Math.sign, 'SIGN', 1, 1);
 
 const RAND = funcConstructor(Math.random, 'RAND', 1, 1);
+
+const AHTOH = funcConstructor(() => 'AHTOH <3', 'AHTOH', 0, 0);
 
 POSSIBLE_FUNCTIONS.prepareToWork();
 
