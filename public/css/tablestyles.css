@@ -89,13 +89,13 @@
     background-color: #fff;
     margin-left: 20px;
     /* Firefox */
-    height: -moz-calc(100% - 205px);
+    height: -moz-calc(100% - 215px);
     /* WebKit */
-    height: -webkit-calc(100% - 205px);
+    height: -webkit-calc(100% - 215px);
     /* Opera */
-    height: -o-calc(100% - 205px);
+    height: -o-calc(100% - 215px);
     /* Standard */
-    height: calc(100% - 205px);
+    height: calc(100% - 215px);
 }
 
 textarea {
