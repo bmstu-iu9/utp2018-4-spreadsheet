@@ -50,7 +50,7 @@ const colorAutoConfig = {
             }
         },
         classes: {
-            'context-menu_link': 'context-menu_link_guest',
+            'context-menu-cell_link': 'context-menu_link_guest',
         }
     },
 
@@ -66,7 +66,7 @@ const colorAutoConfig = {
             }
         },
         classes: {
-            'context-menu_link': 'context-menu_link_user',
+            'context-menu-cell_link': 'context-menu_link_user',
         }
     }
 }

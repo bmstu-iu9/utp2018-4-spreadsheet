@@ -154,16 +154,17 @@ td {
 }
 
 .context-menu_item {
-  display: block;
+  display: block !important;
   margin-bottom: 4px;
   padding: 0;
 }
 
 .context-menu_item:last-child {
   margin-bottom: 0;
+  border-bottom-width: 0px;
 }
 
-.context-menu_link {
+.context-menu-cell_link, .context-menu-file_link {
   display: block;
   padding: 4px 12px;
   text-decoration: none;

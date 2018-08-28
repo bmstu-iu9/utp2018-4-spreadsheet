@@ -1,8 +1,5 @@
 'use strict';
 
-const contextMenu = new ContextMenu(document.getElementById('context-menu')); //Контекстное меню
-let itemInContext = null; //Ссылка на клетку, для которой вызвано контекстное меню
-
 /**
  * Обновляет значения в клетках таблицы
  */
@@ -82,6 +79,61 @@ const getSavedTable = (title, okCallback, errorCallback) => {
         });
 }
 
+const contextMenuCell = new ContextMenu(document.getElementById('context-menu-cell'), 10, 210); //Контекстное меню
+const contextMenuFile = new ContextMenu(document.getElementById('context-menu-file'), 0, 0);
+
+let itemInContext = null; //Ссылка на клетку, для которой вызвано контекстное меню
+let fileInContext = null; //Ссылка на файл, для которого вызвано контекстное меню
+
+const fileMenuItemListener = link => {
+    const fileLi = fileInContext;
+    const childLabels = fileInContext.childNodes;
+    switch (link.getAttribute("data-action")) {
+        case 'rename':
+            rename(0, childLabels[0].innerText,
+                (removeINFO) => {
+                    fileLi.id = 'load_' + removeINFO.new_title;
+                    setNewTitle(removeINFO.new_title);
+                    childLabels[0].innerHTML = removeINFO.new_title;
+                },
+                (error) => {
+                    console.log(`Rename error: ${ERROR_MESSAGES[error]}`);
+                    alert(`Rename error: ${ERROR_MESSAGES[error]}`);
+                });
+            break;
+        case 'remove':
+            ajax_remove_user(childLabels[0].innerText,
+                () => {
+                    fileLi.remove();
+                    if (childLabels[0].innerText === tableTitle) {
+                        removeTable();
+                        createTable(DEFAULT_ROWS, DEFAULT_COLS);
+                        const saveLink = document.getElementById('save');
+                        const saveAsLink = document.getElementById('saveAs');
+
+                        if (saveLink) {
+                            saveLink.remove();
+                        }
+
+                        if (saveAsLink) {
+                            saveAsLink.remove();
+                        }
+
+                        setNewTitle('');
+                        openSideMenu(document.getElementById('sideMenu'), true);
+                    }
+                },
+                (error) => {
+                    console.log(`Rename error: ${ERROR_MESSAGES[error]}`);
+                    alert(`Rename error: ${ERROR_MESSAGES[error]}`);
+                })
+            break;
+    }
+    fileInContext = null;
+    contextMenuFile.contextMenuOff();
+}
+
+
 /**
  * Отвечает за действия в контекстном меню
  * @param {*} link
@@ -124,7 +176,9 @@ const menuItemListener = link => {
             updateTables();
             cell.focus();
     }
-    contextMenu.contextMenuOff();
+
+    itemInContext = null;
+    contextMenuCell.contextMenuOff();
 }
 
 /**
@@ -185,12 +239,14 @@ const clickInsideElement = (e, className) => {
 //Cброс меню
 window.onkeyup = e => {
     if (e.keyCode === 27) {
-        contextMenu.contextMenuOff();
+        contextMenuCell.contextMenuOff();
+        contextMenuFile.contextMenuOff();
     }
 }
 
 window.onresize = function (e) {
-    contextMenu.contextMenuOff();
+    contextMenuCell.contextMenuOff();
+    contextMenuFile.contextMenuOff();
 };
 //************************* */
 
@@ -200,24 +256,42 @@ document.addEventListener('contextmenu', e => {
 
     if (itemInContext) {
         e.preventDefault();
-        contextMenu.contextMenuOn(e);
+        contextMenuFile.contextMenuOff();
+        contextMenuCell.contextMenuOn(e);
     } else {
         itemInContext = null;
-        contextMenu.contextMenuOff();
+        contextMenuCell.contextMenuOff();
+
+        fileInContext = clickInsideElement(e, 'fileMenuLi');
+        if (fileInContext) {
+            e.preventDefault();
+            contextMenuFile.contextMenuOn(e);
+        } else {
+            fileInContext = null;
+            contextMenuFile.contextMenuOff();
+        }
     }
 });
 
+
 //Выбор действия внутри меню
-document.addEventListener("click", e => {
-    let clickeElIsLink = clickInsideElement(e, 'context-menu_link');
+document.addEventListener('click', e => {
+    let clickeElIsLink = clickInsideElement(e, 'context-menu-cell_link');
 
     if (clickeElIsLink) {
         e.preventDefault();
         menuItemListener(clickeElIsLink);
     } else {
-        let button = e.which || e.button;
-        if (button === 1) {
-            contextMenu.contextMenuOff();
+        clickeElIsLink = clickInsideElement(e, 'context-menu-file_link');
+        if (clickeElIsLink) {
+            e.preventDefault();
+            fileMenuItemListener(clickeElIsLink);
+        } else {
+            const button = e.which || e.button;
+            if (button === 1) {
+                contextMenuCell.contextMenuOff();
+                contextMenuFile.contextMenuOff();
+            }
         }
     }
 });

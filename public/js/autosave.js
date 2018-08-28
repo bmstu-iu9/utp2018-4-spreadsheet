@@ -71,13 +71,13 @@ const transfer = (transferData, okCallback, errorCallback) => {
 
 const updateTitle = (updateInfo, okCallback, errorCallback) => {
     sendXMLHttpRequest(config.host_main, config.port_main,
-        '/check_user_title?title=' + updateInfo.newTitle, 'GET', null,
+        '/check_user_title?title=' + updateInfo.new_title, 'GET', null,
         (dataJSON, error) => {
             if (dataJSON.error || error) {
                 return errorCallback(error ? error : dataJSON.error);
             }
 
-            sendXMLHttpRequest(confirm.host_main, config.port_main, '/rename_user_data', 'POST',
+            sendXMLHttpRequest(config.host_main, config.port_main, '/rename_user_data', 'POST',
                 'status=' + updateInfo.status + '&session=' + updateInfo.session +
                 '&title=' + updateInfo.title + '&new_title=' + updateInfo.new_title,
                 (dataJSON, error) => {
@@ -92,7 +92,7 @@ const updateTitle = (updateInfo, okCallback, errorCallback) => {
 
 const rename = (mode, oldTitle, okCallback, errorCallback) => {
     const cookie = parseCookies(document.cookie);
-    const newTitle = prompt(mode === 1 ? 'Title is already used' : 'Enter file title: ', 'new_title');
+    const newTitle = prompt(mode === 1 ? 'Title is already used' : 'Enter file title: ', oldTitle);
     if (!newTitle) return;
 
     updateTitle({
@@ -101,6 +101,7 @@ const rename = (mode, oldTitle, okCallback, errorCallback) => {
         status: cookie['status'],
         session: cookie['token'],
     }, (removeINFO) => {
+        removeINFO.new_title = newTitle;
         okCallback(removeINFO);
     }, (errorCode) => {
         if (errorCode === ERRORS.NOT_UNIQUE_ERROR) //Название занято

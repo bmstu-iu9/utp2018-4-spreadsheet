@@ -3,7 +3,7 @@
 
 const pushFrontSideMenu = (sideMenu, text, func, id) => {
     const li = document.createElement('li');
-    li.id = id;
+    li.id = (id ? id : '');
     const aLi = document.createElement('a');
     aLi.onclick = func;
     aLi.textContent = text;
@@ -14,7 +14,7 @@ const pushFrontSideMenu = (sideMenu, text, func, id) => {
 
 const pushBackSideMenu = (sideMenu, text, func, id) => {
     const li = document.createElement('li');
-    li.id = id;
+    li.id = (id ? id : '');
     const aLi = document.createElement('a');
     aLi.onclick = func;
     aLi.textContent = text;
@@ -26,33 +26,43 @@ const pushBackSideMenu = (sideMenu, text, func, id) => {
 const addLoadOption = (sideMenu, fileMenu, title, timeStamp, mode) => {
     const li = document.createElement('li');
     li.id = 'load_' + title;
+    li.className = 'fileMenuLi';
     const aLi = document.createElement('a');
     aLi.onclick = () => {
         if (tableTitle) {
-            save();
+            save(() => {
+                console.log('save ok');
+            }, (error) => {
+                alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
+                console.log(ERROR_MESSAGES[error]);
+            });
         }
 
-        getSavedTable(title, (dataINFO) => {
+        toLoad();
+        getSavedTable(aLi.innerText, (dataINFO) => {
                 ajax_remove_guest(() => {
                     removeTable();
 
                     const tableData = JSON.parse(dataINFO.data);
                     tableFromObject(tableData);
-                    setNewTitle(title);
+                    setNewTitle(aLi.innerText);
 
                     closeSideMenu(document.getElementById('filesMenu'));
                     closeSideMenu(document.getElementById('sideMenu'));
 
                     removeFromSideMenu(sideMenu, 'stay_li');
                     addSaveOptions(sideMenu);
+                    toLoad();
                 }, (error) => {
                     alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
                     console.log(ERROR_MESSAGES[error]);
+                    toLoad();
                 });
             },
             (error) => {
                 alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
                 console.log(ERROR_MESSAGES[error]);
+                toLoad();
             });
     };
 
@@ -114,7 +124,7 @@ const removeFromSideMenu = (sideMenu, element_id) => {
 
 
 const addSaveOptions = (sideMenu) => {
-    if (!document.getElementById('save_and_saveAs')) {
+    if (!document.getElementById('save')) {
         pushBackSideMenu(sideMenu,
             'Save', () => {
                 save(() => {
@@ -126,8 +136,10 @@ const addSaveOptions = (sideMenu) => {
                     alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
                     console.log(ERROR_MESSAGES[error]);
                 });
-            }, 'save_and_saveAs');
+            }, 'save');
+    }
 
+    if (!document.getElementById('saveAs')) {
         pushBackSideMenu(sideMenu,
             'Save As..', () => {
                 saveAs(0, null,
@@ -140,7 +152,7 @@ const addSaveOptions = (sideMenu) => {
                         alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
                         console.log(ERROR_MESSAGES[error]);
                     });
-            });
+            }, 'saveAs');
     }
 }
 
@@ -221,7 +233,12 @@ const loadTable = () => {
                 loadSideMenu(sideMenu, {
                     'New': () => {
                         if (tableTitle) {
-                            save();
+                            save(() => {
+                                console.log('save ok');
+                            }, (error) => {
+                                alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
+                                console.log(ERROR_MESSAGES[error]);
+                            });
                         }
 
                         new_table(0,

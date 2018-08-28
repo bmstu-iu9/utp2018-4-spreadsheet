@@ -52,6 +52,21 @@
                        style="width: 35px; height: 35px; z-index: 100; display: inline-block; position: absolute; top: 0; left: 0;"></label>
                 <ul id='filesMenuUl' class="submenu1">
                 </ul>
+
+                <nav id = "context-menu-file" class="context-menu">
+                  <ul class="context-menu_items">
+                    <li class="context-menu_item">
+                      <a href="#" class="context-menu-file_link" data-action="rename">
+                        <i class="fa fa-chechnya"></i> Переименовать
+                      </a>
+                    </li>
+                    <li class="context-menu_item">
+                      <a href="#" class="context-menu-file_link" data-action="remove">
+                        <i class="fa fa-copy"></i> Удалить
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </ul>
           </div>
@@ -219,25 +234,25 @@
         <table id = "main-table"></table>
       </div>
 
-      <nav id = "context-menu" class="context-menu">
+      <nav id = "context-menu-cell" class="context-menu">
         <ul class="context-menu_items">
           <li class="context-menu_item">
-            <a href="#" class="context-menu_link" data-action="cut">
+            <a href="#" class="context-menu-cell_link" data-action="cut">
               <i class="fa fa-chechnya"></i> Вырезать
             </a>
           </li>
           <li class="context-menu_item">
-            <a href="#" class="context-menu_link" data-action="copy">
+            <a href="#" class="context-menu-cell_link" data-action="copy">
               <i class="fa fa-copy"></i> Копировать
             </a>
           </li>
           <li class="context-menu_item">
-            <a href="#" class="context-menu_link" data-action="paste">
+            <a href="#" class="context-menu-cell_link" data-action="paste">
               <i class="fa fa-paste"></i> Вставить
             </a>
           </li>
           <li class="context-menu_item">
-            <a href="#" class="context-menu_link" data-action="delete">
+            <a href="#" class="context-menu-cell_link" data-action="delete">
               <i class="fa fa-delete"></i> Удалить
             </a>
           </li>

@@ -1,9 +1,12 @@
 'use strict';
 
 class ContextMenu {
-    constructor(menuDOM) {
+    constructor(menuDOM, offsetX, offsetY) {
         this.menu = menuDOM;
         this.menuState = 0;
+
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
 
         this.menuWidth = this.menu.offsetWidth;
         this.menuHeight = this.menu.offsetHeight;
@@ -46,15 +49,15 @@ class ContextMenu {
         this.windowHeight = window.innerHeight;
 
         if ((this.windowWidth - clickCoordsX) < this.menuWidth) {
-            this.menu.style.left = this.windowWidth - this.menuWidth - 5 + "px";
+            this.menu.style.left = this.windowWidth - this.menuWidth - this.offsetX + "px";
         } else {
-            this.menu.style.left = clickCoordsX - 5 + "px";
+            this.menu.style.left = clickCoordsX -  this.offsetX + "px";
         }
 
         if ((this.windowHeight - clickCoordsY) < this.menuHeight) {
-            this.menu.style.top = this.windowHeight - this.menuHeight - 210 + "px";
+            this.menu.style.top = this.windowHeight - this.menuHeight - this.offsetY + "px";
         } else {
-            this.menu.style.top = clickCoordsY - 210 + "px";
+            this.menu.style.top = clickCoordsY - this.offsetY + "px";
         }
     }
 
