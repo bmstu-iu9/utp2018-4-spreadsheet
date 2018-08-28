@@ -435,13 +435,14 @@ div[id*=t]:target ~ #one {
   transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   margin-bottom: 3px;
 }
-button:focus {
+button:hover{
   border-color: #66afe9;
   outline: 0;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
 }
 
+/*
 button{
   line-height: 1.42857143;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
@@ -449,9 +450,10 @@ button{
   -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
   -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-}
+}*/
 
-button:focus{
+.lock-button:focus,
+.unlock-button:focus{
   border-color: #26154c;
   outline: 0;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(38, 21, 76, 0.6);
@@ -886,6 +888,5 @@ a#account{
 #format-input {
     position: absolute;
     top: 160px;
-    width: 98vw;
     margin-top: 10px;
 }
