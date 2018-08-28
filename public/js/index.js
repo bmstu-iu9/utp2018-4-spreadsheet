@@ -2,6 +2,7 @@
 
 const contextMenu = new ContextMenu(document.getElementById('context-menu')); //Контекстное меню
 let itemInContext = null; //Ссылка на клетку, для которой вызвано контекстное меню
+const autoCompleteMenu = new AutoCompleteMenu(document.getElementById('auto-complete-menu'));
 
 /**
  * Обновляет значения в клетках таблицы
