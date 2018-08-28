@@ -14,6 +14,7 @@ let focusID = '';
 let lastFocusedTextarea = '';
 let somePoliticalDirections = ['left', 'center', 'right'];
 let someStyles = ['bold', 'italics', 'underline'];
+let selecterable = document.getElementById("selecterable");
 
 const clear = (index) => {
     for (let i = index; i < letters.length; i++) {
@@ -302,6 +303,8 @@ const addCells = function(rows, cols){
             cell.id = 'Cell_' + letter + (j + 1);
             initCell(currentLet.length - 1, j + 1);
 
+            cell.firstChild.setAttribute('data-style', '');
+
             cell.firstChild.onfocus = function() {
               lastFocusedTextarea = document.activeElement;
               let thisTextarea = cell.firstChild;
@@ -312,9 +315,11 @@ const addCells = function(rows, cols){
               someStyles.forEach(style => {
                   document.getElementById(style + "-button").style.border = "2px solid #ffffff";
               });
+
               if (thisTextarea.getAttribute('data-style')){
                 document.getElementById("" + new_cell.firstChild.getAttribute('data-style') + "-button").style.border = "2px solid #6bc961";
               }
+
               if (thisTextarea.style.fontWeight == 'bold'){
                 document.getElementById("bold-button").style.border = "2px solid #6bc961";
               }
@@ -324,6 +329,15 @@ const addCells = function(rows, cols){
               if (thisTextarea.style.textDecoration == 'underline'){
                 document.getElementById("underline-button").style.border = "2px solid #6bc961";
               }
+
+              document.getElementById('diss').disabled = false;
+              if (!lastFocusedTextarea.getAttribute('data-font')){
+                selecterable.selectedIndex = 0;
+              }
+              else {
+                selecterable.value = thisTextarea.style.fontFamily;
+              }
+              document.getElementById('diss').disabled = true;
             };
 
 
@@ -376,21 +390,25 @@ const addCells = function(rows, cols){
             new_cell.id = 'Cell_' + letter + (i + 1);
             initCell(j, i + 1);
 
+            new_cell.firstChild.setAttribute('data-font', '');
 
             new_cell.firstChild.onfocus = function() {
               lastFocusedTextarea = document.activeElement;
               let thisTextarea = new_cell.firstChild;
+
               if(!thisTextarea.style.fontFamily)
-                thisTextarea.style.fontFamily = 'sans-serif';
+                thisTextarea.style.fontFamily = 'monospace';
               somePoliticalDirections.forEach(direction => {
                   document.getElementById(direction + "-button").style.border = "2px solid #ffffff";
               });
               someStyles.forEach(style => {
                   document.getElementById(style + "-button").style.border = "2px solid #ffffff";
               });
+
               if (thisTextarea.getAttribute('data-style')){
                 document.getElementById("" + new_cell.firstChild.getAttribute('data-style') + "-button").style.border = "2px solid #6bc961";
               }
+
               if (thisTextarea.style.fontWeight == 'bold'){
                 document.getElementById("bold-button").style.border = "2px solid #6bc961";
               }
@@ -401,6 +419,14 @@ const addCells = function(rows, cols){
                 document.getElementById("underline-button").style.border = "2px solid #6bc961";
               }
 
+              document.getElementById('diss').disabled = false;
+              if (!lastFocusedTextarea.getAttribute('data-font')){
+                selecterable.selectedIndex = 0;
+              }
+              else {
+                selecterable.value = thisTextarea.style.fontFamily;
+              }
+              document.getElementById('diss').disabled = true;
             };
 
 
@@ -490,3 +516,9 @@ somePoliticalDirections.forEach( direction => {
 
   });
 });
+
+selecterable.onchange = function(){
+  lastFocusedTextarea.style.fontFamily = selecterable.value;
+  if (!lastFocusedTextarea.getAttribute('data-font'))
+    lastFocusedTextarea.setAttribute('data-font', '1');
+}

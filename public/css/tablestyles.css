@@ -5,6 +5,7 @@
   width: calc(100% - 40px);
   float: left;
   overflow: auto;
+  background: white;
   height: 97%;
 }
 
@@ -53,10 +54,14 @@
   //border: 1px solid #555;
 }
 
-.left-div table td{
+.left-div tr {
+  border: 1px solid #555;
+}
+
+.left-div td{
    position: relative;
    background-color: #eee;
-   border: 1px solid #555;
+   border: 1px solid #000;
    padding: 1px 3px;
    font-weight: bold;
    text-align: left;
