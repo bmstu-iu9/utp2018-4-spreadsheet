@@ -1540,12 +1540,11 @@ const reallyPowerfulFunctionToCalculateColorFromJavaScriptToCSS = str => {
     let arr = ''+str;
     for(let i = 0; i < arr.length; i++){
         if(Number(arr[i])){
-            kek+=arr[i];
+            curr+=arr[i];
         }
-        else if(kek != ''){
-            acc+=Number(kek).toString(16);
-            console.log(Number(kek).toString(16));
-            kek = '';
+        else if(curr != ''){
+            acc+=Number(curr).toString(16);
+            curr = '';
         }
     }
     return acc;
