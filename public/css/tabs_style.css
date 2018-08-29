@@ -287,6 +287,39 @@ a:visited {
     margin-top: 25px;
 }
 
+.format button {
+  width: 25px;
+  height: 25px;
+}
+
+.font-settings{
+  margin-top: 25px;
+}
+
+.font-settings button{
+  //border-radius: 5px 5px 5px 5px;
+  //border : 2px solid transparent;
+  margin: 2px 5px 2px 2px;
+}
+
+.font-settings button:focus {
+  outline: none;
+}
+
+select:focus {
+  outline: none;
+}
+
+.horizontally button{
+  //border-radius: 5px 5px 5px 5px;
+  //border : 2px solid transparent;
+  margin: 2px 5px 2px 2px;
+}
+
+.horizontally button:focus {
+  outline: none;
+}
+
 .horizontally .left {
   background: url('../img/align-to-left.svg') center center / 100% 100% ;
   box-sizing: content-box;;
@@ -321,17 +354,20 @@ a:visited {
     margin-left: 20px;
 }
 
+/*
 .horizontally button {
     margin-left: 5px;
 }
+*/
 
 .font-settings {
     margin-left: 25px;
 }
 
+/*
 .font-settings button {
     margin-left: 5px;
-}
+}*/
 
 .font-family {
     margin-left: 35px;
@@ -436,12 +472,14 @@ div[id*=t]:target ~ #one {
   transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   margin-bottom: 3px;
 }
+/*
 button:hover{
   border-color: #8100ff;
   outline: 0;
   -webkit-box-shadow: inset 0 2px 2px rgba(0, 0, 0, .075), 0 0 8px rgba(129, 0, 255, 0.6);
  box-shadow: inset 0 2px 2px rgba(0, 0, 0, .075), 0 0 8px rgba(129, 0, 255, 0.6);
 }
+*/
 
 /*
 button{

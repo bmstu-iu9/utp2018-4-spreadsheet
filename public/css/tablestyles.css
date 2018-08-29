@@ -1,7 +1,11 @@
 .scroll-table {
-  width: 97%;
+  width: -moz-calc(100% - 40px);
+  width: -webkit-calc(100% - 40px);
+  width: -o-calc(100% - 40px);
+  width: calc(100% - 40px);
   float: left;
   overflow: auto;
+  background: white;
   height: 97%;
 }
 
@@ -17,7 +21,10 @@
 .up-div{
   float: left;
   overflow: hidden;
-  width: 97%;
+  width: -moz-calc(100% - 40px);
+  width: -webkit-calc(100% - 40px);
+  width: -o-calc(100% - 40px);
+  width: calc(100% - 40px);
 }
 
 .up-div table{
@@ -43,16 +50,20 @@
 
 .left-div{
   overflow: hidden;
-  width: 3%;
-  height: 96%;
+  width: 40px;
+  height: 95%;
   float: left;
   /* border: 1px solid #555; */
 }
 
-.left-div table td{
+.left-div tr {
+  border: 1px solid #555;
+}
+
+.left-div td{
    position: relative;
    background-color: #eee;
-   border: 1px solid #555;
+   border: 1px solid #000;
    padding: 1px 3px;
    font-weight: bold;
    text-align: left;
@@ -66,14 +77,26 @@
 
 .null-div {
   float: left;
-  width: 3%;
+  width: 40px;
 }
 
 .null-div td {
   background-color: #eee;
   border: 1px solid #555;
   height: 23px;
-  width: 666px;
+  width: 100px;
+}
+
+.table{
+    background-color: #fff;
+    /* Firefox */
+    height: -moz-calc(100% - 215px);
+    /* WebKit */
+    height: -webkit-calc(100% - 215px);
+    /* Opera */
+    height: -o-calc(100% - 215px);
+    /* Standard */
+    height: calc(100% - 231px);
 }
 
 textarea {
@@ -88,15 +111,14 @@ textarea {
     padding: 4px;
     /* wrap: none; */
     vertical-align: top;
+    //align: left;
 }
 
 textarea:focus {
     outline: none;
 }
 
-textarea:not(:focus) {
-    text-align: left;
-}
+
 
 table {
     border-collapse: collapse;
