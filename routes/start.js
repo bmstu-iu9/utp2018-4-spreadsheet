@@ -37,7 +37,7 @@ const start = (req, res) => {
                                 'Content-Type': 'application/json',
                                 'Set-Cookie': ['token=' + sessionINFO.session_id +
                                     ';expires=' + new Date(new Date().getTime() + 2592000000).toUTCString(),
-                                    'status=' + CONFIG.GUEST + ';expires=' + new Date(new Date().getTime() + 2592000000).toUTCString()
+                                'status=' + CONFIG.GUEST + ';expires=' + new Date(new Date().getTime() + 2592000000).toUTCString()
                                 ]
                             }); //на месяц
                             return res.end(JSON.stringify({
@@ -57,11 +57,11 @@ const start = (req, res) => {
                     'Content-Type': 'application/json',
                     'Set-Cookie': ['token=' + cookies['token'] +
                         ';expires=' + new Date(new Date().getTime() + 31556952000).toUTCString(),
-                        'status=' + CONFIG.USER + ';expires=' + new Date(new Date().getTime() + 31556952000).toUTCString()
+                    'status=' + CONFIG.USER + ';expires=' + new Date(new Date().getTime() + 31556952000).toUTCString()
                     ]
                 }) //на год
-                
-                const reqData = qs.stringify({email : authINFO.email});
+
+                const reqData = qs.stringify({ email: authINFO.email });
                 sendAuthRequest('/data', reqData).then(
                     data => {
                         logs.log(`\x1b[34mUSER INFO\x1b[0m \x1b[32mRECEIVED\x1b[0m: SessionID: ${cookies['token']}, Email: ${authINFO.email}`);
@@ -78,7 +78,7 @@ const start = (req, res) => {
                                     titles: titles.titles
                                 }));
                             },
-        
+
                             (err) => {
                                 logs.log(`\x1b[34mTITLES LOAD\x1b[0m \x1b[31mFAILED\x1b[0m: SessionID: ${cookies['token']}, Email: ${authINFO.email}, Error: ${err.message}`);
                                 res.end(JSON.stringify({
@@ -108,7 +108,7 @@ const start = (req, res) => {
                     'Content-Type': 'application/json',
                     'Set-Cookie': ['token=' + cookies['token'] +
                         ';expires=' + new Date(new Date().getTime() + 2592000000).toUTCString(),
-                        'status=' + CONFIG.GUEST + ';expires=' + new Date(new Date().getTime() + 2592000000).toUTCString()
+                    'status=' + CONFIG.GUEST + ';expires=' + new Date(new Date().getTime() + 2592000000).toUTCString()
                     ]
                 }); //на месяц
                 res.end(JSON.stringify({

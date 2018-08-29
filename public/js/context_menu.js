@@ -51,7 +51,7 @@ class ContextMenu {
         if ((this.windowWidth - clickCoordsX) < this.menuWidth) {
             this.menu.style.left = this.windowWidth - this.menuWidth - this.offsetX + "px";
         } else {
-            this.menu.style.left = clickCoordsX -  this.offsetX + "px";
+            this.menu.style.left = clickCoordsX - this.offsetX + "px";
         }
 
         if ((this.windowHeight - clickCoordsY) < this.menuHeight) {

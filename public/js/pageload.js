@@ -40,25 +40,25 @@ const addLoadOption = (sideMenu, fileMenu, title, timeStamp, mode) => {
 
         toLoad();
         getSavedTable(aLi.innerText, (dataINFO) => {
-                ajax_remove_guest(() => {
-                    removeTable();
+            ajax_remove_guest(() => {
+                removeTable();
 
-                    const tableData = JSON.parse(dataINFO.data);
-                    tableFromObject(tableData);
-                    setNewTitle(aLi.innerText);
+                const tableData = JSON.parse(dataINFO.data);
+                tableFromObject(tableData);
+                setNewTitle(aLi.innerText);
 
-                    closeSideMenu(document.getElementById('filesMenu'));
-                    closeSideMenu(document.getElementById('sideMenu'));
+                closeSideMenu(document.getElementById('filesMenu'));
+                closeSideMenu(document.getElementById('sideMenu'));
 
-                    removeFromSideMenu(sideMenu, 'stay_li');
-                    addSaveOptions(sideMenu);
-                    toLoad();
-                }, (error) => {
-                    alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
-                    console.log(ERROR_MESSAGES[error]);
-                    toLoad();
-                });
-            },
+                removeFromSideMenu(sideMenu, 'stay_li');
+                addSaveOptions(sideMenu);
+                toLoad();
+            }, (error) => {
+                alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
+                console.log(ERROR_MESSAGES[error]);
+                toLoad();
+            });
+        },
             (error) => {
                 alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
                 console.log(ERROR_MESSAGES[error]);

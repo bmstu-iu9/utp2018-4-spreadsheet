@@ -15,7 +15,7 @@ const updateTables = () => {
         console.log(innerTable.getCeil(ceil.x, ceil.y).realText);
         console.log(innerTable.getCeil(ceil.x, ceil.y).error);
         document.getElementById(convNumtoId(ceil.x, ceil.y)).value = innerTable.getCeil(ceil.x, ceil.y).toDisplay;
-        if(Number(innerTable.getCeil(ceil.x, ceil.y).toDisplay))
+        if (Number(innerTable.getCeil(ceil.x, ceil.y).toDisplay))
             document.getElementById(convNumtoId(ceil.x, ceil.y)).style.textAlign = 'right';
     }
 }

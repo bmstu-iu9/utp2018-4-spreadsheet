@@ -486,34 +486,34 @@ const initCell = (columnNumber, rowNumber) => {
                 //document.getElementById(style + "-button").style.margin = '2px 5px 2px 2px';
             });
 
-            if (thisTextarea.getAttribute('data-style')){
+            if (thisTextarea.getAttribute('data-style')) {
                 document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
                 //document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.border = "2px solid #6bc961";
                 //document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.borderRadius = '5px 5px 5px 5px';
                 //document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.margin = '0px 3px 0px 0px';
             }
 
-            if (thisTextarea.style.fontWeight == 'bold'){
+            if (thisTextarea.style.fontWeight == 'bold') {
                 document.getElementById("bold-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
                 //document.getElementById("bold-button").style.margin = '0px 3px 0px 0px';
             }
-            if (thisTextarea.style.fontStyle == 'italic'){
+            if (thisTextarea.style.fontStyle == 'italic') {
                 document.getElementById("italics-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
                 //document.getElementById("italics-button").style.margin = '0px 3px 0px 0px';
             }
-            if (thisTextarea.style.textDecoration == 'underline'){
+            if (thisTextarea.style.textDecoration == 'underline') {
                 document.getElementById("underline-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
                 //document.getElementById("underline-button").style.margin = '0px 3px 0px 0px';
             }
 
-            if (!thisTextarea.style.fontFamily){
+            if (!thisTextarea.style.fontFamily) {
                 selecterable.selectedIndex = 0;
             }
             else {
                 selecterable.value = thisTextarea.style.fontFamily;
             }
 
-            if (!thisTextarea.style.fontSize){
+            if (!thisTextarea.style.fontSize) {
                 sizeSelect.selectedIndex = 0;
             }
             else {
@@ -567,7 +567,7 @@ const initCell = (columnNumber, rowNumber) => {
                 oldInput.editMode = false;
                 oldInput.style.cursor = 'cell';
 
-                if(!oldInput.getAttribute('data-style') && Number(oldInput.value))
+                if (!oldInput.getAttribute('data-style') && Number(oldInput.value))
                     oldInput.style.textAlign = 'right';
             }
 
@@ -581,7 +581,7 @@ const initCell = (columnNumber, rowNumber) => {
             leftCell.style.backgroundColor = '#c3c3c3';
             document.getElementById('left_' + rowNumber).style.backgroundColor = colorManualCofig[userColorCode]['left'].backgroundColor;
 
-            if(!newInput.getAttribute('data-style'))
+            if (!newInput.getAttribute('data-style'))
                 newInput.style.textAlign = 'left';
 
             paintBorders(newCell, true, true, true, true);
@@ -591,8 +591,8 @@ const initCell = (columnNumber, rowNumber) => {
 
                 stateScroll = (mainDiv.scrollLeft && mainDiv.scrollTop) ? 3 :
                     (mainDiv.scrollLeft) ? 2 :
-                    (mainDiv.scrollTop) ? 1 :
-                    0;
+                        (mainDiv.scrollTop) ? 1 :
+                            0;
 
                 currentX = e.clientX;
                 currentY = e.clientY;
@@ -995,7 +995,7 @@ const addCells = function (rows, cols) {
             const leftRow = leftTable.insertRow(-1);
 
             const left_cell = leftRow.insertCell(-1);
-            left_cell.innerHTML = `<div align = "center" id = "${'@' + (i + 1)}" class = "left"> ${i+1} </div>`;
+            left_cell.innerHTML = `<div align = "center" id = "${'@' + (i + 1)}" class = "left"> ${i + 1} </div>`;
             left_cell.id = 'Cell_' + (i + 1);
             addDecorLeftDiv(i);
             addUpAndLeftEvents('left', i + 1);
@@ -1112,8 +1112,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[0].cells[elem.colNum] :
-                (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1128,8 +1128,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[elem.rowNum].cells[0] :
-                (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1146,8 +1146,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1166,8 +1166,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1191,8 +1191,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1215,8 +1215,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[elem.rowNum].cells[0] :
-                (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1233,8 +1233,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1253,8 +1253,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1277,8 +1277,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[0].cells[elem.colNum] :
-                (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1294,8 +1294,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1320,8 +1320,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1340,8 +1340,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1365,8 +1365,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1390,8 +1390,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1416,8 +1416,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1436,8 +1436,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1461,7 +1461,7 @@ mainDiv.onscroll = function () {
 
 
 document.getElementById("bold-button").addEventListener("click", e => {
-    if (lastFocusedTextarea.style.fontWeight != 'bold'){
+    if (lastFocusedTextarea.style.fontWeight != 'bold') {
         document.getElementById("bold-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
         //document.getElementById("bold-button").style.margin = '0px 3px 0px 0px';
         lastFocusedTextarea.style.fontWeight = 'bold';
@@ -1474,7 +1474,7 @@ document.getElementById("bold-button").addEventListener("click", e => {
 });
 
 document.getElementById("italics-button").addEventListener("click", e => {
-    if (lastFocusedTextarea.style.fontStyle != 'italic'){
+    if (lastFocusedTextarea.style.fontStyle != 'italic') {
         document.getElementById("italics-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
         //document.getElementById("italics-button").style.margin = '0px 3px 0px 0px';
         lastFocusedTextarea.style.fontStyle = 'italic';
@@ -1487,7 +1487,7 @@ document.getElementById("italics-button").addEventListener("click", e => {
 });
 
 document.getElementById("underline-button").addEventListener("click", e => {
-    if (lastFocusedTextarea.style.textDecoration != 'underline'){
+    if (lastFocusedTextarea.style.textDecoration != 'underline') {
         document.getElementById("underline-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
         //document.getElementById("underline-button").style.margin = '0px 3px 0px 0px';
         lastFocusedTextarea.style.textDecoration = 'underline';
@@ -1500,15 +1500,15 @@ document.getElementById("underline-button").addEventListener("click", e => {
 });
 
 
-somePoliticalDirections.forEach( direction => {
+somePoliticalDirections.forEach(direction => {
     document.getElementById(direction + "-button").addEventListener("click", e => {
-        if (lastFocusedTextarea.getAttribute('data-style') != direction){
+        if (lastFocusedTextarea.getAttribute('data-style') != direction) {
             document.getElementById(direction + "-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
             //document.getElementById(direction + "-button").style.margin = '0px 3px 0px 0px';
             lastFocusedTextarea.style.textAlign = direction;
             lastFocusedTextarea.setAttribute('data-style', direction);
-            somePoliticalDirections.forEach( directX => {
-                if(directX != direction){
+            somePoliticalDirections.forEach(directX => {
+                if (directX != direction) {
                     document.getElementById(directX + "-button").style.border = 'none';
                     document.getElementById(directX + "-button").style.backgroundColor = '';
                     //document.getElementById(directX + "-button").style.margin = '2px 5px 2px 2px'
@@ -1525,37 +1525,37 @@ somePoliticalDirections.forEach( direction => {
     });
 });
 
-selecterable.onchange = function(){
+selecterable.onchange = function () {
     lastFocusedTextarea.style.fontFamily = selecterable.value;
 }
 
-document.getElementById('filling').onmousedown = function(){
+document.getElementById('filling').onmousedown = function () {
     myFillings.click();
 }
 
-myFillings.onchange = function(){
+myFillings.onchange = function () {
     document.getElementById('color-art').style.backgroundColor = lastFocusedTextarea.style.backgroundColor = myFillings.value;
 }
 
-document.getElementById('font-color').onmousedown = function(){
+document.getElementById('font-color').onmousedown = function () {
     fontFilling.click();
 }
 
-fontFilling.onchange = function(){
+fontFilling.onchange = function () {
     document.getElementById('font-art').style.backgroundColor = lastFocusedTextarea.style.color = fontFilling.value;
 }
 
 const calculateColorFromJavaScriptToCSS = str => {
     let curr = '';
     let acc = '#';
-    let arr = ''+str;
-    for(let i = 0; i < arr.length; i++){
-        if(Number(arr[i])){
-            curr+=arr[i];
+    let arr = '' + str;
+    for (let i = 0; i < arr.length; i++) {
+        if (Number(arr[i])) {
+            curr += arr[i];
         }
-        else if(curr != ''){
+        else if (curr != '') {
             curr = Number(curr).toString(16);
-            if(curr.length == 1)
+            if (curr.length == 1)
                 curr = '0' + curr;
             console.log(curr);
             acc += curr;
@@ -1565,6 +1565,6 @@ const calculateColorFromJavaScriptToCSS = str => {
     return acc;
 }
 
-sizeSelect.onchange = function(){
+sizeSelect.onchange = function () {
     lastFocusedTextarea.style.fontSize = sizeSelect.value;
 }

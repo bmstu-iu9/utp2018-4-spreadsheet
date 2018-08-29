@@ -37,23 +37,23 @@ const returnError = (errorCode, response) => {
 const loadUserTitlesHandle = (body, response) => {
     saveClient.all(`SELECT Title title, SaveTime timeStamp FROM saves_user
                     WHERE Email=? ORDER BY SaveTime DESC`, [body.email], (err, rows) => {
-        if (err) {
-            logs.log(`Load user titles \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Database error: ${err.message}`);
-            return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
-        }
-
-        const titles = rows.map(e => {
-            return {
-                title: e.title,
-                timeStamp: e.timeStamp
+            if (err) {
+                logs.log(`Load user titles \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Database error: ${err.message}`);
+                return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
             }
+
+            const titles = rows.map(e => {
+                return {
+                    title: e.title,
+                    timeStamp: e.timeStamp
+                }
+            });
+            logs.log(`Load user titles \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}`);
+            return returnJSON({
+                titles: titles,
+                error: null
+            }, response);
         });
-        logs.log(`Load user titles \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}`);
-        return returnJSON({
-            titles: titles,
-            error: null
-        }, response);
-    });
 }
 
 /**
@@ -113,21 +113,21 @@ const saveUserHandle = (body, response) => {
 const checkTitleHandle = (body, response) => {
     saveClient.get(`SELECT 1 FROM saves_user
                     WHERE Email=? AND Title=?`, [body.email, body.title], (err, row) => {
-        if (err) {
-            logs.log(`Check title file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Database error: ${err.message}`);
-            return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
-        }
+            if (err) {
+                logs.log(`Check title file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Database error: ${err.message}`);
+                return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
+            }
 
-        if (!row) {
-            logs.log(`Check title file \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}`);
-            return returnJSON({
-                error: null
-            }, response);
-        } else {
-            logs.log(`Check title file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: Title is already used`);
-            return returnError(CONFIG.NOT_UNIQUE_ERROR, response);
-        }
-    });
+            if (!row) {
+                logs.log(`Check title file \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}`);
+                return returnJSON({
+                    error: null
+                }, response);
+            } else {
+                logs.log(`Check title file \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, Error: Title is already used`);
+                return returnError(CONFIG.NOT_UNIQUE_ERROR, response);
+            }
+        });
 }
 
 /**
@@ -182,17 +182,17 @@ const loadGuestHandle = (body, response) => {
     saveClient.get(`SELECT Data data, SaveTime time
                     FROM saves_guest
                     WHERE Token = ?`, [body.session], (err, row) => {
-        if (err || !row) {
-            logs.log(`Load GUEST FILE \x1b[31mFAILED\x1b[0m: SessionID: ${body.session}, ${(err) ? err.message : 'Error: No data for this token'}`);
-            return returnError((err) ? CONFIG.SQLITE3_DATABASE_ERROR : CONFIG.NO_TOKEN_ERROR, response);
-        }
+            if (err || !row) {
+                logs.log(`Load GUEST FILE \x1b[31mFAILED\x1b[0m: SessionID: ${body.session}, ${(err) ? err.message : 'Error: No data for this token'}`);
+                return returnError((err) ? CONFIG.SQLITE3_DATABASE_ERROR : CONFIG.NO_TOKEN_ERROR, response);
+            }
 
-        logs.log(`Load GUEST FILE \x1b[32mSUCCESS\x1b[0m: SessionID: ${body.session}`);
-        return returnJSON({
-            data: row.data,
-            error: null
-        }, response);
-    });
+            logs.log(`Load GUEST FILE \x1b[32mSUCCESS\x1b[0m: SessionID: ${body.session}`);
+            return returnJSON({
+                data: row.data,
+                error: null
+            }, response);
+        });
 }
 
 /**
@@ -204,17 +204,17 @@ const loadUserHandle = (body, response) => {
     saveClient.get(`SELECT Data data
                 FROM saves_user
                 WHERE Email=? AND Title=?`, [body.email, body.title], (err, row) => {
-        if (err || !row) {
-            logs.log(`Load USER FILE \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, ${(err) ? err.message : 'Error: No data for this token'}`);
-            return returnError((err) ? CONFIG.SQLITE3_DATABASE_ERROR : CONFIG.NO_TOKEN_ERROR, response);
-        }
+            if (err || !row) {
+                logs.log(`Load USER FILE \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Title: ${body.title}, ${(err) ? err.message : 'Error: No data for this token'}`);
+                return returnError((err) ? CONFIG.SQLITE3_DATABASE_ERROR : CONFIG.NO_TOKEN_ERROR, response);
+            }
 
-        logs.log(`Load USER FILE \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}`);
-        return returnJSON({
-            data: row.data,
-            error: null
-        }, response);
-    });
+            logs.log(`Load USER FILE \x1b[32mSUCCESS\x1b[0m: Email: ${body.email}, Title: ${body.title}`);
+            return returnJSON({
+                data: row.data,
+                error: null
+            }, response);
+        });
 }
 
 /**
@@ -229,7 +229,7 @@ const renameUserHandle = (body, response) => {
                 logs.log(`Rename USER FILE \x1b[31mFAILED\x1b[0m: Title: ${body.title}, New Title ${body.new_title}, Email: ${body.email}, Database error: ${err.message}`);
                 return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
             }
-    
+
             logs.log(`Rename USER FILE \x1b[32mSUCCESS\x1b[0m: Title: ${body.title}, New Title: ${body.new_title}, Email: ${body.email}`);
             return returnJSON({
                 error: null
@@ -239,48 +239,48 @@ const renameUserHandle = (body, response) => {
 
 //Starts server, which works only with POST requests
 const server = http.createServer((req, res) => {
-        const path = url.parse(req.url, true)
-        if (req.method === 'POST') {
-            let body = '';
-            req.on('data', (data) => {
-                body += data;
-            });
+    const path = url.parse(req.url, true)
+    if (req.method === 'POST') {
+        let body = '';
+        req.on('data', (data) => {
+            body += data;
+        });
 
-            req.on('end', () => {
-                if (path.path === '/save_guest') {
-                    saveGuestHandle(qs.parse(body), res);
-                } else if (path.path === '/save_user') {
-                    saveUserHandle(qs.parse(body), res);
-                } else if (path.path === '/check_title') { //Отдельный запрос на проверку уникальности,
-                    checkTitleHandle(qs.parse(body), res); //чтобы не гонять данные с таблицы несколько раз.
-                } else if (path.path === '/remove_guest') {
-                    removeGuestHandle(qs.parse(body), res);
-                } else if (path.path === '/remove_user') {
-                    removeUserHandle(qs.parse(body), res);
-                } else if (path.path === '/load_guest') {
-                    loadGuestHandle(qs.parse(body), res);
-                } else if (path.path === '/load_user') {
-                    loadUserHandle(qs.parse(body), res);
-                } else if (path.path === '/titles') {
-                    loadUserTitlesHandle(qs.parse(body), res);
-                } else if (path.path === '/rename') {
-                    renameUserHandle(qs.parse(body), res);
-                } else {
-                    res.writeHead(404, {
-                        'Content-Type': 'text/plain'
-                    });
-                    res.end();
-                }
-            });
-        } else {
-            res.writeHead(404, {
-                'Content-Type': 'text/plain'
-            });
-            res.end();
-        }
+        req.on('end', () => {
+            if (path.path === '/save_guest') {
+                saveGuestHandle(qs.parse(body), res);
+            } else if (path.path === '/save_user') {
+                saveUserHandle(qs.parse(body), res);
+            } else if (path.path === '/check_title') { //Отдельный запрос на проверку уникальности,
+                checkTitleHandle(qs.parse(body), res); //чтобы не гонять данные с таблицы несколько раз.
+            } else if (path.path === '/remove_guest') {
+                removeGuestHandle(qs.parse(body), res);
+            } else if (path.path === '/remove_user') {
+                removeUserHandle(qs.parse(body), res);
+            } else if (path.path === '/load_guest') {
+                loadGuestHandle(qs.parse(body), res);
+            } else if (path.path === '/load_user') {
+                loadUserHandle(qs.parse(body), res);
+            } else if (path.path === '/titles') {
+                loadUserTitlesHandle(qs.parse(body), res);
+            } else if (path.path === '/rename') {
+                renameUserHandle(qs.parse(body), res);
+            } else {
+                res.writeHead(404, {
+                    'Content-Type': 'text/plain'
+                });
+                res.end();
+            }
+        });
+    } else {
+        res.writeHead(404, {
+            'Content-Type': 'text/plain'
+        });
+        res.end();
+    }
 
-    }).listen(CONFIG.port, () =>
-        logs.log(`\x1b[35mSave service\x1b[0m successfully \x1b[32mstarted\x1b[0m at ${CONFIG.port}`))
+}).listen(CONFIG.port, () =>
+    logs.log(`\x1b[35mSave service\x1b[0m successfully \x1b[32mstarted\x1b[0m at ${CONFIG.port}`))
     .on('close', () => {
         saveClient.close((err) => {
             if (err) {

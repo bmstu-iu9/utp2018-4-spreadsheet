@@ -41,26 +41,26 @@ const checkSession = (body, response) => {
     usersClient.get(`SELECT Email email, Status status
                     FROM sessions
                     WHERE Token = ?`, [body.session], (err, row) => {
-        if (err || !row) {
-            let errorType = 0;
-            if (err) {
-                errorType = CONFIG.SQLITE3_DATABASE_ERROR;
-                logs.log(`Check \x1b[31mFAILED\x1b[0m: SessionID: ${body.session}. Database error: ${err.message}`);
-            } else {
-                errorType = CONFIG.NO_TOKEN_ERROR;
-                logs.log(`Check \x1b[31mFAILED\x1b[0m: SessionID: ${body.session}. Token is not registered`);
+            if (err || !row) {
+                let errorType = 0;
+                if (err) {
+                    errorType = CONFIG.SQLITE3_DATABASE_ERROR;
+                    logs.log(`Check \x1b[31mFAILED\x1b[0m: SessionID: ${body.session}. Database error: ${err.message}`);
+                } else {
+                    errorType = CONFIG.NO_TOKEN_ERROR;
+                    logs.log(`Check \x1b[31mFAILED\x1b[0m: SessionID: ${body.session}. Token is not registered`);
+                }
+
+                return returnError(errorType, response);
             }
 
-            return returnError(errorType, response);
-        }
-
-        logs.log(`Check \x1b[32mSUCCESS\x1b[0m: SessionID: ${body.session}, Email: ${row.email}, Status: ${row.status}`);
-        return returnJSON({
-            email: row.email,
-            status: row.status,
-            error: null
-        }, response);
-    });
+            logs.log(`Check \x1b[32mSUCCESS\x1b[0m: SessionID: ${body.session}, Email: ${row.email}, Status: ${row.status}`);
+            return returnJSON({
+                email: row.email,
+                status: row.status,
+                error: null
+            }, response);
+        });
 }
 
 const getUserData = (body, response) => {
@@ -120,42 +120,42 @@ const loginHandle = (body, response) => {
                             Pass pass
                     FROM login_data
                     WHERE Email = ?`, [body.email], (err, row) => {
-        if (err || !row || row.pass != body.password) {
-            let errorType = 0;
-            if (err) {
-                errorType = CONFIG.SQLITE3_DATABASE_ERROR;
-                logs.log(`Login USER(check email) \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Database error: ${err.message}`);
-            } else if (!row) {
-                errorType = CONFIG.NO_USER_ERROR;
-                logs.log(`Login USER \x1b[31mFAILED\x1b[0m: Email: ${body.email}. User is not registered`);
-            } else {
-                errorType = CONFIG.INCORRECT_PASS_ERROR;
-                logs.log(`Login USER \x1b[31mFAILED\x1b[0m: Email: ${body.email}. Incorrect password`);
-            }
-
-            return returnError(errorType, response);
-        }
-
-
-        //Insert session token for this user
-        //на случай, если пользователь сразу попал на страницу логина
-        const sessionID = (body.session === 'undefined' ? ID() : body.session);
-        const currDate = new Date();
-        usersClient.run(`REPLACE INTO sessions(Token, Email, Status, LoginTime)
-                        VALUES(?, ?, ?, ?)`, [sessionID, body.email, CONFIG.USER, Math.round(currDate.getTime() / 1000)],
-            (err) => {
+            if (err || !row || row.pass != body.password) {
+                let errorType = 0;
                 if (err) {
-                    logs.log(`Login USER(replace token) \x1b[31mFAILED\x1b[0m: SessionID: ${sessionID} Email: ${body.email}, Database error: ${err.message}`);
-                    return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
+                    errorType = CONFIG.SQLITE3_DATABASE_ERROR;
+                    logs.log(`Login USER(check email) \x1b[31mFAILED\x1b[0m: Email: ${body.email}, Database error: ${err.message}`);
+                } else if (!row) {
+                    errorType = CONFIG.NO_USER_ERROR;
+                    logs.log(`Login USER \x1b[31mFAILED\x1b[0m: Email: ${body.email}. User is not registered`);
+                } else {
+                    errorType = CONFIG.INCORRECT_PASS_ERROR;
+                    logs.log(`Login USER \x1b[31mFAILED\x1b[0m: Email: ${body.email}. Incorrect password`);
                 }
 
-                logs.log(`Login USER \x1b[32mSUCCESS\x1b[0m: SessionID: ${sessionID}, Email: ${body.email}`);
-                return returnJSON({
-                    session_id: sessionID,
-                    error: null
-                }, response);
-            });
-    });
+                return returnError(errorType, response);
+            }
+
+
+            //Insert session token for this user
+            //на случай, если пользователь сразу попал на страницу логина
+            const sessionID = (body.session === 'undefined' ? ID() : body.session);
+            const currDate = new Date();
+            usersClient.run(`REPLACE INTO sessions(Token, Email, Status, LoginTime)
+                        VALUES(?, ?, ?, ?)`, [sessionID, body.email, CONFIG.USER, Math.round(currDate.getTime() / 1000)],
+                (err) => {
+                    if (err) {
+                        logs.log(`Login USER(replace token) \x1b[31mFAILED\x1b[0m: SessionID: ${sessionID} Email: ${body.email}, Database error: ${err.message}`);
+                        return returnError(CONFIG.SQLITE3_DATABASE_ERROR, response);
+                    }
+
+                    logs.log(`Login USER \x1b[32mSUCCESS\x1b[0m: SessionID: ${sessionID}, Email: ${body.email}`);
+                    return returnJSON({
+                        session_id: sessionID,
+                        error: null
+                    }, response);
+                });
+        });
 }
 
 /**
@@ -204,42 +204,42 @@ const registerHandle = (body, response) => {
 
 //Starts server, which works only with POST requests
 const server = http.createServer((req, res) => {
-        const path = url.parse(req.url, true)
-        if (req.method === 'POST') {
-            let body = '';
-            req.on('data', (data) => {
-                body += data;
-            });
+    const path = url.parse(req.url, true)
+    if (req.method === 'POST') {
+        let body = '';
+        req.on('data', (data) => {
+            body += data;
+        });
 
-            req.on('end', () => {
-                if (path.path === '/check_session') {
-                    checkSession(qs.parse(body), res);
-                } else if (path.path === '/login') {
-                    loginHandle(qs.parse(body), res);
-                } else if (path.path === '/guest') {
-                    addGuest(qs.parse(body), res);
-                } else if (path.path === '/register') {
-                    registerHandle(qs.parse(body), res);
-                } else if (path.path === '/logout') {
-                    logoutHandle(qs.parse(body), res);
-                } else if (path.path === '/data') {
-                    getUserData(qs.parse(body), res);
-                } else {
-                    res.writeHead(404, {
-                        'Content-Type': 'text/plain'
-                    });
-                    res.end();
-                }
-            });
-        } else {
-            res.writeHead(404, {
-                'Content-Type': 'text/plain'
-            });
-            res.end();
-        }
+        req.on('end', () => {
+            if (path.path === '/check_session') {
+                checkSession(qs.parse(body), res);
+            } else if (path.path === '/login') {
+                loginHandle(qs.parse(body), res);
+            } else if (path.path === '/guest') {
+                addGuest(qs.parse(body), res);
+            } else if (path.path === '/register') {
+                registerHandle(qs.parse(body), res);
+            } else if (path.path === '/logout') {
+                logoutHandle(qs.parse(body), res);
+            } else if (path.path === '/data') {
+                getUserData(qs.parse(body), res);
+            } else {
+                res.writeHead(404, {
+                    'Content-Type': 'text/plain'
+                });
+                res.end();
+            }
+        });
+    } else {
+        res.writeHead(404, {
+            'Content-Type': 'text/plain'
+        });
+        res.end();
+    }
 
-    }).listen(CONFIG.port, () =>
-        logs.log(`\x1b[35mAuth service\x1b[0m successfully \x1b[32mstarted\x1b[0m at ${CONFIG.port}`))
+}).listen(CONFIG.port, () =>
+    logs.log(`\x1b[35mAuth service\x1b[0m successfully \x1b[32mstarted\x1b[0m at ${CONFIG.port}`))
     .on('close', () => {
         usersClient.close((err) => {
             if (err) {

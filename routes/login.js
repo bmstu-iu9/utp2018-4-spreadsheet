@@ -25,7 +25,7 @@ const auth = (req, res) => {
                 logs.log(`\x1b[34mAUTHORIZATION\x1b[0m \x1b[32mSUCCESS\x1b[0m: SessionID: ${cookies['token']}, Email: ${parsedURL.query['email']}`);
                 res.setHeader('Set-Cookie', ['token=' + loginINFO.session_id +
                     ';expires=' + new Date(new Date().getTime() + 31556952000).toUTCString(),
-                    'status=' + CONFIG.USER + ';expires=' + new Date(new Date().getTime() + 31556952000).toUTCString()
+                'status=' + CONFIG.USER + ';expires=' + new Date(new Date().getTime() + 31556952000).toUTCString()
                 ]) //на год
             } else {
                 logs.log(`\x1b[34mAUTHORIZATION\x1b[0m \x1b[31mFAILED\x1b[0m: SessionID: ${cookies['token']}, Email: ${parsedURL.query['email']}, Error: ${ERROR_MESSAGES[loginINFO.error]}`);
