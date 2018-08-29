@@ -483,9 +483,9 @@ const initCell = (columnNumber, rowNumber) => {
             });
 
             if (thisTextarea.getAttribute('data-style')){
-                document.getElementById("" + new_cell.firstChild.getAttribute('data-style') + "-button").style.border = "2px solid #6bc961";
-                document.getElementById("" + new_cell.firstChild.getAttribute('data-style') + "-button").style.borderRadius = '5px 5px 5px 5px';
-                document.getElementById("" + new_cell.firstChild.getAttribute('data-style') + "-button").style.margin = '0px 3px 0px 0px';
+                document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.border = "2px solid #6bc961";
+                document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.borderRadius = '5px 5px 5px 5px';
+                document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.margin = '0px 3px 0px 0px';
             }
 
             if (thisTextarea.style.fontWeight == 'bold'){
@@ -505,7 +505,7 @@ const initCell = (columnNumber, rowNumber) => {
             }
 
             document.getElementById('diss').disabled = false;
-            if (!lastFocusedTextarea.getAttribute('data-font')){
+            if (!thisTextarea.getAttribute('data-font')){
                 selecterable.selectedIndex = 0;
             }
             else {
