@@ -15,6 +15,8 @@ const updateTables = () => {
         console.log(innerTable.getCeil(ceil.x, ceil.y).realText);
         console.log(innerTable.getCeil(ceil.x, ceil.y).error);
         document.getElementById(convNumtoId(ceil.x, ceil.y)).value = innerTable.getCeil(ceil.x, ceil.y).toDisplay;
+        if(Number(innerTable.getCeil(ceil.x, ceil.y).toDisplay))
+            document.getElementById(convNumtoId(ceil.x, ceil.y)).style.textAlign = 'right';
     }
 }
 
@@ -31,8 +33,8 @@ const removeTable = () => {
 
 /**
  * Создаёт в памяти таблицу rows x cols + её отображение
- * @param {Number} rows 
- * @param {Number} cols 
+ * @param {Number} rows
+ * @param {Number} cols
  */
 const createTable = (rows, cols) => {
     document.getElementsByClassName('null-div')[0].innerHTML = `<table><tr><td></td></tr></table>`;
@@ -44,7 +46,7 @@ const createTable = (rows, cols) => {
  * Восстанавливает таблицу(+отображение) из JSON объекта,
  * Размер задаётся свойством size : [rows, cols]
  * Ячейки записываются в формате [x, y] : [<массив кодов символов>]
- * @param {Object} tableData 
+ * @param {Object} tableData
  */
 const tableFromObject = (tableData) => {
     document.getElementsByClassName('null-div')[0].innerHTML = `<table><tr><td></td></tr></table>`;
@@ -61,9 +63,9 @@ const tableFromObject = (tableData) => {
 
 /**
  * Загружает таблицу
- * @param {String} title 
- * @param {Function} okCallback 
- * @param {Function} errCallback 
+ * @param {String} title
+ * @param {Function} okCallback
+ * @param {Function} errCallback
  */
 const getSavedTable = (title, okCallback, errorCallback) => {
     let adress = title ? '/load_user_data?status=' + USER_STATUS.USER + '&title=' + title :

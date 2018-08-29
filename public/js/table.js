@@ -9,9 +9,10 @@ const leftDiv = document.getElementById('left-div');
 
 const somePoliticalDirections = ['left', 'center', 'right'];
 const someStyles = ['bold', 'italics', 'underline'];
-const selecterable = document.getElementById("selecterable");
+const selecterable = document.getElementById('selecterable');
+const sizeSelect = document.getElementById('size-select');
 const myFillings = document.getElementById('filling-color');
-const gerardPiqueWillBeatMadrid = document.getElementById('font-color-pick');
+const fontFilling = document.getElementById('font-color-pick');
 
 let DEFAULT_ROWS = 50,
     DEFAULT_COLS = 25;
@@ -512,15 +513,22 @@ const initCell = (columnNumber, rowNumber) => {
                 selecterable.value = thisTextarea.style.fontFamily;
             }
 
+            if (!thisTextarea.style.fontSize){
+                sizeSelect.selectedIndex = 0;
+            }
+            else {
+                sizeSelect.value = thisTextarea.style.fontSize;
+            }
+
             document.getElementById('color-art').style.backgroundColor = thisTextarea.style.backgroundColor;
-            myFillings.value = reallyPowerfulFunctionToCalculateColorFromJavaScriptToCSS(thisTextarea.style.backgroundColor);
+            myFillings.value = calculateColorFromJavaScriptToCSS(thisTextarea.style.backgroundColor);
 
             //console.log('#' + ('' + thisTextarea.style.backgroundColor).substring(4, 7).toString(16) + ('' + thisTextarea.style.backgroundColor).substring(9, 12).toString(16) + ('' + thisTextarea.style.backgroundColor).substring(14, 17).toString(16));
 
             document.getElementById('font-art').style.backgroundColor = thisTextarea.style.color;
-            gerardPiqueWillBeatMadrid.value = reallyPowerfulFunctionToCalculateColorFromJavaScriptToCSS(thisTextarea.style.color);
+            fontFilling.value = calculateColorFromJavaScriptToCSS(thisTextarea.style.color);
 
-            console.log(reallyPowerfulFunctionToCalculateColorFromJavaScriptToCSS(thisTextarea.style.color));
+            console.log(calculateColorFromJavaScriptToCSS(thisTextarea.style.color));
 
         };
     }(newInput);
@@ -1530,14 +1538,14 @@ myFillings.onchange = function(){
 }
 
 document.getElementById('font-color').onmousedown = function(){
-    gerardPiqueWillBeatMadrid.click();
+    fontFilling.click();
 }
 
-gerardPiqueWillBeatMadrid.onchange = function(){
-    document.getElementById('font-art').style.backgroundColor = lastFocusedTextarea.style.color = gerardPiqueWillBeatMadrid.value;
+fontFilling.onchange = function(){
+    document.getElementById('font-art').style.backgroundColor = lastFocusedTextarea.style.color = fontFilling.value;
 }
 
-const reallyPowerfulFunctionToCalculateColorFromJavaScriptToCSS = str => {
+const calculateColorFromJavaScriptToCSS = str => {
     let curr = '';
     let acc = '#';
     let arr = ''+str;
@@ -1555,4 +1563,8 @@ const reallyPowerfulFunctionToCalculateColorFromJavaScriptToCSS = str => {
         }
     }
     return acc;
+}
+
+sizeSelect.onchange = function(){
+    lastFocusedTextarea.style.fontSize = sizeSelect.value;
 }
