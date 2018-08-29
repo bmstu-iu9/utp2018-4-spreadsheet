@@ -525,11 +525,11 @@ class StringSetWitnSearch {
         return this.elems.slice(this.begin, this.end + 1);
     }
 
-    charged(){
+    charged() {
         return this.prefix.length > 0;
     }
 
-    setPrefix(prefix){
+    setPrefix(prefix) {
         this.clear;
         this.prefix = prefix;
         this.begin = this.binSearchBegByPrefix(this.prefix, this.begin, this.end);

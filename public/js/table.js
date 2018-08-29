@@ -495,7 +495,7 @@ const paintCells2 = () => {
     const id1 = currentLet[start_j] + (start_i + 1);
     const id2 = currentLet[end_j] + (end_i + 1);
     focusTextArea.value = (id1 === id2) ? focusTextArea.startBuf + id1 + focusTextArea.endBuf :
-                                                                   focusTextArea.startBuf + id1 + ':' + id2 + focusTextArea.endBuf;
+        focusTextArea.startBuf + id1 + ':' + id2 + focusTextArea.endBuf;
 }
 
 let paintCells = paintCells1;
@@ -728,8 +728,8 @@ const initCell = (columnNumber, rowNumber) => {
 
             stateScroll = (mainDiv.scrollLeft && mainDiv.scrollTop) ? 3 :
                 (mainDiv.scrollLeft) ? 2 :
-                (mainDiv.scrollTop) ? 1 :
-                0;
+                    (mainDiv.scrollTop) ? 1 :
+                        0;
 
             currentX = e.clientX;
             currentY = e.clientY;
@@ -790,8 +790,8 @@ const initCell = (columnNumber, rowNumber) => {
 
                 stateScroll = (mainDiv.scrollLeft && mainDiv.scrollTop) ? 3 :
                     (mainDiv.scrollLeft) ? 2 :
-                    (mainDiv.scrollTop) ? 1 :
-                    0;
+                        (mainDiv.scrollTop) ? 1 :
+                            0;
 
                 currentX = e.clientX;
                 currentY = e.clientY;
@@ -1448,8 +1448,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1469,8 +1469,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1491,8 +1491,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1510,8 +1510,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[0].cells[elem.colNum] :
-                (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1526,8 +1526,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[elem.rowNum].cells[0] :
-                (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1544,8 +1544,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1564,8 +1564,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1590,8 +1590,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1617,8 +1617,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1645,8 +1645,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1667,8 +1667,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1687,8 +1687,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1711,8 +1711,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[elem.rowNum].cells[0] :
-                (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1729,8 +1729,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1749,8 +1749,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1774,8 +1774,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1801,8 +1801,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1821,8 +1821,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1850,8 +1850,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1869,8 +1869,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[0].cells[elem.colNum] :
-                (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1886,8 +1886,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1912,8 +1912,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1932,8 +1932,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1958,8 +1958,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1996,8 +1996,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2024,8 +2024,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2054,8 +2054,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2074,8 +2074,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2099,8 +2099,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2125,8 +2125,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2145,8 +2145,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                curCell;
+                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                        curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();

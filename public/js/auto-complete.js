@@ -124,7 +124,7 @@ class AutoCompleteMenu {
             document.getElementById('auto-complete-targeted').id = '';
             next.id = 'auto-complete-targeted';
             next.style.backgroundColor = '#000000';
-            next.scrollIntoView({behavior: "smooth"})
+            next.scrollIntoView({ behavior: "smooth" })
         }
     }
 
@@ -135,7 +135,7 @@ class AutoCompleteMenu {
             document.getElementById('auto-complete-targeted').id = '';
             next.id = 'auto-complete-targeted';
             next.style.backgroundColor = '#000000';
-            next.scrollIntoView({behavior: "smooth"})
+            next.scrollIntoView({ behavior: "smooth" })
         }
     }
 

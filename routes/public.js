@@ -29,17 +29,17 @@ const public = (req, res) => {
             break;
     }
 
-    res.writeHead(200, {'Content-Type' : contentType});
+    res.writeHead(200, { 'Content-Type': contentType });
     console.log(path.resolve('public', req.url.slice(1)));
     const stream = fs.createReadStream(path.resolve('public', req.url.slice(1)));
     stream.pipe(res);
 
     stream.on('error', error => {
         if (error.code === 'ENOENT') {
-            res.writeHead(404, {'Content-Type' : 'text/html'});
+            res.writeHead(404, { 'Content-Type': 'text/html' });
             res.end('<h1>404 Not Found<h1>');
         } else {
-            res.writeHead(500, {'Content-Type' : 'text/html'});
+            res.writeHead(500, { 'Content-Type': 'text/html' });
             res.end(error.message);
         }
     });
