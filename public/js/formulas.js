@@ -149,7 +149,6 @@ class Ceil {
 }
 
 
-
 const coordFromLetters = (str) => {
     str = str.toUpperCase();
     let res = 0;

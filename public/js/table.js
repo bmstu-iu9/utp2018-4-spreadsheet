@@ -334,54 +334,54 @@ const bleachCells1 = () => {
 
 const bleachCells2 = () => {
 
-  while (lightblueBorderCells.length !== 0) {
-      const obj = lightblueBorderCells.pop();
-      const cell = obj.cell;
-      const focusCell = document.getElementById('Cell_' + focusID);
+    while (lightblueBorderCells.length !== 0) {
+        const obj = lightblueBorderCells.pop();
+        const cell = obj.cell;
+        const focusCell = document.getElementById('Cell_' + focusID);
 
-      if (obj.top) {
-        if (cell.rowNum) {
-            const bs = getComputedStyle(mainTable.rows[cell.rowNum - 1].cells[cell.colNum]).boxShadow.split(',');
+        if (obj.top) {
+            if (cell.rowNum) {
+                const bs = getComputedStyle(mainTable.rows[cell.rowNum - 1].cells[cell.colNum]).boxShadow.split(',');
 
-            mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style.boxShadow = (bs.length <= 3)? 'none' : bs[0] + bs[1] + bs[2];
-            mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style.zIndex = (bs.length <= 3)? 3 : 4;
-        } else {
-            document.getElementById('up_' + cell.colNum).style.backgroundColor =
-                    (cell.colNum === focusCell.colNum)? '#6bc961' : 'transparent';
+                mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style.boxShadow = (bs.length <= 3) ? 'none' : bs[0] + bs[1] + bs[2];
+                mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style.zIndex = (bs.length <= 3) ? 3 : 4;
+            } else {
+                document.getElementById('up_' + cell.colNum).style.backgroundColor =
+                    (cell.colNum === focusCell.colNum) ? '#6bc961' : 'transparent';
+            }
         }
-      }
 
-      if (obj.left) {
-        if (cell.colNum) {
-            const bs = getComputedStyle(mainTable.rows[cell.rowNum].cells[cell.colNum - 1]).boxShadow.split(',');
+        if (obj.left) {
+            if (cell.colNum) {
+                const bs = getComputedStyle(mainTable.rows[cell.rowNum].cells[cell.colNum - 1]).boxShadow.split(',');
 
-            mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style.boxShadow = (bs.length <= 3)? 'none' : bs[0] + bs[1] + bs[2];
-            mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style.zIndex = (bs.length <= 3)? 3 : 4;
-        } else {
-            document.getElementById('left_' + (cell.rowNum + 1)).style.backgroundColor =
-                    (cell.rowNum === focusCell.rowNum)? '#6bc961' : 'transparent';
+                mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style.boxShadow = (bs.length <= 3) ? 'none' : bs[0] + bs[1] + bs[2];
+                mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style.zIndex = (bs.length <= 3) ? 3 : 4;
+            } else {
+                document.getElementById('left_' + (cell.rowNum + 1)).style.backgroundColor =
+                    (cell.rowNum === focusCell.rowNum) ? '#6bc961' : 'transparent';
+            }
         }
-      }
 
-      if (obj.right) {
-        if (cell.colNum + 1 <= COLS) {
-            const bs = getComputedStyle(mainTable.rows[cell.rowNum].cells[cell.colNum + 1]).boxShadow.split(',');
+        if (obj.right) {
+            if (cell.colNum + 1 <= COLS) {
+                const bs = getComputedStyle(mainTable.rows[cell.rowNum].cells[cell.colNum + 1]).boxShadow.split(',');
 
-            mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style.boxShadow = (bs.length <= 3)? 'none' : bs[0] + bs[1] + bs[2];
-            mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style.zIndex = (bs.length <= 3)? 3 : 4;
+                mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style.boxShadow = (bs.length <= 3) ? 'none' : bs[0] + bs[1] + bs[2];
+                mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style.zIndex = (bs.length <= 3) ? 3 : 4;
+            }
         }
-      }
 
-      if (obj.bottom) {
-        if (cell.rowNum + 1 < ROWS) {
-            const bs = getComputedStyle(mainTable.rows[cell.rowNum + 1].cells[cell.colNum]).boxShadow.split(',');
+        if (obj.bottom) {
+            if (cell.rowNum + 1 < ROWS) {
+                const bs = getComputedStyle(mainTable.rows[cell.rowNum + 1].cells[cell.colNum]).boxShadow.split(',');
 
-            mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style.boxShadow = (bs.length <= 3)? 'none' : bs[0] + bs[1] + bs[2];
-            mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style.zIndex = (bs.length <= 3)? 3 : 4;
+                mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style.boxShadow = (bs.length <= 3) ? 'none' : bs[0] + bs[1] + bs[2];
+                mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style.zIndex = (bs.length <= 3) ? 3 : 4;
+            }
         }
-      }
 
-  }
+    }
 
 }
 
@@ -449,44 +449,44 @@ const paintCells2 = () => {
             if (i === start_i) {
                 paintBorders(mainTable.rows[i].cells[j], true, false, false, false);
                 lightblueBorderCells.push({
-                      cell: mainTable.rows[i].cells[j],
-                      top: true,
-                      left: false,
-                      right: false,
-                      bottom: false
+                    cell: mainTable.rows[i].cells[j],
+                    top: true,
+                    left: false,
+                    right: false,
+                    bottom: false
                 });
             }
 
             if (j === start_j) {
                 paintBorders(mainTable.rows[i].cells[j], false, true, false, false);
                 lightblueBorderCells.push({
-                      cell: mainTable.rows[i].cells[j],
-                      top: false,
-                      left: true,
-                      right: false,
-                      bottom: false
+                    cell: mainTable.rows[i].cells[j],
+                    top: false,
+                    left: true,
+                    right: false,
+                    bottom: false
                 });
             }
 
             if (j === end_j) {
                 paintBorders(mainTable.rows[i].cells[j], false, false, true, false);
                 lightblueBorderCells.push({
-                      cell: mainTable.rows[i].cells[j],
-                      top: false,
-                      left: false,
-                      right: true,
-                      bottom: false
+                    cell: mainTable.rows[i].cells[j],
+                    top: false,
+                    left: false,
+                    right: true,
+                    bottom: false
                 });
             }
 
             if (i === end_i) {
                 paintBorders(mainTable.rows[i].cells[j], false, false, false, true);
                 lightblueBorderCells.push({
-                      cell: mainTable.rows[i].cells[j],
-                      top: false,
-                      left: false,
-                      right: false,
-                      bottom: true
+                    cell: mainTable.rows[i].cells[j],
+                    top: false,
+                    left: false,
+                    right: false,
+                    bottom: true
                 });
             }
 
@@ -495,7 +495,7 @@ const paintCells2 = () => {
 
     const id1 = currentLet[start_j] + (start_i + 1);
     const id2 = currentLet[end_j] + (end_i + 1);
-    focusTextArea.value = (id1 === id2)? formulaBuf + id1 : formulaBuf + id1 + ':' + id2;
+    focusTextArea.value = (id1 === id2) ? formulaBuf + id1 : formulaBuf + id1 + ':' + id2;
 }
 
 let paintCells = paintCells1;
@@ -526,51 +526,51 @@ const paintBorders1 = (cell, top, left, right, bottom) => {
 
 const paintBorders2 = (cell, top, left, right, bottom) => {
 
-      if (top) {
+    if (top) {
 
-          if (cell.rowNum) {
+        if (cell.rowNum) {
             const prevBS = getComputedStyle(mainTable.rows[cell.rowNum - 1].cells[cell.colNum]).boxShadow;
 
             mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] =
-                    (prevBS === 'none')? '0px 3px 0px 0px #00b7b7' : prevBS + ', 0px 3px 0px 0px #00b7b7';
+                (prevBS === 'none') ? '0px 3px 0px 0px #00b7b7' : prevBS + ', 0px 3px 0px 0px #00b7b7';
             mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['z-index'] = 4;
 
-          } else {
+        } else {
             document.getElementById('up_' + cell.colNum).style.backgroundColor = '#00b7b7';
-          }
+        }
 
-      }
+    }
 
-      if (left) {
+    if (left) {
 
-          if (cell.colNum) {
+        if (cell.colNum) {
             const prevBS = getComputedStyle(mainTable.rows[cell.rowNum].cells[cell.colNum - 1]).boxShadow;
 
             mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['box-shadow'] =
-                    (prevBS === 'none')? '3px 0px 0px 0px #00b7b7' : prevBS + ', 3px 0px 0px 0px #00b7b7';
+                (prevBS === 'none') ? '3px 0px 0px 0px #00b7b7' : prevBS + ', 3px 0px 0px 0px #00b7b7';
             mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['z-index'] = 4;
 
-          } else {
+        } else {
             document.getElementById('left_' + (cell.rowNum + 1)).style.backgroundColor = '#00b7b7';
-          }
+        }
 
-      }
+    }
 
-      if (right) {
-          const prevBS = getComputedStyle(mainTable.rows[cell.rowNum].cells[cell.colNum + 1]).boxShadow;
+    if (right) {
+        const prevBS = getComputedStyle(mainTable.rows[cell.rowNum].cells[cell.colNum + 1]).boxShadow;
 
-          mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['box-shadow'] =
-                  (prevBS === 'none')? '-2px 0px 0px 0px #00b7b7' : prevBS + ', -2px 0px 0px 0px #00b7b7';
-          mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['z-index'] = 4;
-      }
+        mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['box-shadow'] =
+            (prevBS === 'none') ? '-2px 0px 0px 0px #00b7b7' : prevBS + ', -2px 0px 0px 0px #00b7b7';
+        mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['z-index'] = 4;
+    }
 
-      if (bottom) {
-          const prevBS = getComputedStyle(mainTable.rows[cell.rowNum + 1].cells[cell.colNum]).boxShadow;
+    if (bottom) {
+        const prevBS = getComputedStyle(mainTable.rows[cell.rowNum + 1].cells[cell.colNum]).boxShadow;
 
-          mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['box-shadow'] =
-                  (prevBS === 'none')? '0px -2px 0px 0px #00b7b7' : prevBS + ', 0px -2px 0px 0px #00b7b7';
-          mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['z-index'] = 4;
-      }
+        mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['box-shadow'] =
+            (prevBS === 'none') ? '0px -2px 0px 0px #00b7b7' : prevBS + ', 0px -2px 0px 0px #00b7b7';
+        mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['z-index'] = 4;
+    }
 
 }
 
@@ -673,116 +673,56 @@ const initCell = (columnNumber, rowNumber) => {
     }
 
     const disableFormulaMode = () => {
-        newInput.formulaMode = false;
-        newInput.style.cursor = 'cell';
-        bleachCells();
-        bleachCells = bleachCells1;
-        paintBorders = paintBorders1;
-        paintCells = paintCells1;
-        formulaBuf = '=';
+        if (newInput.formulaMode) {
+            newInput.formulaMode = false;
+            newInput.style.cursor = 'cell';
+            bleachCells();
+            bleachCells = bleachCells1;
+            paintBorders = paintBorders1;
+            paintCells = paintCells1;
+            formulaBuf = '=';
+        }
     }
 
     const handler1 = (e) => {
 
-      e.preventDefault();
-      newInput.selectionStart = newInput.selectionEnd = 0;
-      newInput.focus();
-      isMultiHL = true;
-      startCell = newCell;
-      colorCell = newCell;
-
-      bleachCells();
-
-      if (focusID) {
-          const oldInput = document.getElementById(focusID);
-          const oldCell = document.getElementById('Cell_' + focusID);
-          const upCell = upTable.rows[0].cells[oldCell.colNum];
-          const leftCell = leftTable.rows[oldCell.rowNum].cells[0];
-
-          upCell.style.backgroundColor = '#eee';
-          document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
-          leftCell.style.backgroundColor = '#eee';
-          document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
-          oldInput.style.textAlign = 'right';
-          oldInput.editMode = false;
-          oldInput.style.cursor = 'cell';
-      }
-
-      focusID = newInput.id;
-      newInput.hasOldValue = true;
-      const upCell = upTable.rows[0].cells[columnNumber];
-      const leftCell = leftTable.rows[rowNumber - 1].cells[0];
-
-      upCell.style.backgroundColor = '#c3c3c3';
-      document.getElementById('up_' + columnNumber).style.backgroundColor = '#6bc961';
-      leftCell.style.backgroundColor = '#c3c3c3';
-      document.getElementById('left_' + rowNumber).style.backgroundColor = '#6bc961';
-      newInput.style.textAlign = 'left';
-
-      paintBorders(newCell, true, true, true, true);
-      borderCells.push(newCell);
-
-      document.onmousemove = (e) => {
-
-          stateScroll = (mainDiv.scrollLeft && mainDiv.scrollTop) ? 3 :
-              (mainDiv.scrollLeft) ? 2 :
-              (mainDiv.scrollTop) ? 1 :
-              0;
-
-          currentX = e.clientX;
-          currentY = e.clientY;
-
-          if (e.target.className === 'main_cell') {
-              curCell = e.target;
-          } else if (e.target.parentNode.className === 'main_cell') {
-              curCell = e.target.parentNode;
-          } else if (!isScrolling) {
-              isScrolling = true;
-              mainDiv.onscroll();
-          }
-
-          if ((curCell !== null) && (curCell !== colorCell)) {
-              bleachCells();
-              paintCells();
-              colorCell = curCell;
-          }
-
-      }
-
-      document.onmouseup = () => {
-          isMultiHL = false;
-          isScrolling = false;
-          curCell = null;
-          currentY = 0;
-          currentX = 0;
-          stateScroll = -1;
-          document.onmousemove = document.onmouseup = null;
-      }
-
-    }
-
-    const handler2 = (e) => {
-
-      if (newInput.id !== focusID) {
-
-        const focusTextArea = document.getElementById(focusID);
-
         e.preventDefault();
+        newInput.selectionStart = newInput.selectionEnd = 0;
+        newInput.focus();
         isMultiHL = true;
         startCell = newCell;
         colorCell = newCell;
 
         bleachCells();
 
+        if (focusID) {
+            const oldInput = document.getElementById(focusID);
+            const oldCell = document.getElementById('Cell_' + focusID);
+            const upCell = upTable.rows[0].cells[oldCell.colNum];
+            const leftCell = leftTable.rows[oldCell.rowNum].cells[0];
+
+            upCell.style.backgroundColor = '#eee';
+            document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
+            leftCell.style.backgroundColor = '#eee';
+            document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
+            oldInput.style.textAlign = 'right';
+            oldInput.editMode = false;
+            oldInput.style.cursor = 'cell';
+        }
+
+        focusID = newInput.id;
+        newInput.hasOldValue = true;
+        const upCell = upTable.rows[0].cells[columnNumber];
+        const leftCell = leftTable.rows[rowNumber - 1].cells[0];
+
+        upCell.style.backgroundColor = '#c3c3c3';
+        document.getElementById('up_' + columnNumber).style.backgroundColor = '#6bc961';
+        leftCell.style.backgroundColor = '#c3c3c3';
+        document.getElementById('left_' + rowNumber).style.backgroundColor = '#6bc961';
+        newInput.style.textAlign = 'left';
+
         paintBorders(newCell, true, true, true, true);
-        lightblueBorderCells.push({
-              cell: newCell,
-              top: true,
-              left: true,
-              right: true,
-              bottom: true
-        });
-        focusTextArea.value = formulaBuf + newInput.id;
+        borderCells.push(newCell);
 
         document.onmousemove = (e) => {
 
@@ -821,9 +761,71 @@ const initCell = (columnNumber, rowNumber) => {
             document.onmousemove = document.onmouseup = null;
         }
 
-      } else {
-        formulaBuf = newInput.value;
-      }
+    }
+
+    const handler2 = (e) => {
+
+        if (newInput.id !== focusID) {
+
+            const focusTextArea = document.getElementById(focusID);
+
+            e.preventDefault();
+            isMultiHL = true;
+            startCell = newCell;
+            colorCell = newCell;
+
+            bleachCells();
+
+            paintBorders(newCell, true, true, true, true);
+            lightblueBorderCells.push({
+                cell: newCell,
+                top: true,
+                left: true,
+                right: true,
+                bottom: true
+            });
+            focusTextArea.value = formulaBuf + newInput.id;
+
+            document.onmousemove = (e) => {
+
+                stateScroll = (mainDiv.scrollLeft && mainDiv.scrollTop) ? 3 :
+                    (mainDiv.scrollLeft) ? 2 :
+                    (mainDiv.scrollTop) ? 1 :
+                    0;
+
+                currentX = e.clientX;
+                currentY = e.clientY;
+
+                if (e.target.className === 'main_cell') {
+                    curCell = e.target;
+                } else if (e.target.parentNode.className === 'main_cell') {
+                    curCell = e.target.parentNode;
+                } else if (!isScrolling) {
+                    isScrolling = true;
+                    mainDiv.onscroll();
+                }
+
+                if ((curCell !== null) && (curCell !== colorCell)) {
+                    bleachCells();
+                    paintCells();
+                    colorCell = curCell;
+                }
+
+            }
+
+            document.onmouseup = () => {
+                isMultiHL = false;
+                isScrolling = false;
+                curCell = null;
+                currentY = 0;
+                currentX = 0;
+                stateScroll = -1;
+                document.onmousemove = document.onmouseup = null;
+            }
+
+        } else {
+            formulaBuf = newInput.value;
+        }
 
     }
 
@@ -843,27 +845,27 @@ const initCell = (columnNumber, rowNumber) => {
 
         if (!newInput.formulaMode) {
 
-          if (newInput.value === '=') {
-            newInput.focus();
-            activateFormulaMode();
-            newInput.selectionStart = newInput.selectionEnd = newInput.value.length;
-          } else {
-            newInput.editMode = true;
-            newInput.focus();
+            if (newInput.value[0] === '=') {
+                newInput.focus();
+                activateFormulaMode();
+                newInput.selectionStart = newInput.selectionEnd = newInput.value.length;
+            } else {
+                newInput.editMode = true;
+                newInput.focus();
 
-            newInput.style.cursor = 'text';
-            newInput.selectionStart = newInput.selectionEnd = newInput.value.length;
+                newInput.style.cursor = 'text';
+                newInput.selectionStart = newInput.selectionEnd = newInput.value.length;
 
-            if (newCell.rowNum) {
-                mainTable.rows[newCell.rowNum - 1].cells[newCell.colNum].style['box-shadow'] = '0px 3px 0px 0px #0080ff';
+                if (newCell.rowNum) {
+                    mainTable.rows[newCell.rowNum - 1].cells[newCell.colNum].style['box-shadow'] = '0px 3px 0px 0px #0080ff';
+                }
+                if (newCell.colNum) {
+                    mainTable.rows[newCell.rowNum].cells[newCell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px #0080ff';
+                }
+
+                mainTable.rows[newCell.rowNum].cells[newCell.colNum + 1].style['box-shadow'] = '-2px 0px 0px 0px #0080ff';
+                mainTable.rows[newCell.rowNum + 1].cells[newCell.colNum].style['box-shadow'] = '0px -2px 0px 0px #0080ff';
             }
-            if (newCell.colNum) {
-                mainTable.rows[newCell.rowNum].cells[newCell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px #0080ff';
-            }
-
-            mainTable.rows[newCell.rowNum].cells[newCell.colNum + 1].style['box-shadow'] = '-2px 0px 0px 0px #0080ff';
-            mainTable.rows[newCell.rowNum + 1].cells[newCell.colNum].style['box-shadow'] = '0px -2px 0px 0px #0080ff';
-          }
 
         }
 
@@ -889,36 +891,6 @@ const initCell = (columnNumber, rowNumber) => {
                 activateFormulaMode();
             }
 
-        } else if (newInput.formulaMode) {
-
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                dy = 1;
-                disableFormulaMode();
-            } else if (e.key === 'Tab' && e.shiftKey) {
-                e.preventDefault();
-                dx = (columnNumber ? -1 : 0);
-                disableFormulaMode();
-            } else if (e.key === 'Tab') {
-                e.preventDefault();
-                dx = 1;
-                disableFormulaMode();
-            } /*else if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                dy = 1;
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                dy = (rowNumber ? -1 : 0);
-            } else if (e.key === 'ArrowLeft') {
-                e.preventDefault();                            !will be update later!
-                dx = (columnNumber ? -1 : 0);
-            } else if (e.key === 'ArrowRight') {
-                e.preventDefault();
-                dx = 1;
-            } *//*else if (e.key !== 'Escape') {
-                formulaBuf = newInput.value;
-            }*/
-
         } else if (autoCompleteMenu.isActive()) {
             //console.log('ACTIVATED')
             if (e.key === 'Enter') {
@@ -931,11 +903,11 @@ const initCell = (columnNumber, rowNumber) => {
             } else if (e.key === 'Tab') {
                 e.preventDefault();
                 dx = 1;
-            }else if (e.key === 'ArrowUp') {
+            } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 autoCompleteMenu.switchUp();
                 return;
-            }else if (e.key === 'ArrowDown') {
+            } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 autoCompleteMenu.switchDown();
                 return;
@@ -945,21 +917,27 @@ const initCell = (columnNumber, rowNumber) => {
             if (e.key === 'Enter' || e.key === 'ArrowDown') {
                 e.preventDefault();
                 dy = 1;
+                disableFormulaMode();
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 dy = (rowNumber ? -1 : 0);
+                disableFormulaMode();
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
                 dx = (columnNumber ? -1 : 0);
+                disableFormulaMode();
             } else if (e.key === 'ArrowRight') {
                 e.preventDefault();
                 dx = 1;
+                disableFormulaMode();
             } else if (e.key === 'Tab' && e.shiftKey) {
                 e.preventDefault();
                 dx = (columnNumber ? -1 : 0);
+                disableFormulaMode();
             } else if (e.key === 'Tab') {
                 e.preventDefault();
                 dx = 1;
+                disableFormulaMode();
             } else if ((newInput.hasOldValue) && (!e.shiftKey)) {
                 newInput.value = '';
                 newInput.hasOldValue = false;
@@ -1416,8 +1394,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1437,8 +1415,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1459,8 +1437,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1478,8 +1456,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[0].cells[elem.colNum] :
-                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1494,8 +1472,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[elem.rowNum].cells[0] :
-                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1512,8 +1490,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1532,8 +1510,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1558,8 +1536,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1585,8 +1563,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1613,8 +1591,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1635,8 +1613,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1655,8 +1633,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1679,8 +1657,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[elem.rowNum].cells[0] :
-                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? mainTable.rows[elem.parentNode.rowNum].cells[0] :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1697,8 +1675,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1717,8 +1695,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1742,8 +1720,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1769,8 +1747,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1789,8 +1767,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1818,8 +1796,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1837,8 +1815,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? mainTable.rows[0].cells[elem.colNum] :
-                    (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? mainTable.rows[0].cells[elem.parentNode.colNum] :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1854,8 +1832,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1880,8 +1858,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1900,8 +1878,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1926,8 +1904,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1964,8 +1942,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -1992,8 +1970,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2022,8 +2000,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2042,8 +2020,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2067,8 +2045,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2093,8 +2071,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
@@ -2113,8 +2091,8 @@ mainDiv.onscroll = function () {
 
             curCell = (elem === null) ? null :
                 (elem.className === 'main_cell') ? elem :
-                    (elem.parentNode.className === 'main_cell') ? elem.parentNode :
-                        curCell;
+                (elem.parentNode.className === 'main_cell') ? elem.parentNode :
+                curCell;
 
             if ((curCell !== null) && (curCell !== colorCell)) {
                 bleachCells();
