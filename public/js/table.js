@@ -27,7 +27,6 @@ let isScrolling = false;
 let startCell = null;
 let colorCell = null;
 let stateScroll = -1;
-let formulaBuf = '=';
 
 const horScrollSpeed = 30;
 const vertScrollSpeed = 15;
@@ -495,7 +494,8 @@ const paintCells2 = () => {
 
     const id1 = currentLet[start_j] + (start_i + 1);
     const id2 = currentLet[end_j] + (end_i + 1);
-    focusTextArea.value = (id1 === id2) ? formulaBuf + id1 : formulaBuf + id1 + ':' + id2;
+    focusTextArea.value = (id1 === id2) ? focusTextArea.startBuf + id1 + focusTextArea.endBuf :
+                                                                   focusTextArea.startBuf + id1 + ':' + id2 + focusTextArea.endBuf;
 }
 
 let paintCells = paintCells1;
@@ -591,10 +591,12 @@ const initCell = (columnNumber, rowNumber) => {
 
     newCell.colNum = columnNumber;
     newCell.rowNum = rowNumber - 1;
+
     newCell.onclick = (e) => {
         POSSIBLE_FUNCTIONS.clean();
         autoCompleteMenu.autoCompleteOff();
     }
+
     newInput.onkeydown = (e) => {
         let evtobj = window.event ? event : e
         if (evtobj.code === 'KeyZ' && evtobj.ctrlKey && evtobj.shiftKey) {
@@ -616,17 +618,13 @@ const initCell = (columnNumber, rowNumber) => {
                 //console.log(elem.value);
                 elem.value = '';
                 elem.editMode = false;
-                elem.style.cursor = 'cell';
+                disableFormulaMode();
 
-                if (cell.rowNum) {
-                    mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] = '0px 3px 0px 0px #6bc961';
-                }
-                if (cell.colNum) {
-                    mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px #6bc961';
-                }
-
-                mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['box-shadow'] = '-2px 0px 0px 0px #6bc961';
-                mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['box-shadow'] = '0px -2px 0px 0px #6bc961';
+                cell.dispatchEvent(new Event('mousedown', {
+                    keyCode: 13
+                }));
+                document.dispatchEvent(new Event('mouseup'));
+                elem.focus();
             }
         }
     }(newInput))
@@ -657,6 +655,8 @@ const initCell = (columnNumber, rowNumber) => {
         newInput.editMode = false;
         newInput.formulaMode = true;
         newInput.style.cursor = 'text';
+        newInput.startBuf = '';
+        newInput.endBuf = '';
         bleachCells = bleachCells2;
         paintBorders = paintBorders2;
         paintCells = paintCells2;
@@ -680,7 +680,6 @@ const initCell = (columnNumber, rowNumber) => {
             bleachCells = bleachCells1;
             paintBorders = paintBorders1;
             paintCells = paintCells1;
-            formulaBuf = '=';
         }
     }
 
@@ -784,7 +783,7 @@ const initCell = (columnNumber, rowNumber) => {
                 right: true,
                 bottom: true
             });
-            focusTextArea.value = formulaBuf + newInput.id;
+            focusTextArea.value = focusTextArea.startBuf + newInput.id + focusTextArea.endBuf;
 
             document.onmousemove = (e) => {
 
@@ -824,7 +823,13 @@ const initCell = (columnNumber, rowNumber) => {
             }
 
         } else {
-            formulaBuf = newInput.value;
+
+            newCell.onmouseup = () => {
+                newInput.startBuf = newInput.value.substring(0, newInput.selectionStart);
+                newInput.endBuf = newInput.value.substring(newInput.selectionStart);
+                newCell.onmouseup = null;
+            }
+
         }
 
     }
@@ -848,6 +853,8 @@ const initCell = (columnNumber, rowNumber) => {
             if (newInput.value[0] === '=') {
                 newInput.focus();
                 activateFormulaMode();
+                newInput.startBuf = newInput.value;
+                newInput.endBuf = '';
                 newInput.selectionStart = newInput.selectionEnd = newInput.value.length;
             } else {
                 newInput.editMode = true;
@@ -870,7 +877,6 @@ const initCell = (columnNumber, rowNumber) => {
         }
 
     }
-
 
     newInput.addEventListener('keydown', (e) => {
         let dx = 0;
@@ -938,11 +944,12 @@ const initCell = (columnNumber, rowNumber) => {
                 e.preventDefault();
                 dx = 1;
                 disableFormulaMode();
-            } else if ((newInput.hasOldValue) && (!e.shiftKey)) {
-                newInput.value = '';
-                newInput.hasOldValue = false;
-
-                if (e.key === '=') {
+            } else if (!newInput.formulaMode) {
+                if ((newInput.hasOldValue) && (!e.shiftKey)) {
+                    newInput.value = '';
+                    newInput.hasOldValue = false;
+                }
+                if ((newInput.value === '') && (e.key === '=')) {
                     activateFormulaMode();
                 }
             }
@@ -994,6 +1001,25 @@ const initCell = (columnNumber, rowNumber) => {
         }
     });
 
+    newInput.addEventListener('keyup', (e) => {
+        if ((newInput.formulaMode) && (newInput.value[0] !== '=')) {
+            disableFormulaMode();
+            newCell.dispatchEvent(new Event('mousedown', {
+                keyCode: 13
+            }));
+            document.dispatchEvent(new Event('mouseup'));
+            newInput.focus();
+        }
+
+        if ((!newInput.formulaMode) && (newInput.editMode) && (newInput.value[0] === '=')) {
+            activateFormulaMode();
+        }
+
+        if (newInput.formulaMode) {
+            newInput.startBuf = newInput.value.substring(0, newInput.selectionStart);
+            newInput.endBuf = newInput.value.substring(newInput.selectionStart);
+        }
+    });
 
     // newInput.addEventListener('keydown', (e) => {
 
