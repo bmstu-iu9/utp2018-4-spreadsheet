@@ -73,7 +73,7 @@
       </ul>
     </nav>
   </div>
-  
+
 
 
 
@@ -136,31 +136,31 @@
     </ul>
   </div>
   <div id="two" class="abs block">
-      
+
       <div class="format-topbar">
         <div class="alignment">
           <div class="horizontally">
-            <button class='left' title="left"></button>
-            <button class='center'title="center"></button>
-            <button class='right' title="right"></button>
+            <button class='left' id='left-button' title="left"></button>
+            <button class='center' id='center-button' title="center"></button>
+            <button class='right' id='right-button' title="right"></button>
           </div>
             <div class="font-settings">
-            <button class='left' title="bold"></button>
-            <button class='center'title="italics"></button>
-            <button class='right' title="color"></button>
-          </div>
+              <button class='left' title="bold" id="bold-button"></button>
+              <button class='center'title="italics" id="italics-button"></button>
+              <button class='right' title="color" id="underline-button"></button>
+            </div>
 <!--            <input type="color" value="#000000" class="filling">-->
             <button class="filling" title="fill"></button>
             <button class="font-color" title="font color"></button>
             <div class="font-family">
-            <select>
-              <option selected disabled>Font family</option>
-              <option value="">Default</option>
-              <option value="">Arial</option>
-              <option value="">Courier</option>
-              <option value="">Verdana</option>
-            </select>
-        </div>
+                <select id="selecterable">
+                  <option selected disabled id='diss' value = "Font family">Font family</option>
+                  <option value="monospace">Default</option>
+                  <option value="Arial">Arial</option>
+                  <option value="Courier">Courier</option>
+                  <option value="Verdana">Verdana</option>
+                </select>
+            </div>
             <div class="font-size">
                 <select>
                     <option selected disabled>Text size</option>
@@ -182,7 +182,7 @@
                     <option value="">7pt</option>
                     <option value="">6pt</option>
                 </select>
-            
+
             </div>
         </div>
       </div>
