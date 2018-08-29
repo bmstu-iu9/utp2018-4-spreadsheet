@@ -646,7 +646,7 @@ const initCell = (columnNumber, rowNumber) => {
 
                 mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['box-shadow'] = '-2px 0px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
                 mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['box-shadow'] = '0px -2px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
-                
+
                 cell.dispatchEvent(new Event('mousedown', {
                     keyCode: 13
                 }));
@@ -803,7 +803,7 @@ const initCell = (columnNumber, rowNumber) => {
         newInput.hasOldValue = true;
         const upCell = upTable.rows[0].cells[columnNumber];
         const leftCell = leftTable.rows[rowNumber - 1].cells[0];
-       
+
         upCell.style.backgroundColor = '#c3c3c3';
         document.getElementById('up_' + columnNumber).style.backgroundColor = colorManualCofig[userColorCode]['up'].backgroundColor;
         leftCell.style.backgroundColor = '#c3c3c3';
@@ -1092,9 +1092,11 @@ const initCell = (columnNumber, rowNumber) => {
                 let beg = newInput.selectionStart;
                 if (!POSSIBLE_FUNCTIONS.charged())
                     while (beg > 0 && isAlphabetic(newInput.value[beg - 1])) beg--;
-                let cur_concurrence = POSSIBLE_FUNCTIONS.addLetters(newInput.value.substring(beg, newInput.selectionStart) + e.key);
-                autoCompleteMenu.autoCompleteMenuOn(newCell, newInput);
-                autoCompleteMenu.changeFields(cur_concurrence);
+                if (newInput.value[beg - 1] !== "'") {
+                    let cur_concurrence = POSSIBLE_FUNCTIONS.addLetters(newInput.value.substring(beg, newInput.selectionStart) + e.key);
+                    autoCompleteMenu.autoCompleteMenuOn(newCell, newInput);
+                    autoCompleteMenu.changeFields(cur_concurrence);
+                }
             } else if (e.key === ')' && newInput.value[newInput.selectionStart] === ')') {
                 newInput.selectionStart++;
                 e.preventDefault();
@@ -1104,7 +1106,9 @@ const initCell = (columnNumber, rowNumber) => {
                 if (!POSSIBLE_FUNCTIONS.charged()) {
                     let beg = newInput.selectionStart - 1;
                     while (beg > 0 && isAlphabetic(newInput.value[beg - 1])) beg--;
-                    POSSIBLE_FUNCTIONS.addLetters(newInput.value.substring(beg, newInput.selectionStart));
+                    if (newInput.value[beg - 1] !== "'") {
+                        POSSIBLE_FUNCTIONS.addLetters(newInput.value.substring(beg, newInput.selectionStart));
+                    }
                 }
                 let cur_concurrence = POSSIBLE_FUNCTIONS.removeLetters(1);
                 if (POSSIBLE_FUNCTIONS.charged()) {

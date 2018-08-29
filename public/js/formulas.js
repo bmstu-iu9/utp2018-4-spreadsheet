@@ -684,13 +684,13 @@ const RAND = funcConstructor(Math.random, 'RAND', 1, 1);
 
 const AHTOH = funcConstructor(() => 'AHTOH <3', 'AHTOH', 0, 0);
 
-// const CONCAT = funcConstructor((...args) => {
-//     let res = '';
-//     for(let i = 0; i < args.length; i++){
-//         res += String(args[i]);
-//     }
-//     return res;
-// }, 'CONCAT', 1);
+const CONCAT = funcConstructor((...args) => {
+    let res = '';
+    for(let i = 0; i < args.length; i++){
+        res += String(args[i]);
+    }
+    return res;
+}, 'CONCAT', 1);
 
 POSSIBLE_FUNCTIONS.prepareToWork();
 
@@ -759,7 +759,6 @@ const ceilInsert = (table, ceil, text) => {
 }
 
 const tokenize = (formula) => {
-    formula = formula.toUpperCase();
     let tokens = new Array();
     let positions = new Array();
     let ptL = 0;
@@ -786,7 +785,7 @@ const tokenize = (formula) => {
                     beg,
                 )
             }
-            tokens.push(temp);
+            tokens.push(temp.toUpperCase());
         } else if (isAlphabetic(formula[ptL]) || formula[ptL] == '$') {
             positions.push(ptL);
             let beg = ptL;
@@ -806,8 +805,29 @@ const tokenize = (formula) => {
                     )
                 }
             }
+            tokens.push(temp.toUpperCase());
+        } else if (formula[ptL] == "'"){
+            positions.push(ptL);
+            const save = ptL;
+            ptL++;
+            let temp = "'";
+            while (ptL < formula.length && formula[ptL] != "'") {
+                temp += formula[ptL];
+                ptL++;
+            }
+            if(ptL == formula.length){
+                throw new FormulaError(
+                    WRONG_SYMBOL,
+                    "wrong symb: 'string' expression have not ended",
+                    ptL
+                );
+            }else{
+                ptL++;
+            }
+            temp += "'";
+            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!', temp);
             tokens.push(temp);
-        } else {
+        }else{
             //console.log("kek lol kek lol")
             throw new FormulaError(
                 WRONG_SYMBOL,
@@ -961,6 +981,10 @@ const parseElem = (table, ceil, tokens) => {
         if (isNumeric(tokens.peek().token[0])) {
             //console.log("OK : " + tokens.peek().token)
             return tokens.next().token;
+        } else if(tokens.peek().token[0] == "'"){
+            const str = tokens.next().token;
+            console.log('STR', str.substring(1, str.length - 1));
+            return `'${str.substring(1, str.length - 1)}'`
         } else if (isAlphabetic(tokens.peek().token[0]) || tokens.peek().token[0] == '$') {
             if (POSSIBLE_FUNCTIONS.has(tokens.peek().token)) {
                 funcStr += ' ' + tokens.next().token + '(';
