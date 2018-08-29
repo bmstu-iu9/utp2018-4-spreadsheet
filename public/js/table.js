@@ -632,14 +632,15 @@ const initCell = (columnNumber, rowNumber) => {
     }(newInput))
     newInput.onfocus = function (elem) {
         return () => {
-            //console.log('onfocus')
+            console.log('onfocus')
             let coord = convCoord(elem.id)
             elem.value = innerTable.getCeil(coord.x, coord.y).realText;
+            console.log(innerTable.getCeil(coord.x, coord.y).realText + '!!!!');
         };
     }(newInput);
     newInput.onblur = function (elem) {
         return () => {
-            //console.log('onblur')
+            console.log('onblur')
             POSSIBLE_FUNCTIONS.clean();
             autoCompleteMenu.autoCompleteOff();
             let coord = convCoord(elem.id);
@@ -876,8 +877,35 @@ const initCell = (columnNumber, rowNumber) => {
         let dx = 0;
         let dy = 0;
 
-        if (newInput.editMode) {
+        if (e.key === 'Control') {
+            return;
+        }
 
+        if (e.key === 'c' && e.ctrlKey) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const coord = convCoord(newInput.id);
+            innerTable.copy(coord.x, coord.y);
+            updateTables();
+            newInput.focus();
+            return;
+        }
+
+        if (e.key === 'v' && e.ctrlKey) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            newInput.blur();
+            const coord = convCoord(newInput.id);
+            innerTable.paste(coord.x, coord.y);
+            updateTables();
+            newInput.focus();
+            return;
+        }
+
+
+        if (newInput.editMode) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 dy = 1;
