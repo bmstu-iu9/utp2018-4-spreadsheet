@@ -519,6 +519,9 @@ const initCell = (columnNumber, rowNumber) => {
 
             document.getElementById('font-art').style.backgroundColor = thisTextarea.style.color;
             gerardPiqueWillBeatMadrid.value = reallyPowerfulFunctionToCalculateColorFromJavaScriptToCSS(thisTextarea.style.color);
+
+            console.log(reallyPowerfulFunctionToCalculateColorFromJavaScriptToCSS(thisTextarea.style.color));
+
         };
     }(newInput);
     newInput.onblur = function (elem) {
@@ -1543,7 +1546,11 @@ const reallyPowerfulFunctionToCalculateColorFromJavaScriptToCSS = str => {
             curr+=arr[i];
         }
         else if(curr != ''){
-            acc+=Number(curr).toString(16);
+            curr = Number(curr).toString(16);
+            if(curr.length == 1)
+                curr = '0' + curr;
+            console.log(curr);
+            acc += curr;
             curr = '';
         }
     }
