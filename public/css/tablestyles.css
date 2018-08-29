@@ -158,11 +158,15 @@ td {
   display: none;
   position: absolute;
   z-index: 67;
-  padding: 12px 0;
-  width: 240px;
+
+  width: 170px;
   background-color: #fff;
   border: solid 1px #dfdfdf;
   box-shadow: 1px 1px 2px #cfcfcf;
+}
+
+.context-menu_item{
+    height: 20px;
 }
 
 .context-menu--active {
@@ -188,7 +192,7 @@ td {
 
 .context-menu-cell_link, .context-menu-file_link {
   display: block;
-  padding: 4px 12px;
+
   text-decoration: none;
 }
 
@@ -209,6 +213,7 @@ td {
   color: #fff;
   background-color: #5271ff;
 }
+
 
 .decorUp {
     position: absolute;

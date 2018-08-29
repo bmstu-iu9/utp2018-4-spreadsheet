@@ -472,14 +472,15 @@ div[id*=t]:target ~ #one {
   transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   margin-bottom: 3px;
 }
-/*
+
 button:hover{
-  border-color: #8100ff;
+  border-color: #5271ff;
   outline: 0;
-  -webkit-box-shadow: inset 0 2px 2px rgba(0, 0, 0, .075), 0 0 8px rgba(129, 0, 255, 0.6);
- box-shadow: inset 0 2px 2px rgba(0, 0, 0, .075), 0 0 8px rgba(129, 0, 255, 0.6);
+  background-color: #5271ff;
+  -webkit-box-shadow: inset 0 2px 2px rgba(0, 0, 0, .075), 0 0 8px rgba(82, 113, 255, 0.6);
+ box-shadow: inset 0 2px 2px rgba(0, 0, 0, .075), 0 0 8px rgba(82, 113, 255, 0.6);
 }
-*/
+
 
 /*
 button{
@@ -619,7 +620,7 @@ textarea.form-control {
   position: absolute;
 
   margin-left:5px;
-  /* margin-top: 11px; */
+   margin-top: 11px;
   /* margin-bottom: 15px; */
 }
 
@@ -929,3 +930,5 @@ a#account{
     top: 160px;
     margin-top: 10px;
 }
+
+
