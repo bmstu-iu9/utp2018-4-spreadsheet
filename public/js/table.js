@@ -420,6 +420,8 @@ const initCell = (columnNumber, rowNumber) => {
     newInput.editMode = false;
     newInput.hasOldValue = false;
 
+    newInput.setAttribute('data-style', '');
+
     newCell.colNum = columnNumber;
     newCell.rowNum = rowNumber - 1;
 
@@ -463,6 +465,53 @@ const initCell = (columnNumber, rowNumber) => {
             console.log('onfocus')
             let coord = convCoord(elem.id)
             elem.value = innerTable.getCeil(coord.x, coord.y).realText;
+
+            //KHOPO4KU
+
+            lastFocusedTextarea = document.activeElement;
+            let thisTextarea = elem;
+
+            if(!thisTextarea.style.fontFamily)
+            thisTextarea.style.fontFamily = 'monospace';
+            somePoliticalDirections.forEach(direction => {
+                document.getElementById(direction + "-button").style.border = 'none';
+                document.getElementById(direction + "-button").style.margin = '2px 5px 2px 2px';
+            });
+            someStyles.forEach(style => {
+                document.getElementById(style + "-button").style.border = 'none';
+                document.getElementById(style + "-button").style.margin = '2px 5px 2px 2px';
+            });
+
+            if (thisTextarea.getAttribute('data-style')){
+                document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.border = "2px solid #6bc961";
+                document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.borderRadius = '5px 5px 5px 5px';
+                document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.margin = '0px 3px 0px 0px';
+            }
+
+            if (thisTextarea.style.fontWeight == 'bold'){
+                document.getElementById("bold-button").style.border = "2px solid #6bc961";
+                document.getElementById("bold-button").style.borderRadius = '5px 5px 5px 5px';
+                document.getElementById("bold-button").style.margin = '0px 3px 0px 0px';
+            }
+            if (thisTextarea.style.fontStyle == 'italic'){
+                document.getElementById("italics-button").style.border = "2px solid #6bc961";
+                document.getElementById("italics-button").style.borderRadius = '5px 5px 5px 5px';
+                document.getElementById("italics-button").style.margin = '0px 3px 0px 0px';
+            }
+            if (thisTextarea.style.textDecoration == 'underline'){
+                document.getElementById("underline-button").style.border = "2px solid #6bc961";
+                document.getElementById("underline-button").style.borderRadius = '5px 5px 5px 5px';
+                document.getElementById("underline-button").style.margin = '0px 3px 0px 0px';
+            }
+
+            document.getElementById('diss').disabled = false;
+            if (!thisTextarea.getAttribute('data-font')){
+                selecterable.selectedIndex = 0;
+            }
+            else {
+                selecterable.value = thisTextarea.style.fontFamily;
+            }
+            document.getElementById('diss').disabled = true;
         };
     }(newInput);
     newInput.onblur = function (elem) {
@@ -497,7 +546,6 @@ const initCell = (columnNumber, rowNumber) => {
                 document.getElementById('up_' + oldCell.colNum).style.backgroundColor = 'transparent';
                 leftCell.style.backgroundColor = '#eee';
                 document.getElementById('left_' + (oldCell.rowNum + 1)).style.backgroundColor = 'transparent';
-                //oldInput.style.textAlign = 'right';
                 oldInput.editMode = false;
                 oldInput.style.cursor = 'cell';
 
@@ -514,7 +562,6 @@ const initCell = (columnNumber, rowNumber) => {
             document.getElementById('up_' + columnNumber).style.backgroundColor = colorManualCofig[userColorCode]['up'].backgroundColor;
             leftCell.style.backgroundColor = '#c3c3c3';
             document.getElementById('left_' + rowNumber).style.backgroundColor = colorManualCofig[userColorCode]['left'].backgroundColor;
-            //newInput.style.textAlign = 'left';
 
             if(!newInput.getAttribute('data-style'))
                 newInput.style.textAlign = 'left';
@@ -860,43 +907,6 @@ const addCells = function (rows, cols) {
                 cell.className = 'main_cell';
                 initCell(currentLet.length - 1, j + 1);
 
-                cell.firstChild.setAttribute('data-style', '');
-
-                cell.firstChild.onfocus = function() {
-                    lastFocusedTextarea = document.activeElement;
-                    let thisTextarea = cell.firstChild;
-
-                    somePoliticalDirections.forEach(direction => {
-                        document.getElementById(direction + "-button").style.border = "2px solid #ffffff";
-                    });
-                    someStyles.forEach(style => {
-                        document.getElementById(style + "-button").style.border = "2px solid #ffffff";
-                    });
-
-                    if (thisTextarea.getAttribute('data-style')){
-                        document.getElementById("" + new_cell.firstChild.getAttribute('data-style') + "-button").style.border = "2px solid #6bc961";
-                    }
-
-                    if (thisTextarea.style.fontWeight == 'bold'){
-                        document.getElementById("bold-button").style.border = "2px solid #6bc961";
-                    }
-                    if (thisTextarea.style.fontStyle == 'italic'){
-                        document.getElementById("italics-button").style.border = "2px solid #6bc961";
-                    }
-                    if (thisTextarea.style.textDecoration == 'underline'){
-                        document.getElementById("underline-button").style.border = "2px solid #6bc961";
-                    }
-
-                    document.getElementById('diss').disabled = false;
-                    if (!lastFocusedTextarea.getAttribute('data-font')){
-                        selecterable.selectedIndex = 0;
-                    }
-                    else {
-                        selecterable.value = thisTextarea.style.fontFamily;
-                    }
-                    document.getElementById('diss').disabled = true;
-                };
-
                 const curId = letter + (j + 1);
                 const prevId = currentLet[currentLet.length - 2] + (j + 1);
                 const inp = document.getElementById(curId);
@@ -986,55 +996,6 @@ const addCells = function (rows, cols) {
                 new_cell.id = 'Cell_' + letter + (i + 1);
                 new_cell.className = 'main_cell';
                 initCell(j, i + 1);
-
-                new_cell.firstChild.setAttribute('data-font', '');
-
-                new_cell.firstChild.onfocus = function() {
-                    lastFocusedTextarea = document.activeElement;
-                    let thisTextarea = new_cell.firstChild;
-
-                    if(!thisTextarea.style.fontFamily)
-                    thisTextarea.style.fontFamily = 'monospace';
-                    somePoliticalDirections.forEach(direction => {
-                        document.getElementById(direction + "-button").style.border = 'none';
-                        document.getElementById(direction + "-button").style.margin = '2px 5px 2px 2px';
-                    });
-                    someStyles.forEach(style => {
-                        document.getElementById(style + "-button").style.border = 'none';
-                        document.getElementById(style + "-button").style.margin = '2px 5px 2px 2px';
-                    });
-
-                    if (thisTextarea.getAttribute('data-style')){
-                        document.getElementById("" + new_cell.firstChild.getAttribute('data-style') + "-button").style.border = "2px solid #6bc961";
-                        document.getElementById("" + new_cell.firstChild.getAttribute('data-style') + "-button").style.borderRadius = '5px 5px 5px 5px';
-                        document.getElementById("" + new_cell.firstChild.getAttribute('data-style') + "-button").style.margin = '0px 3px 0px 0px';
-                    }
-
-                    if (thisTextarea.style.fontWeight == 'bold'){
-                        document.getElementById("bold-button").style.border = "2px solid #6bc961";
-                        document.getElementById("bold-button").style.borderRadius = '5px 5px 5px 5px';
-                        document.getElementById("bold-button").style.margin = '0px 3px 0px 0px';
-                    }
-                    if (thisTextarea.style.fontStyle == 'italic'){
-                        document.getElementById("italics-button").style.border = "2px solid #6bc961";
-                        document.getElementById("italics-button").style.borderRadius = '5px 5px 5px 5px';
-                        document.getElementById("italics-button").style.margin = '0px 3px 0px 0px';
-                    }
-                    if (thisTextarea.style.textDecoration == 'underline'){
-                        document.getElementById("underline-button").style.border = "2px solid #6bc961";
-                        document.getElementById("underline-button").style.borderRadius = '5px 5px 5px 5px';
-                        document.getElementById("underline-button").style.margin = '0px 3px 0px 0px';
-                    }
-
-                    document.getElementById('diss').disabled = false;
-                    if (!lastFocusedTextarea.getAttribute('data-font')){
-                        selecterable.selectedIndex = 0;
-                    }
-                    else {
-                        selecterable.value = thisTextarea.style.fontFamily;
-                    }
-                    document.getElementById('diss').disabled = true;
-                };
 
                 new_cell.onkeydown = function (e) {
                     if (e.ctrlKey && e.keyCode === 67) {
