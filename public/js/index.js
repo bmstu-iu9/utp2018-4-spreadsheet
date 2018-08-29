@@ -1,5 +1,7 @@
 'use strict';
 
+
+
 /**
  * Обновляет значения в клетках таблицы
  */
@@ -83,6 +85,7 @@ const getSavedTable = (title, okCallback, errorCallback) => {
 
 const contextMenuCell = new ContextMenu(document.getElementById('context-menu-cell'), 10, 210); //Контекстное меню
 const contextMenuFile = new ContextMenu(document.getElementById('context-menu-file'), 0, 0);
+const autoCompleteMenu = new AutoCompleteMenu(document.getElementById('auto-complete-menu'));
 
 let itemInContext = null; //Ссылка на клетку, для которой вызвано контекстное меню
 let fileInContext = null; //Ссылка на файл, для которого вызвано контекстное меню
@@ -144,9 +147,11 @@ const menuItemListener = link => {
     const cell = itemInContext;
     switch (link.getAttribute("data-action")) {
         case 'paste':
+            console.log('paste');
             if (cell.editMode)
                 tryToPasteFromClipboard(cell);
             else {
+                cell.blur();
                 const coord = convCoord(cell.id);
                 innerTable.paste(coord.x, coord.y);
                 updateTables();
@@ -154,6 +159,7 @@ const menuItemListener = link => {
             }
             break;
         case 'copy':
+            console.log('cpy');
             if (cell.editMode)
                 tryToSmthToClipboard(cell, 'copy');
             else {
@@ -277,7 +283,7 @@ document.addEventListener('contextmenu', e => {
 
 
 //Выбор действия внутри меню
-document.addEventListener('click', e => {
+document.addEventListener('mousedown', e => {
     let clickeElIsLink = clickInsideElement(e, 'context-menu-cell_link');
 
     if (clickeElIsLink) {
