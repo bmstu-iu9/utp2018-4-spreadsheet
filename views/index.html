@@ -149,10 +149,16 @@
               <button class='center'title="italics" id="italics-button"></button>
               <button class='right' title="color" id="underline-button"></button>
             </div>
-            <button class="filling" title="fill"></button>
-            <input type="color" value="#000000" class="filling-color">
-            <button class="font-color" title="font color"></button>
-            <input type="color" value="#000000" class="font-color-pick">
+            <div class="color-settings">
+                <button class="filling" title="fill" id="filling"></button>
+                <input type="color" value="#ffffff" class="filling-color" id="filling-color">
+                <div class="artifact whart" id="color-art"></div>
+            </div>
+            <div class="color-settings">
+                <button class="font-color" title="font color" id="font-color"></button>
+                <input type="color" value="#000000" class="font-color-pick" id="font-color-pick">
+                <div class="artifact" id="font-art"></div>
+            </div>
             <div class="font-family">
                 <select id="selecterable">
                   <option selected disabled id='diss' value = "Font family">Font family</option>

@@ -10,6 +10,8 @@ const leftDiv = document.getElementById('left-div');
 const somePoliticalDirections = ['left', 'center', 'right'];
 const someStyles = ['bold', 'italics', 'underline'];
 const selecterable = document.getElementById("selecterable");
+const myFillings = document.getElementById('filling-color');
+const gerardPiqueWillBeatMadrid = document.getElementById('font-color-pick');
 
 let DEFAULT_ROWS = 50,
     DEFAULT_COLS = 25;
@@ -417,6 +419,7 @@ const initCell = (columnNumber, rowNumber) => {
     const id = currentLet[columnNumber] + rowNumber;
     const newInput = document.getElementById(id);
     const newCell = document.getElementById('Cell_' + id);
+    newInput.style.backgroundColor = '#ffffff';
     newInput.editMode = false;
     newInput.hasOldValue = false;
 
@@ -471,8 +474,6 @@ const initCell = (columnNumber, rowNumber) => {
             lastFocusedTextarea = document.activeElement;
             let thisTextarea = elem;
 
-            if(!thisTextarea.style.fontFamily)
-            thisTextarea.style.fontFamily = 'monospace';
             somePoliticalDirections.forEach(direction => {
                 document.getElementById(direction + "-button").style.border = 'none';
                 document.getElementById(direction + "-button").style.backgroundColor = '';
@@ -504,14 +505,20 @@ const initCell = (columnNumber, rowNumber) => {
                 //document.getElementById("underline-button").style.margin = '0px 3px 0px 0px';
             }
 
-            document.getElementById('diss').disabled = false;
-            if (!thisTextarea.getAttribute('data-font')){
+            if (!thisTextarea.style.fontFamily){
                 selecterable.selectedIndex = 0;
             }
             else {
                 selecterable.value = thisTextarea.style.fontFamily;
             }
-            document.getElementById('diss').disabled = true;
+
+            document.getElementById('color-art').style.backgroundColor = thisTextarea.style.backgroundColor;
+            myFillings.value = reallyPowerfulFunctionToCalculateColorFromJavaScriptToCSS(thisTextarea.style.backgroundColor);
+
+            //console.log('#' + ('' + thisTextarea.style.backgroundColor).substring(4, 7).toString(16) + ('' + thisTextarea.style.backgroundColor).substring(9, 12).toString(16) + ('' + thisTextarea.style.backgroundColor).substring(14, 17).toString(16));
+
+            document.getElementById('font-art').style.backgroundColor = thisTextarea.style.color;
+            gerardPiqueWillBeatMadrid.value = reallyPowerfulFunctionToCalculateColorFromJavaScriptToCSS(thisTextarea.style.color);
         };
     }(newInput);
     newInput.onblur = function (elem) {
@@ -1509,6 +1516,37 @@ somePoliticalDirections.forEach( direction => {
 
 selecterable.onchange = function(){
     lastFocusedTextarea.style.fontFamily = selecterable.value;
-    if (!lastFocusedTextarea.getAttribute('data-font'))
-    lastFocusedTextarea.setAttribute('data-font', '1');
+}
+
+document.getElementById('filling').onmousedown = function(){
+    myFillings.click();
+}
+
+myFillings.onchange = function(){
+    document.getElementById('color-art').style.backgroundColor = lastFocusedTextarea.style.backgroundColor = myFillings.value;
+}
+
+document.getElementById('font-color').onmousedown = function(){
+    gerardPiqueWillBeatMadrid.click();
+}
+
+gerardPiqueWillBeatMadrid.onchange = function(){
+    document.getElementById('font-art').style.backgroundColor = lastFocusedTextarea.style.color = gerardPiqueWillBeatMadrid.value;
+}
+
+const reallyPowerfulFunctionToCalculateColorFromJavaScriptToCSS = str => {
+    let curr = '';
+    let acc = '#';
+    let arr = ''+str;
+    for(let i = 0; i < arr.length; i++){
+        if(Number(arr[i])){
+            kek+=arr[i];
+        }
+        else if(kek != ''){
+            acc+=Number(kek).toString(16);
+            console.log(Number(kek).toString(16));
+            kek = '';
+        }
+    }
+    return acc;
 }

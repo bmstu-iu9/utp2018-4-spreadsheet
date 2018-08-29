@@ -270,7 +270,7 @@ a:visited {
   font-weight: bold;
 }
 .format-topbar {
-    min-width: 500px;
+    min-width: 800px;
     width: 45%;
 }
 
@@ -375,25 +375,41 @@ select:focus {
     margin-left: 35px;
 }
 
-.filling {
+
+.color-settings {
+
     margin-left: 25px;
     margin-top: 25px;
+}
+
+.filling {
     background: url('../img/fill-drip-solid.svg') center center / 100% 100%;
     background-repeat: no-repeat;
 }
 
 .filling-color, .font-color-pick {
-    padding: 1px;
+    padding: 0px;
 /*    -webkit-appearance: none;*/
 /*    border: none;*/
     outline: none;
     margin-left: 10px;
     margin-top: 25px;
-    display: inline-block;
+    display: none;
     width: 25px;
     height: 25px;
 }
 
+.artifact {
+    background-color: #000000;
+    margin-top: 1px;
+    width: 25px;
+    height: 5px;
+    border: 1px solid #bbbbbb;
+}
+
+.whart {
+    background-color: #ffffff;
+}
 
 /*
 .filling-color::-webkit-color-swatch-wrapper {
@@ -407,8 +423,6 @@ select:focus {
 
 .font-color {
     display: flex;
-    margin-left: 35px;
-    margin-top: 25px;
     background: url('../img/palette-solid.svg') center center / 100% 100%;
     background-repeat: no-repeat;
 }
@@ -946,5 +960,3 @@ a#account{
     top: 160px;
     margin-top: 10px;
 }
-
-
