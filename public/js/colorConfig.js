@@ -16,6 +16,10 @@ const colorManualCofig = {
             'box-shadow': '#6bc961',
             'selectedHeaderBackgroundColor': '#bbffbb',
             'hoverHeaderBackgroundColor' : '#9fff9f',
+        },
+
+        formatButton: {
+            'selectedBackgroundColor' : '#BBBBBB',
         }
     },
 
@@ -32,6 +36,10 @@ const colorManualCofig = {
             'box-shadow': '#5271ff',
             'selectedHeaderBackgroundColor': '#bbbbff',
             'hoverHeaderBackgroundColor' : '#b7c4ff',
+        },
+
+        formatButton: {
+            'selectedBackgroundColor' : '#BBBBBB',
         }
     }
 }

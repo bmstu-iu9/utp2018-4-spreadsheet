@@ -475,33 +475,33 @@ const initCell = (columnNumber, rowNumber) => {
             thisTextarea.style.fontFamily = 'monospace';
             somePoliticalDirections.forEach(direction => {
                 document.getElementById(direction + "-button").style.border = 'none';
-                document.getElementById(direction + "-button").style.margin = '2px 5px 2px 2px';
+                document.getElementById(direction + "-button").style.backgroundColor = '';
+                //document.getElementById(direction + "-button").style.margin = '2px 5px 2px 2px';
             });
             someStyles.forEach(style => {
                 document.getElementById(style + "-button").style.border = 'none';
-                document.getElementById(style + "-button").style.margin = '2px 5px 2px 2px';
+                document.getElementById(style + "-button").style.backgroundColor = '';
+                //document.getElementById(style + "-button").style.margin = '2px 5px 2px 2px';
             });
 
             if (thisTextarea.getAttribute('data-style')){
-                document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.border = "2px solid #6bc961";
-                document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.borderRadius = '5px 5px 5px 5px';
-                document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.margin = '0px 3px 0px 0px';
+                document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
+                //document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.border = "2px solid #6bc961";
+                //document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.borderRadius = '5px 5px 5px 5px';
+                //document.getElementById("" + thisTextarea.getAttribute('data-style') + "-button").style.margin = '0px 3px 0px 0px';
             }
 
             if (thisTextarea.style.fontWeight == 'bold'){
-                document.getElementById("bold-button").style.border = "2px solid #6bc961";
-                document.getElementById("bold-button").style.borderRadius = '5px 5px 5px 5px';
-                document.getElementById("bold-button").style.margin = '0px 3px 0px 0px';
+                document.getElementById("bold-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
+                //document.getElementById("bold-button").style.margin = '0px 3px 0px 0px';
             }
             if (thisTextarea.style.fontStyle == 'italic'){
-                document.getElementById("italics-button").style.border = "2px solid #6bc961";
-                document.getElementById("italics-button").style.borderRadius = '5px 5px 5px 5px';
-                document.getElementById("italics-button").style.margin = '0px 3px 0px 0px';
+                document.getElementById("italics-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
+                //document.getElementById("italics-button").style.margin = '0px 3px 0px 0px';
             }
             if (thisTextarea.style.textDecoration == 'underline'){
-                document.getElementById("underline-button").style.border = "2px solid #6bc961";
-                document.getElementById("underline-button").style.borderRadius = '5px 5px 5px 5px';
-                document.getElementById("underline-button").style.margin = '0px 3px 0px 0px';
+                document.getElementById("underline-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
+                //document.getElementById("underline-button").style.margin = '0px 3px 0px 0px';
             }
 
             document.getElementById('diss').disabled = false;
@@ -902,7 +902,7 @@ const addCells = function (rows, cols) {
             for (let j = 0; j < ROWS; j++) {
 
                 const cell = mainTable.rows[j].insertCell(-1);
-                cell.innerHTML = "<textarea id = '" + letter + (j + 1) + "' class = 'cell_input_area'/>";
+                cell.innerHTML = "<textarea spellcheck='false' id = '" + letter + (j + 1) + "' class = 'cell_input_area'/>";
                 cell.id = 'Cell_' + letter + (j + 1);
                 cell.className = 'main_cell';
                 initCell(currentLet.length - 1, j + 1);
@@ -992,7 +992,7 @@ const addCells = function (rows, cols) {
                 const letter = currentLet[j];
 
                 const new_cell = row.insertCell(-1);
-                new_cell.innerHTML = "<textarea id = '" + letter + (i + 1) + "' class = 'cell_input_area'/>";
+                new_cell.innerHTML = "<textarea spellcheck='false' id = '" + letter + (i + 1) + "' class = 'cell_input_area'/>";
                 new_cell.id = 'Cell_' + letter + (i + 1);
                 new_cell.className = 'main_cell';
                 initCell(j, i + 1);
@@ -1444,40 +1444,40 @@ mainDiv.onscroll = function () {
 
 document.getElementById("bold-button").addEventListener("click", e => {
     if (lastFocusedTextarea.style.fontWeight != 'bold'){
-        document.getElementById("bold-button").style.border = "2px solid #6bc961";
-        document.getElementById("bold-button").style.borderRadius = '5px 5px 5px 5px';
-        document.getElementById("bold-button").style.margin = '0px 3px 0px 0px';
+        document.getElementById("bold-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
+        //document.getElementById("bold-button").style.margin = '0px 3px 0px 0px';
         lastFocusedTextarea.style.fontWeight = 'bold';
     } else {
         lastFocusedTextarea.style.fontWeight = 'normal';
         document.getElementById("bold-button").style.border = 'none';
-        document.getElementById("bold-button").style.margin = '2px 5px 2px 2px'
+        document.getElementById("bold-button").style.backgroundColor = '';
+        //document.getElementById("bold-button").style.margin = '2px 5px 2px 2px'
     }
 });
 
 document.getElementById("italics-button").addEventListener("click", e => {
     if (lastFocusedTextarea.style.fontStyle != 'italic'){
-        document.getElementById("italics-button").style.border = "2px solid #6bc961";
-        document.getElementById("italics-button").style.borderRadius = '5px 5px 5px 5px';
-        document.getElementById("italics-button").style.margin = '0px 3px 0px 0px';
+        document.getElementById("italics-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
+        //document.getElementById("italics-button").style.margin = '0px 3px 0px 0px';
         lastFocusedTextarea.style.fontStyle = 'italic';
     } else {
         lastFocusedTextarea.style.fontStyle = 'normal';
         document.getElementById("italics-button").style.border = 'none';
-        document.getElementById("italics-button").style.margin = '2px 5px 2px 2px'
+        document.getElementById("italics-button").style.backgroundColor = '';
+        //document.getElementById("italics-button").style.margin = '2px 5px 2px 2px'
     }
 });
 
 document.getElementById("underline-button").addEventListener("click", e => {
     if (lastFocusedTextarea.style.textDecoration != 'underline'){
-        document.getElementById("underline-button").style.border = "2px solid #6bc961";
-        document.getElementById("underline-button").style.borderRadius = '5px 5px 5px 5px';
-        document.getElementById("underline-button").style.margin = '0px 3px 0px 0px';
+        document.getElementById("underline-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
+        //document.getElementById("underline-button").style.margin = '0px 3px 0px 0px';
         lastFocusedTextarea.style.textDecoration = 'underline';
     } else {
         lastFocusedTextarea.style.textDecoration = 'none';
         document.getElementById("underline-button").style.border = 'none';
-        document.getElementById("underline-button").style.margin = '2px 5px 2px 2px'
+        document.getElementById("underline-button").style.backgroundColor = '';
+        //document.getElementById("underline-button").style.margin = '2px 5px 2px 2px'
     }
 });
 
@@ -1485,22 +1485,23 @@ document.getElementById("underline-button").addEventListener("click", e => {
 somePoliticalDirections.forEach( direction => {
     document.getElementById(direction + "-button").addEventListener("click", e => {
         if (lastFocusedTextarea.getAttribute('data-style') != direction){
-            document.getElementById(direction + "-button").style.border = "2px solid #6bc961";
-            document.getElementById(direction + "-button").style.borderRadius = '5px 5px 5px 5px';
-            document.getElementById(direction + "-button").style.margin = '0px 3px 0px 0px';
+            document.getElementById(direction + "-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
+            //document.getElementById(direction + "-button").style.margin = '0px 3px 0px 0px';
             lastFocusedTextarea.style.textAlign = direction;
             lastFocusedTextarea.setAttribute('data-style', direction);
             somePoliticalDirections.forEach( directX => {
                 if(directX != direction){
                     document.getElementById(directX + "-button").style.border = 'none';
-                    document.getElementById(directX + "-button").style.margin = '2px 5px 2px 2px'
+                    document.getElementById(directX + "-button").style.backgroundColor = '';
+                    //document.getElementById(directX + "-button").style.margin = '2px 5px 2px 2px'
                 }
             });
         } else {
             lastFocusedTextarea.setAttribute('data-style', '');
             lastFocusedTextarea.style.textAlign = 'left';
             document.getElementById(direction + "-button").style.border = 'none';
-            document.getElementById(direction + "-button").style.margin = '2px 5px 2px 2px'
+            document.getElementById(direction + "-button").style.backgroundColor = '';
+            //document.getElementById(direction + "-button").style.margin = '2px 5px 2px 2px'
         }
 
     });
