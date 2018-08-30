@@ -1408,32 +1408,32 @@ const addCells = function (rows, cols) {
                 if (document.getElementById('Cell_' + (j + 1)).isSelected) {
 
                     if (isFormulaModeOn) {
-                      lightblueBorderCells.push({
-                          cell: cell,
-                          top: true,
-                          left: false,
-                          right: false,
-                          bottom: true
-                      });
+                        lightblueBorderCells.push({
+                            cell: cell,
+                            top: true,
+                            left: false,
+                            right: false,
+                            bottom: true
+                        });
 
-                      paintBorders(cell, true, false, false, false);
+                        paintBorders(cell, true, false, false, false);
 
                     } else {
-                      grayCells.push({
-                          cell: cell,
-                          id: curId
-                      });
-                      cell.style.backgroundColor = '#c3c3c3';
-                      document.getElementById(curId).style.backgroundColor = '#c3c3c3';
-                      borderCells.push(cell);
+                        grayCells.push({
+                            cell: cell,
+                            id: curId
+                        });
+                        cell.style.backgroundColor = '#c3c3c3';
+                        document.getElementById(curId).style.backgroundColor = '#c3c3c3';
+                        borderCells.push(cell);
 
-                      if (cell.rowNum) {
-                          mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] = '0px 3px 0px 0px #6bc961';
-                          mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['z-index'] = 4;
-                      }
+                        if (cell.rowNum) {
+                            mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] = '0px 3px 0px 0px #6bc961';
+                            mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['z-index'] = 4;
+                        }
 
-                      upTable.rows[0].cells[i].style.backgroundColor = '#c3c3c3';
-                      document.getElementById('up_' + i).style.backgroundColor = '#6bc961';
+                        upTable.rows[0].cells[i].style.backgroundColor = '#c3c3c3';
+                        document.getElementById('up_' + i).style.backgroundColor = '#6bc961';
                     }
 
                 }
@@ -1529,32 +1529,32 @@ const addCells = function (rows, cols) {
                     if (document.getElementById('Cell_' + letter).isSelected) {
 
                         if (isFormulaModeOn) {
-                          lightblueBorderCells.push({
-                              cell: new_cell,
-                              top: false,
-                              left: true,
-                              right: true,
-                              bottom: false
-                          });
+                            lightblueBorderCells.push({
+                                cell: new_cell,
+                                top: false,
+                                left: true,
+                                right: true,
+                                bottom: false
+                            });
 
-                          paintBorders(new_cell, false, true, false, false);
+                            paintBorders(new_cell, false, true, false, false);
 
                         } else {
-                          grayCells.push({
-                              cell: new_cell,
-                              id: curId
-                          });
-                          new_cell.style.backgroundColor = '#c3c3c3';
-                          document.getElementById(curId).style.backgroundColor = '#c3c3c3';
-                          borderCells.push(new_cell);
+                            grayCells.push({
+                                cell: new_cell,
+                                id: curId
+                            });
+                            new_cell.style.backgroundColor = '#c3c3c3';
+                            document.getElementById(curId).style.backgroundColor = '#c3c3c3';
+                            borderCells.push(new_cell);
 
-                          if (new_cell.colNum) {
-                              mainTable.rows[new_cell.rowNum].cells[new_cell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px #6bc961';
-                              mainTable.rows[new_cell.rowNum].cells[new_cell.colNum - 1].style['z-index'] = 4;
-                          }
+                            if (new_cell.colNum) {
+                                mainTable.rows[new_cell.rowNum].cells[new_cell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px #6bc961';
+                                mainTable.rows[new_cell.rowNum].cells[new_cell.colNum - 1].style['z-index'] = 4;
+                            }
 
-                          leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
-                          document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
+                            leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
+                            document.getElementById('left_' + (i + 1)).style.backgroundColor = '#6bc961';
                         }
 
                     }
