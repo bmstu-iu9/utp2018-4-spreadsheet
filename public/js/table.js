@@ -1213,6 +1213,7 @@ const addUpAndLeftEvents = (type, num) => {
 
             bleachCells();
             cell.isSelected = true;
+            lastFocusedTextarea = null;
 
             if (focusID) {
                 const oldInput = document.getElementById(focusID);
@@ -1250,13 +1251,7 @@ const addUpAndLeftEvents = (type, num) => {
                         cell: cell,
                         id: id
                     });
-
-                    if (cell.colNum) {
-                        mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
-                        mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['z-index'] = 4;
-                    }
-                    mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['box-shadow'] = '-2px 0px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
-                    mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['z-index'] = 4;
+                    lastFocusedTextarea = cell.childNodes[0];
                 } else {
                     borderCells.push(cell);
                     grayCells.push({
@@ -1265,14 +1260,14 @@ const addUpAndLeftEvents = (type, num) => {
                     });
                     cell.style.backgroundColor = '#c3c3c3';
                     document.getElementById(id).style.backgroundColor = '#c3c3c3';
-
-                    if (cell.colNum) {
-                        mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
-                        mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['z-index'] = 4;
-                    }
-                    mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['box-shadow'] = '-2px 0px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
-                    mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['z-index'] = 4;
                 }
+
+                if (cell.colNum) {
+                    mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['box-shadow'] = '3px 0px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
+                    mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style['z-index'] = 4;
+                }
+                mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['box-shadow'] = '-2px 0px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
+                mainTable.rows[cell.rowNum].cells[cell.colNum + 1].style['z-index'] = 4;
 
                 leftTable.rows[i].cells[0].style.backgroundColor = '#c3c3c3';
                 document.getElementById('left_' + (i + 1)).style.backgroundColor = colorManualCofig[userColorCode]['left'].backgroundColor;
@@ -1368,12 +1363,7 @@ const addUpAndLeftEvents = (type, num) => {
                         id: id
                     });
 
-                    if (cell.rowNum) {
-                        mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] = '0px 3px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
-                        mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['z-index'] = 4;
-                    }
-                    mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['box-shadow'] = '0px -2px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
-                    mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['z-index'] = 4;
+                    lastFocusedTextarea = cell.childNodes[0];
                 } else {
                     borderCells.push(cell);
                     grayCells.push({
@@ -1382,14 +1372,14 @@ const addUpAndLeftEvents = (type, num) => {
                     });
                     cell.style.backgroundColor = '#c3c3c3';
                     document.getElementById(id).style.backgroundColor = '#c3c3c3';
-
-                    if (cell.rowNum) {
-                        mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] = '0px 3px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
-                        mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['z-index'] = 4;
-                    }
-                    mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['box-shadow'] = '0px -2px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
-                    mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['z-index'] = 4;
                 }
+
+                if (cell.rowNum) {
+                    mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] = '0px 3px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
+                    mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['z-index'] = 4;
+                }
+                mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['box-shadow'] = '0px -2px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
+                mainTable.rows[cell.rowNum + 1].cells[cell.colNum].style['z-index'] = 4;
 
                 upTable.rows[0].cells[i].style.backgroundColor = '#c3c3c3';
                 document.getElementById('up_' + i).style.backgroundColor = colorManualCofig[userColorCode]['up'].backgroundColor;
