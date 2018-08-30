@@ -26,6 +26,7 @@ const updateTables = () => {
  * Удаляет таблицу, вместе с отображением
  */
 const removeTable = () => {
+    clearCellStyles();
     ROWS = COLS = 0;
     letters = [65];
     currentLet = [];
@@ -48,10 +49,11 @@ const createTable = (rows, cols) => {
  * Восстанавливает таблицу(+отображение) из JSON объекта,
  * Размер задаётся свойством size : [rows, cols]
  * Ячейки записываются в формате [x, y] : [<массив кодов символов>]
- * @param {Object} tableData
+ * @param {Object} serverData
  */
-const tableFromObject = (tableData) => {
+const tableFromObject = (serverData) => {
     document.getElementsByClassName('null-div')[0].innerHTML = `<table><tr><td></td></tr></table>`;
+    const tableData = serverData['table'];
     innerTable = new Table(tableData['size'][0], tableData['size'][1]);
     addCells(tableData['size'][0], tableData['size'][1]);
     delete tableData['size'];
@@ -61,6 +63,44 @@ const tableFromObject = (tableData) => {
     }
 
     updateTables();
+
+    const styles = {
+        8: 'left',
+        16:'center',
+        32: 'right',
+    }
+    const fontStyleData = serverData['styles'];
+    for (let id in fontStyleData) {
+        const elem = document.getElementById(id);
+        for (let bit in styles) {
+            if (fontStyleData[id] & bit) {
+                setAlign(elem, styles[bit]);
+            }
+        }
+
+        if (fontStyleData[id] & 1) { //bold
+            setBold(elem, true);
+        }
+
+        if (fontStyleData[id] & 2) { //italic
+            setItalic(elem, true);
+        }
+
+        if (fontStyleData[id] & 4) { //underline
+            setUnderline(elem, true);
+        }
+    }
+
+    const bgColorData = serverData['bgColors'];
+    for (let id in bgColorData) {
+        setBackgroundColor(document.getElementById(id), bgColorData[id], false);
+    }
+    
+    
+    const txtColorData = serverData['txtColors'];
+    for (let id in txtColorData) {
+        setTextColor(document.getElementById(id), txtColorData[id]);
+    }
 }
 
 /**
@@ -334,9 +374,14 @@ window.onbeforeunload = function () {
     const cookie = parseCookies(document.cookie);
     navigator.sendBeacon('http://' + config.host_main + ':' + config.port_main + '/save_user_data',
         'status=' + cookie['status'] + '&title=' + tableTitle + '&session=' + cookie['token'] +
-        '&data=' + JSON.stringify(Object.assign({}, {
-            'size': [ROWS, COLS]
-        }, innerTable.activeCeils)));
+        '&data=' + JSON.stringify({
+            table: Object.assign({}, {
+                'size': [ROWS, COLS]
+            }, innerTable.activeCeils),
+            styles: styledFontCells,
+            bgColors: backgroundColoredCells,
+            txtColors: textColoredCells
+        }));
 }
 
 //UNDO REDO

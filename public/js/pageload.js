@@ -208,7 +208,12 @@ const loadTable = () => {
                     },
                     'Save': () => {
                         closeSideMenu(document.getElementById('sideMenu'));
-                        save();
+                        save(() => {
+                            console.log('save ok');
+                        }, (error) => {
+                            alert(`Error: ${ERROR_MESSAGES[error]}. Retry later.`);
+                            console.log(ERROR_MESSAGES[error]);
+                        });
                     },
                     'Download as CSV': downloadAsCSV,
                 });

@@ -122,7 +122,12 @@ const new_table = (mode, okCallback, errorCallback) => {
         status: cookie['status'],
         session: cookie['token'],
         data: JSON.stringify({
-            'size': [DEFAULT_ROWS, DEFAULT_COLS]
+            table: {
+                'size': [ROWS, COLS]
+            },
+            styles: {},
+            bgColors: {},
+            txtColors: {}
         })
     }, (removeINFO) => {
         setNewTitle(newTitle);
@@ -140,9 +145,14 @@ const stay = (mode, data, okCallback, errorCallback) => {
     const cookie = parseCookies(document.cookie);
     const newTitle = prompt(mode ? 'Title is already used' : 'Enter file title: ', 'new_title');
     if (!newTitle) return;
-    const newData = mode ? data : JSON.stringify(Object.assign({}, {
-        'size': [ROWS, COLS]
-    }, innerTable.activeCeils));
+    const newData = mode ? data : JSON.stringify({
+        table: Object.assign({}, {
+            'size': [ROWS, COLS]
+        }, innerTable.activeCeils),
+        styles: styledFontCells,
+        bgColors: backgroundColoredCells,
+        txtColors: textColoredCells
+    })
 
     transfer({
         session: cookie['token'],
@@ -168,9 +178,14 @@ const save = (okCallback, errorCallback) => {
         title: tableTitle,
         status: cookie['status'],
         session: cookie['token'],
-        data: JSON.stringify(Object.assign({}, {
-            'size': [ROWS, COLS]
-        }, innerTable.activeCeils))
+        data: JSON.stringify({
+            table: Object.assign({}, {
+                'size': [ROWS, COLS]
+            }, innerTable.activeCeils),
+            styles: styledFontCells,
+            bgColors: backgroundColoredCells,
+            txtColors: textColoredCells
+        })
     }, okCallback, errorCallback);
 }
 
@@ -178,9 +193,14 @@ const saveAs = (mode, data, okCallback, errorCallback) => {
     const cookie = parseCookies(document.cookie);
     const newTitle = prompt(mode === 1 ? 'Title is already used' : 'Enter file title: ', 'new_title');
     if (!newTitle) return;
-    const newData = mode ? data : JSON.stringify(Object.assign({}, {
-        'size': [ROWS, COLS]
-    }, innerTable.activeCeils));
+    const newData = mode ? data : JSON.stringify({
+        table: Object.assign({}, {
+            'size': [ROWS, COLS]
+        }, innerTable.activeCeils),
+        styles: styledFontCells,
+        bgColors: backgroundColoredCells,
+        txtColors: textColoredCells
+    });
 
     ajax_save({
         title: newTitle,

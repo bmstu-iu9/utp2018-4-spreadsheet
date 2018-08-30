@@ -39,11 +39,9 @@ let stateScroll = -1;
 
 let lastFocusedTextarea = '';
 
-
 const horScrollSpeed = 30;
 const vertScrollSpeed = 15;
 
-// const innerTable = new Table(DEFAULT_COLS, DEFAULT_ROWS);
 
 const convNumtoId = (x, y) => {
     return colName(x) + String(y + 1);
@@ -2441,40 +2439,40 @@ mainDiv.onscroll = function () {
 document.getElementById("bold-button").addEventListener("click", e => {
     if (lastFocusedTextarea.style.fontWeight != 'bold') {
         document.getElementById("bold-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
-        lastFocusedTextarea.style.fontWeight = 'bold';
+        setBold(lastFocusedTextarea, true);
     } else {
-        lastFocusedTextarea.style.fontWeight = 'normal';
+        setBold(lastFocusedTextarea, false);
         document.getElementById("bold-button").style.border = 'none';
         document.getElementById("bold-button").style.backgroundColor = '';
     }
 
-    grayCells.forEach(selectedHTML => selectedHTML.cell.childNodes[0].style.fontWeight = lastFocusedTextarea.style.fontWeight);
+    grayCells.forEach(selectedHTML => setBold(selectedHTML.cell.childNodes[0], (lastFocusedTextarea.style.fontWeight === 'bold')));
 });
 
 document.getElementById("italics-button").addEventListener("click", e => {
     if (lastFocusedTextarea.style.fontStyle != 'italic') {
         document.getElementById("italics-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
-        lastFocusedTextarea.style.fontStyle = 'italic';
+        setItalic(lastFocusedTextarea, true);
     } else {
-        lastFocusedTextarea.style.fontStyle = 'normal';
+        setItalic(lastFocusedTextarea, false);
         document.getElementById("italics-button").style.border = 'none';
         document.getElementById("italics-button").style.backgroundColor = '';
     }
 
-    grayCells.forEach(selectedHTML => selectedHTML.cell.childNodes[0].style.fontStyle = lastFocusedTextarea.style.fontStyle);
+    grayCells.forEach(selectedHTML => setItalic(selectedHTML.cell.childNodes[0], (lastFocusedTextarea.style.fontStyle === 'italic')));
 });
 
 document.getElementById("underline-button").addEventListener("click", e => {
     if (lastFocusedTextarea.style.textDecoration != 'underline') {
         document.getElementById("underline-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
-        lastFocusedTextarea.style.textDecoration = 'underline';
+        setUnderline(lastFocusedTextarea, true);
     } else {
-        lastFocusedTextarea.style.textDecoration = 'none';
+        setUnderline(lastFocusedTextarea, false);
         document.getElementById("underline-button").style.border = 'none';
         document.getElementById("underline-button").style.backgroundColor = '';
     }
 
-    grayCells.forEach(selectedHTML => selectedHTML.cell.childNodes[0].style.textDecoration = lastFocusedTextarea.style.textDecoration);
+    grayCells.forEach(selectedHTML => setUnderline(selectedHTML.cell.childNodes[0], (lastFocusedTextarea.style.textDecoration === 'underline')));
 });
 
 
@@ -2482,7 +2480,7 @@ somePoliticalDirections.forEach(direction => {
     document.getElementById(direction + "-button").addEventListener("click", e => {
         if (lastFocusedTextarea.getAttribute('data-style') != direction) {
             document.getElementById(direction + "-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
-            lastFocusedTextarea.style.textAlign = direction;
+            setAlign(lastFocusedTextarea, direction);
             lastFocusedTextarea.setAttribute('data-style', direction);
             somePoliticalDirections.forEach(directX => {
                 if (directX != direction) {
@@ -2492,7 +2490,7 @@ somePoliticalDirections.forEach(direction => {
             });
         } else {
             lastFocusedTextarea.setAttribute('data-style', '');
-            lastFocusedTextarea.style.textAlign = 'left';
+            setAlign(lastFocusedTextarea, 'left'); //!!!
             document.getElementById(direction + "-button").style.border = 'none';
             document.getElementById(direction + "-button").style.backgroundColor = '';
         }
@@ -2500,7 +2498,7 @@ somePoliticalDirections.forEach(direction => {
         grayCells.forEach(selectedHTML => {
             const selected = selectedHTML.cell.childNodes[0];
             selected.setAttribute('data-style', lastFocusedTextarea.getAttribute('data-style'));
-            selected.style.textAlign = lastFocusedTextarea.style.textAlign;
+            setAlign(selected, lastFocusedTextarea.style.textAlign);
         });
     });
 });
@@ -2517,10 +2515,10 @@ document.getElementById('filling').onmousedown = function () {
 
 myFillings.onchange = function () {
     const backgroundColor = myFillings.value;
-    document.getElementById('color-art').style.backgroundColor = document.getElementById('Cell_' + lastFocusedTextarea.id).style.backgroundColor = document.getElementById('Cell_' + lastFocusedTextarea.id).trueColor
-        = lastFocusedTextarea.style.backgroundColor = backgroundColor;
+    document.getElementById('color-art').style.backgroundColor = backgroundColor;
+    setBackgroundColor(lastFocusedTextarea, myFillings.value, false);
 
-    grayCells.forEach(selectedHTML => selectedHTML.cell.trueColor = backgroundColor);
+    grayCells.forEach(selectedHTML => setBackgroundColor(selectedHTML.cell.childNodes[0], backgroundColor, true));
 }
 
 document.getElementById('font-color').onmousedown = function () {
@@ -2528,9 +2526,10 @@ document.getElementById('font-color').onmousedown = function () {
 }
 
 fontFilling.onchange = function () {
-    document.getElementById('font-art').style.backgroundColor = lastFocusedTextarea.style.color = fontFilling.value;
+    document.getElementById('font-art').style.backgroundColor = fontFilling.value;
+    setTextColor(lastFocusedTextarea, fontFilling.value)
 
-    grayCells.forEach(selectedHTML => selectedHTML.cell.childNodes[0].style.color = lastFocusedTextarea.style.color);
+    grayCells.forEach(selectedHTML => setTextColor(selectedHTML.cell.childNodes[0], lastFocusedTextarea.style.color));
 }
 
 const calculateColorFromJavaScriptToCSS = str => {
