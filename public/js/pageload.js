@@ -154,6 +154,11 @@ const addSaveOptions = (sideMenu) => {
                     });
             }, 'saveAs');
     }
+
+    if (!document.getElementById('downloadAsCSV')) {
+        pushBackSideMenu(sideMenu,
+            'Download As CSV', downloadAsCSV, 'downloadAsCSV');
+    }
 }
 
 /**
@@ -173,6 +178,7 @@ const loadTable = () => {
                             createTable(DEFAULT_ROWS, DEFAULT_COLS);
                         }
                     },
+                    'Download as CSV': downloadAsCSV,
                 });
 
 
@@ -204,6 +210,7 @@ const loadTable = () => {
                         closeSideMenu(document.getElementById('sideMenu'));
                         save();
                     },
+                    'Download as CSV': downloadAsCSV,
                 });
 
 

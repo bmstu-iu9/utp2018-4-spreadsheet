@@ -113,16 +113,10 @@ const fileMenuItemListener = link => {
                     if (childLabels[0].innerText === tableTitle) {
                         removeTable();
                         createTable(DEFAULT_ROWS, DEFAULT_COLS);
-                        const saveLink = document.getElementById('save');
-                        const saveAsLink = document.getElementById('saveAs');
-
-                        if (saveLink) {
-                            saveLink.remove();
-                        }
-
-                        if (saveAsLink) {
-                            saveAsLink.remove();
-                        }
+                        const sideMenu = document.getElementById('sideMenuUl');
+                        removeFromSideMenu(sideMenu, 'save');
+                        removeFromSideMenu(sideMenu, 'saveAs');
+                        removeFromSideMenu(sideMenu, 'downloadAsCSV');
 
                         setNewTitle('');
                         openSideMenu(document.getElementById('sideMenu'), true);
@@ -300,6 +294,32 @@ document.addEventListener('mousedown', e => {
                 contextMenuCell.contextMenuOff();
                 contextMenuFile.contextMenuOff();
             }
+        }
+    }
+});
+
+const autoCompleteListener = link => {
+    const cell = itemInContext;
+
+    autoCompleteMenu.paste(link.getAttribute("data-action"), POSSIBLE_FUNCTIONS.prefix.length);
+    POSSIBLE_FUNCTIONS.clean();
+    autoCompleteMenu.autoCompleteOff();
+}
+
+document.addEventListener('mousedown', e => {
+    /* e.preventDefault();
+    e.stopPropagation(); */
+    //console.log('loool');
+    let clickeElIsLink = clickInsideElement(e, 'auto-complete-menu_link');
+
+    if (clickeElIsLink) {
+        e.preventDefault();
+        e.stopPropagation();
+        autoCompleteListener(clickeElIsLink);
+    } else {
+        let button = e.which || e.button;
+        if (button === 1) {
+            autoCompleteMenu.autoCompleteOff();
         }
     }
 });

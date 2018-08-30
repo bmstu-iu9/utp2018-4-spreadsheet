@@ -452,6 +452,24 @@ class Table {
         this.copied = null;
     }
 
+    toCSV(useValues) {
+        let csv = new Array(ROWS);
+        for (let i = 0; i < ROWS; i++) {
+            csv[i] = new Array(COLS);
+        }
+
+        for (let coordStr in this.activeCeils) {
+            const coord = coordStr.split(',').map(e => parseInt(e, 10));
+            const ceil = this.getCeil(coord[0], coord[1]);
+            csv[coord[1]][coord[0]] = "\"" + (useValues ? ceil.toDisplay : ceil.realText) + "\"";
+        }
+
+        for (let i = 0; i < ROWS; i++) {
+            csv[i] = csv[i].join(',');
+        }
+
+        return csv.join('\n');
+    }
 }
 
 class StringSetWitnSearch {
@@ -686,7 +704,7 @@ const AHTOH = funcConstructor(() => 'AHTOH <3', 'AHTOH', 0, 0);
 
 const CONCAT = funcConstructor((...args) => {
     let res = '';
-    for(let i = 0; i < args.length; i++){
+    for (let i = 0; i < args.length; i++) {
         res += String(args[i]);
     }
     return res;
@@ -806,7 +824,7 @@ const tokenize = (formula) => {
                 }
             }
             tokens.push(temp.toUpperCase());
-        } else if (formula[ptL] == "'"){
+        } else if (formula[ptL] == "'") {
             positions.push(ptL);
             const save = ptL;
             ptL++;
@@ -815,19 +833,19 @@ const tokenize = (formula) => {
                 temp += formula[ptL];
                 ptL++;
             }
-            if(ptL == formula.length){
+            if (ptL == formula.length) {
                 throw new FormulaError(
                     WRONG_SYMBOL,
                     "wrong symb: 'string' expression have not ended",
                     ptL
                 );
-            }else{
+            } else {
                 ptL++;
             }
             temp += "'";
             console.log('!!!!!!!!!!!!!!!!!!!!!!!!!', temp);
             tokens.push(temp);
-        }else{
+        } else {
             //console.log("kek lol kek lol")
             throw new FormulaError(
                 WRONG_SYMBOL,
@@ -981,7 +999,7 @@ const parseElem = (table, ceil, tokens) => {
         if (isNumeric(tokens.peek().token[0])) {
             //console.log("OK : " + tokens.peek().token)
             return tokens.next().token;
-        } else if(tokens.peek().token[0] == "'"){
+        } else if (tokens.peek().token[0] == "'") {
             const str = tokens.next().token;
             console.log('STR', str.substring(1, str.length - 1));
             return `'${str.substring(1, str.length - 1)}'`

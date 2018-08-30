@@ -2377,29 +2377,3 @@ const calculateColorFromJavaScriptToCSS = str => {
 sizeSelect.onchange = function () {
     lastFocusedTextarea.style.fontSize = sizeSelect.value;
 }
-
-const autoCompleteListener = link => {
-    const cell = itemInContext;
-
-    autoCompleteMenu.paste(link.getAttribute("data-action"), POSSIBLE_FUNCTIONS.prefix.length);
-    POSSIBLE_FUNCTIONS.clean();
-    autoCompleteMenu.autoCompleteOff();
-}
-
-document.addEventListener('mousedown', e => {
-    /* e.preventDefault();
-    e.stopPropagation(); */
-    //console.log('loool');
-    let clickeElIsLink = clickInsideElement(e, 'auto-complete-menu_link');
-
-    if (clickeElIsLink) {
-        e.preventDefault();
-        e.stopPropagation();
-        autoCompleteListener(clickeElIsLink);
-    } else {
-        let button = e.which || e.button;
-        if (button === 1) {
-            autoCompleteMenu.autoCompleteOff();
-        }
-    }
-});
