@@ -1,0 +1,193 @@
+body {
+  color: #8f8f8f;
+  font: 12px Tahoma, sans-serif;
+  border-top: 5px solid #7e7e7e;
+  margin: 0;
+
+}
+
+body {
+  background: linear-gradient( #bbb, transparent 1px), linear-gradient( 90deg, #bbb, transparent 1px);
+  background-size: 15px 15px;
+  background-position: center center;
+}
+input[type="text"] {
+  background-color: #f0f0f0;
+  border: 1px solid #e7e7e7;
+  height: 30px;
+  color: #d0d0d0;
+  padding: 0 10px;
+  vertical-align: top;
+}
+button {
+  color: #fff;
+  background-color: #29c5e6;
+  border: none;
+  height: 32px;
+  font-family: 'Oswald', sans-serif;
+}
+p {
+  margin: 20px 0;
+}
+
+#wrapper {
+  max-width: 960px;
+  margin: auto;
+}
+header {
+  padding: 20px 0;
+}
+
+form[name="search"] {
+  float: right;
+}
+
+nav a {
+  text-decoration: none;
+}
+
+nav ul {
+  margin: 0;
+  padding: 0;
+}
+
+nav li {
+  list-style-position: inside;
+  font: 14px 'Oswald', sans-serif;
+  padding: 10px;
+}
+
+.top-menu li {
+  display: inline-block;
+  padding: 10px 30px;
+  margin: 0;
+  border-bottom: 1px solid;
+}
+
+.top-menu li.active {
+  background: #29c5e6;
+  color: #fff;
+}
+
+.top-menu a {
+  color: #000000;
+}
+.top-menu{
+  margin-left: 20px;
+}
+
+.top-menu a:after {
+  display: block;
+  content: "";
+  height: 2px;
+  width: 0%;
+  background-color: #26154c;
+  transition: width .3s ease-in-out;
+}
+
+.top-menu a:hover:after,
+.top-menu a:focus:after {
+  width: 100%;
+}
+
+ul.submenu {
+  display: none;
+  position: absolute;
+  width: 200px;
+  top: 37px;
+  left: 0;
+  background-color: white;
+}
+ul.submenu > li {
+  display: block;
+}
+ul.submenu > li > a {
+  display: block;
+  color: #5c5c5c;
+  background-color: white;
+  text-decoration: none;
+}
+
+ul.top-menu > li:hover > ul.submenu {
+  display: block;
+}
+
+.back-button{
+  height: 35px;
+  margin-top: 20px;
+  width: 35px;
+  background: url('../img/undo-variant.svg') center center / 100% 100% ;
+  box-sizing: content-box;;
+
+}
+
+.forward-button{
+  margin-top: 20px;
+  height: 35px;
+  width: 35px;
+  background: url('../img/redo-variant.svg') center center / 100% 100% ;
+  box-sizing: content-box;;
+
+}
+
+.copy-button{
+  margin-top: 20px;
+  margin-left: 30px;
+  height: 35px;
+  width: 35px;
+  background: url('../img/copy-file.svg') center center / 100% 100% ;
+  box-sizing: content-box;;
+
+}
+
+.cut-button{
+  margin-top: 20px;
+  height: 35px;
+  width: 35px;
+  background: url('../img/cut.svg') center center / 100% 100% ;
+  box-sizing: content-box;;
+
+}
+
+
+.paste-button{
+  margin-top: 20px;
+  height: 35px;
+  width: 35px;
+  background: url('../img/clipboard-paste-button.svg') center center / 100% 100% ;
+  box-sizing: content-box;;
+
+}
+
+.lock-button{
+  margin-top: 20px;
+  margin-left: 30px;
+  height: 35px;
+  width: 35px;
+  background: url('../img/locked-padlock.svg') center center / 100% 100% ;
+  box-sizing: content-box;;
+
+}
+
+.unlock-button{
+  margin-top: 20px;
+  height: 35px;
+  width: 35px;
+  background: url('../img/unlocked-padlock.svg') center center / 100% 100% ;
+  box-sizing: content-box;;
+
+}
+.toolbar{
+  margin-left: 20px;
+}
+
+
+
+
+
+
+
+
+
+
+

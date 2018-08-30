@@ -1,0 +1,11 @@
+{
+    "host" : "127.0.0.1",
+    "port" : 8082,
+    "dbAdress" : "./db/saves.db",
+
+    "NO_TOKEN_ERROR": 501,
+    "NO_USER_ERROR": 502,
+    "NOT_UNIQUE_ERROR": 503,
+    "SQLITE3_DATABASE_ERROR": 504,
+    "TOKEN_UNDEFINED" : 505
+}

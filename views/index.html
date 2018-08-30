@@ -1,21 +1,280 @@
-<!DOCTYPE html>
-<html>
- <head>
-  <title>Электронная таблица</title>
-  <meta charset="utf8"/>
-  <link rel="stylesheet" type="text/css" href="/css/tablestyles.css" >
- </head>
- <body>
+<div class="back">
+  <html xmlns="http://www.w3.org/1999/html">
+  <head>
 
-  <h1>Матерьяльный дизайн</h1>
-  <!--
-  <img src="/img/teamlogo.png" alt="Our TEAM" id = "img">
-  <-->
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <title>Data!</title>
+    <link rel="stylesheet" href="/css/tabs_style.css" type="text/css">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Oswald:400,300" type="text/css">
 
-  <div id = "table-div" class = "scroll-table">
-    <table id = "table"></table>
+  </head>
+
+  <div>
+    <img id="load_back" src="/img/backB.png">
+    <div class="wrapper" id="wrap">
+      <div class="loading"></div>
+    </div>
+    <script src="/js/loading.js"></script>
+    <script>toLoad();</script>
   </div>
 
-  <script src="/js/table.js"></script>
- </body>
-</html>
+  <div id="topBarContainer" class = "TopBarContainer">
+    <div id="topbar" class="TopBarState">
+      <div class = "flexitems" style="height: 48px">
+        <button class="toMainPage" id="logoButton" style="display: inline"></button>
+        <h1 class = "PageName" id ="name"></h1>
+        <div class="userInf">
+          <h1 class = "UserName" id ="username"></h1>
+          <h1 class = "UserName">|</h1>
+          <a href="#" class="accountInf" id="account"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="menu">
+    <nav>
+      <ul class="top-menu">
+        <li>
+          <input type="checkbox" id="sideMenu">
+          <label for="sideMenu" style="line-height: 1; margin-right: 20px;"><!-- <a href="#"> -->File<!-- </a> --></label>
+          <label id='close' for="sideMenu" class="close"></label>
+          <div id="sideMenu">
+            <p id="recentlyUpdated">File</p>
+            <ul id="sideMenuUl" class="submenu">
+              <div id="filesMenu">
+                <p id="recentlyUpdated">Recently Updated</p>
+                <label id="closeFileMenuButton" onclick="closeSideMenu(document.getElementById('filesMenu'))"
+                       style="width: 35px; height: 35px; z-index: 100; display: inline-block; position: absolute; top: 0; left: 0;"></label>
+                <ul id='filesMenuUl' class="submenu1">
+                </ul>
+
+                <nav id = "context-menu-file" class="context-menu">
+                  <ul class="context-menu_items">
+                    <li class="context-menu_item">
+                      <a href="#" class="context-menu-file_link" data-action="rename">
+                        <i class="fa fa-chechnya"></i> Переименовать
+                      </a>
+                    </li>
+                    <li class="context-menu_item">
+                      <a href="#" class="context-menu-file_link" data-action="remove">
+                        <i class="fa fa-copy"></i> Удалить
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </ul>
+          </div>
+        </li>
+        <li><a href="#one">Edit</a></li>
+        <li><a href="#two">Format</a></li>
+      </ul>
+    </nav>
+  </div>
+
+
+
+
+  <!-- <div class="input">
+    <input type="text" size="60" value="" class="input-sm" id="format-input">
+  </div> -->
+
+  <div id="tab/three" class="abs tabs block">
+    <p class="abs">
+      &lt;div <span style="color: #444">id="tab/three"</span>&gt;
+      <br />...
+      <br />&lt;/div&gt;
+    </p>
+  </div>
+  <div id="tab/two" class="abs tabs block">
+    <p class="abs">
+      &lt;div <span style="color: #444">id="tab/two"</span>&gt;
+      <br />...
+      <br />&lt;/div&gt;
+    </p>
+  </div>
+  <div id="tab/one" class="abs tabs block">
+    <p class="abs">
+      &lt;div <span style="color: #444">id="tab/one"</span>&gt;
+      <br />...
+      <br />&lt;/div&gt;
+    </p>
+  </div>
+  <div id="tab" class="abs block">
+    <a href="#one">#one</a>
+    <a href="#two">#two</a>
+    <b><a href="#tab/one">#tab</a></b>
+    <p class="abs" style="font-size: 24px; top: 32px; left: 34px; color: #ccc">
+      &lt;div id="tab"&gt;
+    </p>
+    <p class="abs" style="font-size: 24px; top: 200px; left: 34px; color: #ccc">
+      &lt;div id="tab"&gt;
+    </p>
+    <ul class="circle abs">
+      <a href="#tab/one">
+        <li></li>
+      </a>
+      <a href="#tab/two">
+        <li></li>
+      </a>
+      <a href="#tab/three">
+        <li></li>
+      </a>
+    </ul>
+    <ul class="abs">
+      <a href="#tab/one">
+        <li>3.1</li>
+      </a>
+      <a href="#tab/two">
+        <li>3.2</li>
+      </a>
+      <a href="#tab/three">
+        <li>3.3</li>
+      </a>
+    </ul>
+  </div>
+  <div id="two" class="abs block">
+
+      <div class="format-topbar">
+        <div class="alignment">
+          <div class="horizontally">
+            <button class='left' id='left-button' title="left"></button>
+            <button class='center' id='center-button' title="center"></button>
+            <button class='right' id='right-button' title="right"></button>
+          </div>
+            <div class="font-settings">
+              <button class='left' title="bold" id="bold-button"></button>
+              <button class='center'title="italics" id="italics-button"></button>
+              <button class='right' title="color" id="underline-button"></button>
+            </div>
+            <div class="color-settings">
+                <button class="filling" title="fill" id="filling"></button>
+                <input type="color" value="#ffffff" class="filling-color" id="filling-color">
+                <div class="artifact whart" id="color-art"></div>
+            </div>
+            <div class="color-settings">
+                <button class="font-color" title="font color" id="font-color"></button>
+                <input type="color" value="#000000" class="font-color-pick" id="font-color-pick">
+                <div class="artifact" id="font-art"></div>
+            </div>
+            <div class="font-family">
+                <select id="font-select">
+                  <option selected disabled id='diss' value = "Font family">Font family</option>
+                  <option value="monospace">Default</option>
+                  <option value="Arial">Arial</option>
+                  <option value="Courier">Courier</option>
+                  <option value="Verdana">Verdana</option>
+                </select>
+            </div>
+            <div class="font-size">
+                <select id="size-select">
+                    <option selected disabled>Text size</option>
+                    <option value="40pt">40</option>
+                    <option value="36pt">36</option>
+                    <option value="32pt">32</option>
+                    <option value="28pt">28</option>
+                    <option value="24pt">24</option>
+                    <option value="22pt">22</option>
+                    <option value="20pt">20</option>
+                    <option value="18pt">18</option>
+                    <option value="16pt">16</option>
+                    <option value="14pt">14</option>
+                    <option value="12pt">12</option>
+                    <option value="11pt">11</option>
+                    <option value="10pt">10</option>
+                    <option value="9pt">9</option>
+                    <option value="8pt">8</option>
+                    <option value="7pt">7</option>
+                    <option value="6pt">6</option>
+                </select>
+
+            </div>
+        </div>
+      </div>
+  </div>
+  <div id="one" class="abs block">
+
+    <div class="toolbar">
+      <button class="back-button" onclick="innerTable.undo();updateTables();" title="Cancel"></button>
+      <button class="forward-button" onclick="innerTable.redo();updateTables();" title="Forward"></button>
+      <button class="copy-button" onclick="const coords = convCoord(focusID); innerTable.copy(coords.x, coords.y);" title="Copy"></button>
+      <button class="cut-button" onclick="const coords = convCoord(focusID); innerTable.cut(coords.x, coords.y); updateTables();" title="Cut"></button>
+      <button class="paste-button" onclick="const coords = convCoord(focusID); innerTable.paste(coords.x, coords.y); updateTables(); document.getElementById(focusID).focus();" title="Paste"></button>
+      <button class="lock-button" onclick="document.getElementById(focusID).readOnly = true" title="Lock"></button>
+      <button class="unlock-button"  onclick="document.getElementById(focusID).readOnly = false" title="Unlock"></button>
+    </div>
+    <!-- <div class="input">
+      <input type="text" size="60" value="" class="form-control input-sm">
+    </div> -->
+
+  </div>
+
+  <div class="table" >
+    <link rel="stylesheet" type="text/css" href="/css/tablestyles.css" >
+    <div class = "null-div">
+      <table>
+        <tr>
+          <td></td>
+        </tr>
+      </table>
+      <!-- для общности сделаем таблицей -->
+    </div>
+    <div class = "up-div" id = "up-div">
+      <meta charset="utf8"/>
+      <table id = "up-table"></table>
+    </div>
+    <!-- <div class = "great-table"> -->
+    <div class = "left-div" id = "left-div">
+      <table id = "left-table" width = 100%></table>
+    </div>
+    <div id = "main-div" class = "scroll-table">
+      <table id = "main-table"></table>
+    </div>
+
+    <nav id = "context-menu-cell" class="context-menu">
+      <ul class="context-menu_items">
+        <li class="context-menu_item">
+          <a href="#" class="context-menu-cell_link" data-action="cut">
+            <i class="fa fa-chechnya"></i> Вырезать
+          </a>
+        </li>
+        <li class="context-menu_item">
+          <a href="#" class="context-menu-cell_link" data-action="copy">
+            <i class="fa fa-copy"></i> Копировать
+          </a>
+        </li>
+        <li class="context-menu_item">
+          <a href="#" class="context-menu-cell_link" data-action="paste">
+            <i class="fa fa-paste"></i> Вставить
+          </a>
+        </li>
+        <li class="context-menu_item">
+          <a href="#" class="context-menu-cell_link" data-action="delete">
+            <i class="fa fa-delete"></i> Удалить
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <nav id = "auto-complete-menu" class="auto-complete-menu">
+      <ul id = "auto-complete-menu-ul" class="auto-complete-menu_items">
+      </ul>
+    </nav>
+    
+    <script src="/js/config.js"></script>
+    <script src="/js/colorConfig.js"></script>
+    <script src="/js/downloadAs.js"></script>
+    <script src="/js/context_menu.js"></script>
+    <script src="/js/auto-complete.js"></script>
+    <script src="/js/styleControl.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/autosave.js"></script>
+    <script src="/js/formulas.js"></script>
+    <script src="/js/table.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/pageload.js"></script>
+  </div>
+
+  </html>

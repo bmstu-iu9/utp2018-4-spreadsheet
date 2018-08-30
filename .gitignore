@@ -1,0 +1,4 @@
+.idea
+./logs
+./save_service/logs
+./auth_service/logs
