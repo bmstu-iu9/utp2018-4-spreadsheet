@@ -16,6 +16,8 @@
   outline-offset: -1px;
   margin: 1px;
   z-index: 3;
+
+  background-clip: padding-box; /* Delete in case of troubles in Chrome */
 }
 
 .up-div{
@@ -39,6 +41,8 @@
    border: 1px solid #555;
    font-weight: bold;
    text-align: center;
+
+   background-clip: padding-box; /* Delete in case of troubles in Chrome */
 }
 
 .up {
@@ -67,6 +71,8 @@
    padding: 1px 3px;
    font-weight: bold;
    text-align: left;
+
+   background-clip: padding-box; /* Delete in case of troubles in Chrome */
 }
 
 .left {
@@ -135,7 +141,6 @@ td {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    z-index: 66;
     height: 100%;
     width: 3px;
     top: 0px;
@@ -148,7 +153,6 @@ td {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    z-index: 66;
     height: 3px;
     width: 100%;
     bottom: -2px;

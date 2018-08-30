@@ -9,7 +9,7 @@ const leftDiv = document.getElementById('left-div');
 
 const somePoliticalDirections = ['left', 'center', 'right'];
 const someStyles = ['bold', 'italics', 'underline'];
-const selecterable = document.getElementById('selecterable');
+const fontSelect = document.getElementById('font-select');
 const sizeSelect = document.getElementById('size-select');
 const myFillings = document.getElementById('filling-color');
 const fontFilling = document.getElementById('font-color-pick');
@@ -75,7 +75,7 @@ const getYCoord = (elem) => elem.getBoundingClientRect().top + pageYOffset;
 
 const addExpansion = (letter, j) => {
     const newDiv = document.createElement('div');
-    newDiv['style'].zIndex = 1; //если поменять сломается блокировка :(
+    newDiv['style'].zIndex = 5; //если поменять сломается блокировка :(
     newDiv['id'] = letter;
     newDiv['className'] = 'modSymb';
     upTable.rows[0].cells[j].appendChild(newDiv);
@@ -173,7 +173,7 @@ const addExpansion = (letter, j) => {
 
 const addVerticalExpansion = (i) => {
     const newDiv = document.createElement('div');
-    newDiv['style'].zIndex = 1; //если поменять сломается блокировка :(
+    newDiv['style'].zIndex = 5; //если поменять сломается блокировка :(
     newDiv['id'] = (i + 1);
     newDiv['className'] = 'modVertSymb';
     leftTable.rows[i].cells[0].appendChild(newDiv);
@@ -293,8 +293,8 @@ const bleachCells1 = () => {
         const upCell = upTable.rows[0].cells[cell.colNum];
         const leftCell = leftTable.rows[cell.rowNum].cells[0];
 
-        cell.style.backgroundColor = 'transparent';
-        document.getElementById(obj.id).style.backgroundColor = 'transparent';
+        cell.style.backgroundColor = cell.trueColor;
+        document.getElementById(obj.id).style.backgroundColor = cell.trueColor;
         upCell.style.backgroundColor = '#eee';
         document.getElementById('up_' + cell.colNum).style.backgroundColor = 'transparent';
         leftCell.style.backgroundColor = '#eee';
@@ -360,7 +360,7 @@ const bleachCells2 = () => {
                 mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style.zIndex = (bs.length <= 3) ? 3 : 4;
             } else {
                 document.getElementById('up_' + cell.colNum).style.backgroundColor =
-                    (cell.colNum === focusCell.colNum) ? '#6bc961' : 'transparent';
+                    (cell.colNum === focusCell.colNum) ? colorManualCofig[userColorCode]['up'].backgroundColor : 'transparent';
             }
         }
 
@@ -372,7 +372,7 @@ const bleachCells2 = () => {
                 mainTable.rows[cell.rowNum].cells[cell.colNum - 1].style.zIndex = (bs.length <= 3) ? 3 : 4;
             } else {
                 document.getElementById('left_' + (cell.rowNum + 1)).style.backgroundColor =
-                    (cell.rowNum === focusCell.rowNum) ? '#6bc961' : 'transparent';
+                    (cell.rowNum === focusCell.rowNum) ? colorManualCofig[userColorCode]['left'].backgroundColor : 'transparent';
             }
         }
 
@@ -624,6 +624,7 @@ const initCell = (columnNumber, rowNumber) => {
     const id = currentLet[columnNumber] + rowNumber;
     const newInput = document.getElementById(id);
     const newCell = document.getElementById('Cell_' + id);
+    newCell.trueColor = 'transparent'
     newInput.style.backgroundColor = '#ffffff';
     newInput.editMode = false;
     newInput.formulaMode = false;
@@ -713,10 +714,10 @@ const initCell = (columnNumber, rowNumber) => {
             }
 
             if (!thisTextarea.style.fontFamily) {
-                selecterable.selectedIndex = 0;
+                fontSelect.selectedIndex = 0;
             }
             else {
-                selecterable.value = thisTextarea.style.fontFamily;
+                fontSelect.value = thisTextarea.style.fontFamily;
             }
 
             if (!thisTextarea.style.fontSize) {
@@ -2440,40 +2441,40 @@ mainDiv.onscroll = function () {
 document.getElementById("bold-button").addEventListener("click", e => {
     if (lastFocusedTextarea.style.fontWeight != 'bold') {
         document.getElementById("bold-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
-        //document.getElementById("bold-button").style.margin = '0px 3px 0px 0px';
         lastFocusedTextarea.style.fontWeight = 'bold';
     } else {
         lastFocusedTextarea.style.fontWeight = 'normal';
         document.getElementById("bold-button").style.border = 'none';
         document.getElementById("bold-button").style.backgroundColor = '';
-        //document.getElementById("bold-button").style.margin = '2px 5px 2px 2px'
     }
+
+    grayCells.forEach(selectedHTML => selectedHTML.cell.childNodes[0].style.fontWeight = lastFocusedTextarea.style.fontWeight);
 });
 
 document.getElementById("italics-button").addEventListener("click", e => {
     if (lastFocusedTextarea.style.fontStyle != 'italic') {
         document.getElementById("italics-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
-        //document.getElementById("italics-button").style.margin = '0px 3px 0px 0px';
         lastFocusedTextarea.style.fontStyle = 'italic';
     } else {
         lastFocusedTextarea.style.fontStyle = 'normal';
         document.getElementById("italics-button").style.border = 'none';
         document.getElementById("italics-button").style.backgroundColor = '';
-        //document.getElementById("italics-button").style.margin = '2px 5px 2px 2px'
     }
+
+    grayCells.forEach(selectedHTML => selectedHTML.cell.childNodes[0].style.fontStyle = lastFocusedTextarea.style.fontStyle);
 });
 
 document.getElementById("underline-button").addEventListener("click", e => {
     if (lastFocusedTextarea.style.textDecoration != 'underline') {
         document.getElementById("underline-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
-        //document.getElementById("underline-button").style.margin = '0px 3px 0px 0px';
         lastFocusedTextarea.style.textDecoration = 'underline';
     } else {
         lastFocusedTextarea.style.textDecoration = 'none';
         document.getElementById("underline-button").style.border = 'none';
         document.getElementById("underline-button").style.backgroundColor = '';
-        //document.getElementById("underline-button").style.margin = '2px 5px 2px 2px'
     }
+
+    grayCells.forEach(selectedHTML => selectedHTML.cell.childNodes[0].style.textDecoration = lastFocusedTextarea.style.textDecoration);
 });
 
 
@@ -2481,14 +2482,12 @@ somePoliticalDirections.forEach(direction => {
     document.getElementById(direction + "-button").addEventListener("click", e => {
         if (lastFocusedTextarea.getAttribute('data-style') != direction) {
             document.getElementById(direction + "-button").style.backgroundColor = colorManualCofig[userColorCode]['formatButton'].selectedBackgroundColor;
-            //document.getElementById(direction + "-button").style.margin = '0px 3px 0px 0px';
             lastFocusedTextarea.style.textAlign = direction;
             lastFocusedTextarea.setAttribute('data-style', direction);
             somePoliticalDirections.forEach(directX => {
                 if (directX != direction) {
                     document.getElementById(directX + "-button").style.border = 'none';
                     document.getElementById(directX + "-button").style.backgroundColor = '';
-                    //document.getElementById(directX + "-button").style.margin = '2px 5px 2px 2px'
                 }
             });
         } else {
@@ -2496,14 +2495,20 @@ somePoliticalDirections.forEach(direction => {
             lastFocusedTextarea.style.textAlign = 'left';
             document.getElementById(direction + "-button").style.border = 'none';
             document.getElementById(direction + "-button").style.backgroundColor = '';
-            //document.getElementById(direction + "-button").style.margin = '2px 5px 2px 2px'
         }
 
+        grayCells.forEach(selectedHTML => {
+            const selected = selectedHTML.cell.childNodes[0];
+            selected.setAttribute('data-style', lastFocusedTextarea.getAttribute('data-style'));
+            selected.style.textAlign = lastFocusedTextarea.style.textAlign;
+        });
     });
 });
 
-selecterable.onchange = function () {
-    lastFocusedTextarea.style.fontFamily = selecterable.value;
+fontSelect.onchange = function () {
+    lastFocusedTextarea.style.fontFamily = fontSelect.value;
+
+    grayCells.forEach(selectedHTML => selectedHTML.cell.childNodes[0].style.fontFamily = lastFocusedTextarea.style.fontFamily);
 }
 
 document.getElementById('filling').onmousedown = function () {
@@ -2511,7 +2516,11 @@ document.getElementById('filling').onmousedown = function () {
 }
 
 myFillings.onchange = function () {
-    document.getElementById('color-art').style.backgroundColor = lastFocusedTextarea.style.backgroundColor = myFillings.value;
+    const backgroundColor = myFillings.value;
+    document.getElementById('color-art').style.backgroundColor = document.getElementById('Cell_' + lastFocusedTextarea.id).style.backgroundColor = document.getElementById('Cell_' + lastFocusedTextarea.id).trueColor
+        = lastFocusedTextarea.style.backgroundColor = backgroundColor;
+
+    grayCells.forEach(selectedHTML => selectedHTML.cell.trueColor = backgroundColor);
 }
 
 document.getElementById('font-color').onmousedown = function () {
@@ -2520,6 +2529,8 @@ document.getElementById('font-color').onmousedown = function () {
 
 fontFilling.onchange = function () {
     document.getElementById('font-art').style.backgroundColor = lastFocusedTextarea.style.color = fontFilling.value;
+
+    grayCells.forEach(selectedHTML => selectedHTML.cell.childNodes[0].style.color = lastFocusedTextarea.style.color);
 }
 
 const calculateColorFromJavaScriptToCSS = str => {
@@ -2546,4 +2557,6 @@ const calculateColorFromJavaScriptToCSS = str => {
 
 sizeSelect.onchange = function () {
     lastFocusedTextarea.style.fontSize = sizeSelect.value;
+
+    grayCells.forEach(selectedHTML => selectedHTML.cell.childNodes[0].style.fontSize = lastFocusedTextarea.style.fontSize);
 }
