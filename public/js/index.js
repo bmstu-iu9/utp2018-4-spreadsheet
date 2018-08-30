@@ -339,8 +339,6 @@ document.addEventListener('mousedown', e => {
 });
 
 const autoCompleteListener = link => {
-    const cell = itemInContext;
-
     autoCompleteMenu.paste(link.getAttribute("data-action"), POSSIBLE_FUNCTIONS.prefix.length);
     POSSIBLE_FUNCTIONS.clean();
     autoCompleteMenu.autoCompleteOff();

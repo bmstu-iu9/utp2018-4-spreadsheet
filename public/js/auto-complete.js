@@ -50,6 +50,7 @@ class AutoCompleteMenu {
         this.input.value = this.input.value.substring(0, this.input.selectionStart - pref_len) + str + '()' + this.input.value.substring(this.input.selectionStart);
         this.input.selectionStart = new_pos;
         this.input.selectionEnd = new_pos;
+        this.input.dispatchEvent(new Event('keyup'), null);
         this.autoCompleteOff();
     }
 
