@@ -54,10 +54,14 @@ const setBackgroundColor = (cellTextarea, color, onlyTrueColor) => {
     if (onlyTrueColor) {
         document.getElementById('Cell_' + cellTextarea.id).trueColor = color;
     } else {
-        document.getElementById('Cell_' + cellTextarea.id).style.backgroundColor = document.getElementById('Cell_' + cellTextarea.id).trueColor
+        document.getElementById('Cell_' + cellTextarea.id).trueColor
             = cellTextarea.style.backgroundColor = color;
+
+        cellTextarea.style['box-shadow'] = '0px 0px 0px 1.2px' + color;
     }
+    
     if (color === 'white' || color === '#ffffff' || color === 'transparent' || color === 'rgb(255, 255, 255)') {
+        cellTextarea.style['box-shadow'] = '0px 0px 0px 0px white';
         delete backgroundColoredCells[cellTextarea.id];
     } else {
         backgroundColoredCells[cellTextarea.id] = color;

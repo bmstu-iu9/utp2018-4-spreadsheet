@@ -291,8 +291,16 @@ const bleachCells1 = () => {
         const upCell = upTable.rows[0].cells[cell.colNum];
         const leftCell = leftTable.rows[cell.rowNum].cells[0];
 
-        cell.style.backgroundColor = cell.trueColor;
+        cell.style.backgroundColor = 'transparent';
         document.getElementById(obj.id).style.backgroundColor = cell.trueColor;
+        
+
+        if (cell.trueColor === 'white' || cell.trueColor === '#ffffff' || cell.trueColor === 'transparent' || cell.trueColor === 'rgb(255, 255, 255)') {
+            document.getElementById(obj.id).style.boxShadow = '0px 0px 0px 0px white';
+        } else {
+            document.getElementById(obj.id).style.boxShadow = '0px 0px 0px 1.2px' + cell.trueColor;
+        }
+
         upCell.style.backgroundColor = '#eee';
         document.getElementById('up_' + cell.colNum).style.backgroundColor = 'transparent';
         leftCell.style.backgroundColor = '#eee';
