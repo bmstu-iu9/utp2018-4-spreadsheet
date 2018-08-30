@@ -304,19 +304,19 @@ class Table {
         }
     }
 
-    setCeil(x, y, text, undo_or_redo = false) {
+    setCeil(x, y, text, manual_undo_or_redo = false) {
         this.createCeilIfNeed(x, y)
         if (text === this.field[x][y].realText) {
             return;
         }
 
-        if (!undo_or_redo)
-            this.actions.do({
+        if (!manual_undo_or_redo)
+            this.actions.do([{
                 x: x,
                 y: y,
                 newText: text,
                 oldText: this.field[x][y].realText
-            });
+            }]);
 
         this.field[x][y].realText = text;
         if (this.field[x][y].realText) { //Обновляем в активных
@@ -419,19 +419,19 @@ class Table {
     }
 
     undo() {
-        let change = this.actions.undo();
-        if (change) {
-            this.setCeil(change.x, change.y, change.oldText, true);
+        let changes = this.actions.undo();
+        if (changes) {
+            changes.forEach(change => this.setCeil(change.x, change.y, change.oldText, true));
         }
-        return change;
+        return changes;
     }
 
     redo() {
-        let change = this.actions.redo();
-        if (change) {
-            this.setCeil(change.x, change.y, change.newText, true);
+        let changes = this.actions.redo();
+        if (changes) {
+            changes.forEach(change => this.setCeil(change.x, change.y, change.newText, true));
         }
-        return change;
+        return changes;
     }
 
     copy(x, y) {
@@ -447,6 +447,9 @@ class Table {
         this.copied = build(this.field[x][y].realText, x, y);
         this.setCeil(x, y, '')
     }
+
+
+
 
     deleteCopy(x, y) {
         this.copied = null;

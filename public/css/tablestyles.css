@@ -57,6 +57,7 @@
   width: 40px;
   height: 95%;
   float: left;
+
   /* border: 1px solid #555; */
 }
 
@@ -89,7 +90,7 @@
 .null-div td {
   background-color: #eee;
   border: 1px solid #555;
-  height: 23px;
+  height: 22px;
   width: 100px;
 }
 
