@@ -649,7 +649,7 @@ const initCell = (columnNumber, rowNumber) => {
             evtobj.preventDefault();
         }
     };
-    newInput.addEventListener("keydown", function (elem) {
+    newInput.addEventListener('keydown', function (elem) {
         return (event) => {
             //console.log(newInput.id, 'code=', event.code, 'key=', event.key);
             if (event.key == 'Enter' && !autoCompleteMenu.isActive()) {
@@ -1000,12 +1000,12 @@ const initCell = (columnNumber, rowNumber) => {
     }
 
     newInput.addEventListener('keydown', (e) => {
-        let dx = 0;
-        let dy = 0;
-
-        if (e.key === 'Control') {
+        if (newInput.readOnly || e.key === 'Control' || e.key === 'Shift') {
             return;
         }
+
+        let dx = 0;
+        let dy = 0;
 
         if (e.key === 'c' && e.ctrlKey) {
             e.preventDefault();

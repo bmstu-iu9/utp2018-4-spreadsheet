@@ -197,13 +197,13 @@
   <div id="one" class="abs block">
 
     <div class="toolbar">
-      <button class="back-button" title="Cancel"></button>
-      <button class="forward-button" title="Forward"></button>
-      <button class="copy-button" title="Copy"></button>
-      <button class="cut-button" title="Cut"></button>
-      <button class="paste-button" title="Paste"></button>
-      <button class="lock-button" title="Lock"></button>
-      <button class="unlock-button" title="Unlock"></button>
+      <button class="back-button" onclick="innerTable.undo();updateTables();" title="Cancel"></button>
+      <button class="forward-button" onclick="innerTable.redo();updateTables();" title="Forward"></button>
+      <button class="copy-button" onclick="const coords = convCoord(focusID); innerTable.copy(coords.x, coords.y);" title="Copy"></button>
+      <button class="cut-button" onclick="const coords = convCoord(focusID); innerTable.cut(coords.x, coords.y); updateTables();" title="Cut"></button>
+      <button class="paste-button" onclick="const coords = convCoord(focusID); innerTable.paste(coords.x, coords.y); updateTables(); document.getElementById(focusID).focus();" title="Paste"></button>
+      <button class="lock-button" onclick="document.getElementById(focusID).readOnly = true" title="Lock"></button>
+      <button class="unlock-button"  onclick="document.getElementById(focusID).readOnly = false" title="Unlock"></button>
     </div>
     <!-- <div class="input">
       <input type="text" size="60" value="" class="form-control input-sm">
