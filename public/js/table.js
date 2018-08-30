@@ -719,7 +719,7 @@ const initCell = (columnNumber, rowNumber) => {
             document.getElementById('font-art').style.backgroundColor = thisTextarea.style.color;
             fontFilling.value = calculateColorFromJavaScriptToCSS(thisTextarea.style.color);
 
-            console.log(calculateColorFromJavaScriptToCSS(thisTextarea.style.color));
+            //console.log(calculateColorFromJavaScriptToCSS(thisTextarea.style.color));
 
         };
     }(newInput);
@@ -2356,21 +2356,23 @@ const calculateColorFromJavaScriptToCSS = str => {
     let curr = '';
     let acc = '#';
     let arr = '' + str;
-    for (let i = 0; i < arr.length; i++) {
-        if (Number(arr[i])) {
+    for (let i = 4; i < arr.length; i++) {
+        if ((arr[i] !== ' ') && !isNaN(Number(arr[i]))) {
             curr += arr[i];
         }
-        else if (curr != '') {
-            curr = Number(curr).toString(16);
-            if (curr.length == 1)
-                curr = '0' + curr;
-            console.log(curr);
-            acc += curr;
-            curr = '';
+        else {
+            if (curr != '') {
+                curr = Number(curr).toString(16);
+                if (curr.length == 1)
+                    curr = '0' + curr;
+                acc += curr;
+                curr = '';
+            }
         }
     }
     return acc;
 }
+
 
 sizeSelect.onchange = function () {
     lastFocusedTextarea.style.fontSize = sizeSelect.value;
