@@ -815,6 +815,7 @@ const tokenize = (formula) => {
                 temp += formula[ptL];
                 ptL++;
             }
+            temp = temp.toUpperCase();
             if (!POSSIBLE_FUNCTIONS.has(temp)) {
                 try {
                     convCoord(temp);
@@ -826,7 +827,7 @@ const tokenize = (formula) => {
                     )
                 }
             }
-            tokens.push(temp.toUpperCase());
+            tokens.push(temp);
         } else if (formula[ptL] == "'") {
             positions.push(ptL);
             const save = ptL;
