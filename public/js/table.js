@@ -574,7 +574,6 @@ const paintBorders1 = (cell, top, left, right, bottom) => {
 }
 
 const paintBorders2 = (cell, top, left, right, bottom) => {
-    console.log('pb2', cell, top, left, right, bottom);
 
     if (top) {
 
@@ -654,22 +653,20 @@ const initCell = (columnNumber, rowNumber) => {
     newInput.onkeydown = (e) => {
         let evtobj = window.event ? event : e
         if (evtobj.code === 'KeyZ' && evtobj.ctrlKey && evtobj.shiftKey) {
-            //console.log('REDO');
+            console.log('REDO');
             evtobj.preventDefault();
         } else if (evtobj.code === 'KeyZ' && evtobj.ctrlKey) {
-            //console.log('UNDO');
+            console.log('UNDO');
             evtobj.preventDefault();
         }
     };
     newInput.addEventListener('keydown', function (elem) {
         return (event) => {
-            //console.log(newInput.id, 'code=', event.code, 'key=', event.key);
             if (event.key == 'Enter' && !autoCompleteMenu.isActive()) {
                 elem.blur();
             }
             if (event.key == 'Escape') {
                 const cell = document.getElementById('Cell_' + elem.id);
-                //console.log(elem.value);
                 elem.value = '';
                 elem.editMode = false;
                 disableFormulaMode();
@@ -694,7 +691,6 @@ const initCell = (columnNumber, rowNumber) => {
     }(newInput))
     newInput.onfocus = function (elem) {
         return () => {
-            console.log('onfocus')
             painting_beg = newInput;
             painting_end = null;
             let coord = convCoord(elem.id)
@@ -743,23 +739,15 @@ const initCell = (columnNumber, rowNumber) => {
             document.getElementById('color-art').style.backgroundColor = thisTextarea.style.backgroundColor;
             myFillings.value = calculateColorFromJavaScriptToCSS(thisTextarea.style.backgroundColor);
 
-            //console.log('#' + ('' + thisTextarea.style.backgroundColor).substring(4, 7).toString(16) + ('' + thisTextarea.style.backgroundColor).substring(9, 12).toString(16) + ('' + thisTextarea.style.backgroundColor).substring(14, 17).toString(16));
 
             document.getElementById('font-art').style.backgroundColor = thisTextarea.style.color;
             fontFilling.value = calculateColorFromJavaScriptToCSS(thisTextarea.style.color);
 
-            //console.log(calculateColorFromJavaScriptToCSS(thisTextarea.style.color));
 
         };
     }(newInput);
     newInput.onblur = function (elem) {
         return () => {
-            console.log('onblur');
-            /* if(newInput.value.substring(0, 9) === 'auto-copy'){
-                let ss = newInput.value.split(',');
-                innerTable.auto_copy(convCoord(ss[1]), convCoord(ss[2]), convCoord(ss[3]));
-                console.log(ss);
-            } */
             painting_beg = null;
             painting_end = null;
             POSSIBLE_FUNCTIONS.clean();
@@ -1033,7 +1021,6 @@ const initCell = (columnNumber, rowNumber) => {
             const end = painting_end;
             e.preventDefault();
             e.stopPropagation();
-            console.log(painting_beg, painting_end);
             const coord_beg = convCoord(painting_beg.id);
             const coord_end = painting_end === null ? coord_beg : convCoord(painting_end.id);
             innerTable.bigCopy(coord_beg, coord_end);
@@ -1044,12 +1031,10 @@ const initCell = (columnNumber, rowNumber) => {
         }
 
         if (e.key === 'v' && e.ctrlKey) {
-            console.log(painting_beg, painting_end);
             const end = painting_end;
             e.preventDefault();
             e.stopPropagation();
 
-            console.log(painting_beg, painting_end);
             const coord_beg = convCoord(painting_beg.id);
             const coord_end = painting_end === null ? coord_beg : convCoord(painting_end.id);
             newInput.blur();
@@ -1063,11 +1048,9 @@ const initCell = (columnNumber, rowNumber) => {
 
         if (e.key === 'x' && e.ctrlKey) {
             const end = painting_end;
-            console.log(painting_beg, painting_end);
             e.preventDefault();
             e.stopPropagation();
 
-            console.log(painting_beg, painting_end);
             const coord_beg = convCoord(painting_beg.id);
             const coord_end = painting_end === null ? coord_beg : convCoord(painting_end.id);
             newInput.blur();
@@ -1095,7 +1078,6 @@ const initCell = (columnNumber, rowNumber) => {
             }
 
         } else if (autoCompleteMenu.isActive()) {
-            //console.log('ACTIVATED')
             if (e.key === 'Enter') {
                 e.preventDefault();
                 autoCompleteMenu.choseTargeted();
@@ -1165,7 +1147,6 @@ const initCell = (columnNumber, rowNumber) => {
 
         //FOR CHROME <3
         if (newInput.value[0] === '=' && newInput.selectionStart === newInput.selectionEnd) {
-            //console.log('simb:', newInput.value[newInput.selectionStart], newInput.selectionStart)
             if (e.key.length == 1 && isAlphabetic(e.key) && !isAlphabetic(newInput.value[newInput.selectionStart]) && !isNumeric(newInput.value[newInput.selectionStart])) {
                 let beg = newInput.selectionStart;
                 if (!POSSIBLE_FUNCTIONS.charged())
@@ -1180,7 +1161,6 @@ const initCell = (columnNumber, rowNumber) => {
                 e.preventDefault();
             } else if (e.key === 'Backspace' && !isAlphabetic(newInput.value[newInput.selectionStart]) && !isNumeric(newInput.value[newInput.selectionStart])) {
 
-                //console.log('BACKSPACE')
                 if (!POSSIBLE_FUNCTIONS.charged()) {
                     let beg = newInput.selectionStart - 1;
                     while (beg > 0 && isAlphabetic(newInput.value[beg - 1])) beg--;
@@ -1221,10 +1201,6 @@ const initCell = (columnNumber, rowNumber) => {
             newInput.endBuf = newInput.value.substring(newInput.selectionStart);
         }
     });
-
-    // newInput.addEventListener('keydown', (e) => {
-
-    // });
 }
 
 const addUpAndLeftEvents = (type, num) => {
@@ -1479,7 +1455,6 @@ const addUpAndLeftEvents = (type, num) => {
             if (focusID && document.getElementById(focusID).formulaMode) {
                 handlerUp2(e);
             } else {
-                console.log('doe', cell);
                 handlerUp1(e);
             }
         }
@@ -2531,7 +2506,7 @@ somePoliticalDirections.forEach(direction => {
             });
         } else {
             lastFocusedTextarea.setAttribute('data-style', '');
-            setAlign(lastFocusedTextarea, 'left'); //!!!
+            setAlign(lastFocusedTextarea, 'left');
             document.getElementById(direction + "-button").style.border = 'none';
             document.getElementById(direction + "-button").style.backgroundColor = '';
         }

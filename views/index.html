@@ -199,9 +199,9 @@
     <div class="toolbar">
       <button class="back-button" onclick="innerTable.undo();updateTables();" title="Cancel"></button>
       <button class="forward-button" onclick="innerTable.redo();updateTables();" title="Forward"></button>
-      <button class="copy-button" onclick="const coords = convCoord(focusID); innerTable.copy(coords.x, coords.y);" title="Copy"></button>
-      <button class="cut-button" onclick="const coords = convCoord(focusID); innerTable.cut(coords.x, coords.y); updateTables();" title="Cut"></button>
-      <button class="paste-button" onclick="const coords = convCoord(focusID); innerTable.paste(coords.x, coords.y); updateTables(); document.getElementById(focusID).focus();" title="Paste"></button>
+      <button class="copy-button" onclick="const coords = convCoord(focusID); innerTable.bigCopy(coords, coords);" title="Copy"></button>
+      <button class="cut-button" onclick="const coords = convCoord(focusID); innerTable.bigCut(coords, coords); updateTables();" title="Cut"></button>
+      <button class="paste-button" onclick="const coords = convCoord(focusID); innerTable.bigPaste(coords, coords); updateTables(); document.getElementById(focusID).focus();" title="Paste"></button>
       <button class="lock-button" onclick="document.getElementById(focusID).readOnly = true" title="Lock"></button>
       <button class="unlock-button"  onclick="document.getElementById(focusID).readOnly = false" title="Unlock"></button>
     </div>
