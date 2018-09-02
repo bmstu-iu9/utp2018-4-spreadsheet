@@ -73,7 +73,6 @@ class ActionStack {
     }
 
     do(x) {
-        //console.log('do', 'curPos:', this.curPos, 'lastPush:', this.lastPush, 'lim', this.lim);
         this.stack[this.curPos] = x;
         this.curPos = (this.curPos + 1) % this.stack.length;
         this.lastPush = this.curPos;
@@ -83,7 +82,6 @@ class ActionStack {
     }
 
     undo() {
-        //console.log('undo', 'curPos:', this.curPos, 'lastPush:', this.lastPush, 'lim', this.lim);
         if (this.curPos === this.lim) {
             return false;
         } else {
@@ -93,7 +91,6 @@ class ActionStack {
     }
 
     redo() {
-        //console.log('redo', 'curPos:', this.curPos, 'lastPush:', this.lastPush, 'lim', this.lim);
         if (this.curPos === this.lastPush) {
             return false;
         } else {
@@ -110,6 +107,7 @@ class FormulaError {
         this.msg = msg;
         this.char_pos = char_pos;
         this.prev = prev;
+        console.log('CREATED ERROR:', error, msg)
     }
 
     getTrace() {
@@ -132,7 +130,6 @@ class Ceil {
         this.dependencies = new Set();
         this.receivers = new Set();
         this.func = null;
-        //console.log("created ceil")
     }
 
     toString() {
@@ -184,7 +181,6 @@ const isSpaceChar = (str) => {
 }
 
 const convCoord = (str) => {
-    //console.log(str)
     str = str.toUpperCase();
     let beg = 0;
     if (str[0] === "$") beg = 1;
@@ -239,7 +235,6 @@ function transform(str) {
         }
         res += ' + '
         if (str.includes('$') && str.lastIndexOf('$') !== 0) {
-            //console.log(res.includes('$'), str.lastIndexOf('$') !== 0)
             res += "'$' + " + (coord.y + 1);
         } else {
             res += '(' + (coord.y + 1) + ' + delta_y) '
@@ -259,7 +254,6 @@ function build(str, x, y) {
         let formula = `(x, y) =>{
                         const delta_x = x - ${x};
                         const delta_y = y - ${y};
-                       console.log('delta_x', delta_x, 'delta_y',delta_y);
             `
         let return_value = `return \``
         let pt = 0;
@@ -284,7 +278,6 @@ function build(str, x, y) {
 
             return_value += str.substring(pt, old_pt);
         }
-        //console.log('minX', minX, 'minY', minY);
         if (minX != Infinity) {
             formula += `
             if(delta_x < -${minX}){
@@ -304,7 +297,6 @@ function build(str, x, y) {
             }`
         }
         formula += return_value + '`;}'
-        //console.log(formula);
         return eval(formula);
     }
 }
@@ -320,7 +312,6 @@ class Table {
                 this.field[i][j] = new Ceil(i, j);
             }
         }
-        //console.log('ALL CREATED');
         this.toUpdate = new Stack();
         this.actions = new ActionStack(action_memo);
         this.copied = null;
@@ -382,9 +373,6 @@ class Table {
     }
 
     update() {
-        //console.log(this.field[0][0].receivers)
-        //console.log(this.field[0][1].receivers)
-        //console.log(this.field[1][1].receivers)
         let rightOrderedUPD = new Stack();
         let depth_stack = new Stack();
         let usage_array = new Array();
@@ -398,19 +386,15 @@ class Table {
             this.toUpdate.pop();
 
             while (!depth_stack.isEmpty()) {
-                //console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TRACKING UPDATE")
                 if (depth_stack.top().colour === WHITE) {
                     depth_stack.top().colour = GREY;
-                    //console.log(depth_stack.top().x, depth_stack.top().y, 'not popped');
                     depth_stack.top().receivers.forEach(ceil => {
-                        //console.log(ceil.x, ceil.y, 'watching', ceil.colour);
                         if (ceil.colour === WHITE) {
                             depth_stack.push(ceil);
                             usage_array.push(ceil);
                         }
                     })
                 } else {
-                    //console.log(depth_stack.top().x, depth_stack.top().y, 'popped');
                     depth_stack.top().colour = BLACK;
                     rightOrderedUPD.push(depth_stack.pop());
                 }
@@ -446,7 +430,6 @@ class Table {
                 y: curCeil.y
             });
         }
-        //console.log('res:', res);
         return res;
     }
 
@@ -455,7 +438,6 @@ class Table {
         if (changes) {
             changes.forEach(change => this.setCeil(change.x, change.y, change.oldText, true));
         }
-        console.log(changes)
         return changes;
     }
 
@@ -466,27 +448,6 @@ class Table {
         }
         return changes;
     }
-
-    copy(x, y) {
-        this.copied = build(this.field[x][y].realText, x, y);
-    }
-
-    paste(x, y) {
-        if (this.copied != null) {
-            try {
-                this.setCeil(x, y, this.copied(x, y));
-            } catch (err) {
-                this.setCeil(x, y, err.msg);
-            }
-        }
-    }
-
-    cut(x, y) {
-        this.copied = build(this.field[x][y].realText, x, y);
-        this.setCeil(x, y, '')
-    }
-
-
 
 
     deleteCopy(x, y) {
@@ -550,17 +511,15 @@ class Table {
                             newText: this.big_copied[x % modX][y % modY](lowerX + x, lowerY + y),
                             oldText: this.field[lowerX + x][lowerY + y].realText
                         });
-                        console.log('test:', actions[actions.length - 1].newText);
                         this.setCeil(actions[actions.length - 1].x, actions[actions.length - 1].y, actions[actions.length - 1].newText, true);
                     } catch (err) {
-                        console.log(err);
+                        console.log('ERROR:', err);
                         actions.push({
                             x: lowerX + x,
                             y: lowerY + y,
                             newText: err.msg,
                             oldText: this.field[lowerX + x][lowerY + y].realText
                         });
-                        console.log(actions[actions.length - 1].x, actions[actions.length - 1].y, actions[actions.length - 1].newText, true, err.msg);
                         this.setCeil(actions[actions.length - 1].x, actions[actions.length - 1].y, actions[actions.length - 1].newText, true, err.msg);
                     }
                 }
@@ -589,62 +548,6 @@ class Table {
                     oldText: this.field[lowerX + x][lowerY + y].realText
                 });
                 this.big_copied[x][y] = build(actions[actions.length - 1].oldText, actions[actions.length - 1].x, actions[actions.length - 1].y);
-                this.setCeil(actions[actions.length - 1].x, actions[actions.length - 1].y, actions[actions.length - 1].newText, true);
-            }
-        }
-        this.actions.do(actions);
-        console.log('keeekekekeekk', this.big_copied);
-    }
-
-    auto_copy_prepare(fromStart, fromEnd) {
-        const lowerX = Math.min(fromStart.x, fromEnd.x);
-        const higherX = Math.max(fromStart.x, fromEnd.x);
-        const lowerY = Math.min(fromStart.y, fromEnd.y);
-        const higherY = Math.max(fromStart.y, fromEnd.y);
-        const deltaX = higherX - lowerX;
-        const deltaY = higherY - lowerY;
-        const res = new Array(deltaX);
-        for (let x = 0; x <= deltaX; x++) {
-            res[x] = new Array(deltaY);
-            for (let y = 0; y <= deltaY; y++) {
-                res[x][y] = build(this.field[lowerX + x][lowerY + y].realText, lowerX + x, lowerY + y);
-                console.log(x, y, (res[x][y])(lowerX + x, lowerY + y))
-            }
-        }
-        return res;
-    }
-
-    auto_copy(start, fromEnd, toEnd) {
-        console.log(start, fromEnd, toEnd);
-        const preparedData = this.auto_copy_prepare(start, fromEnd);
-        console.log(preparedData)
-        const realStartX = Math.min(start.x, fromEnd.x);
-        const realStartY = Math.min(start.y, fromEnd.y);
-        const modX = Math.abs(start.x - fromEnd.x) + 1;
-        const modY = Math.abs(start.y - fromEnd.y) + 1;
-        console.log('modY', modY, 2 % 1, 1 % 1, 0 % 1)
-
-        const startShiftX = (start.x < toEnd.x) ? 0 : modX - (Math.abs(start.x - toEnd.x) + 1) % modX;
-        const startShiftY = (start.y < toEnd.y) ? 0 : modY - (Math.abs(start.y - toEnd.y) + 1) % modY;
-
-        const lowerX = Math.min(realStartX, toEnd.x);
-        const higherX = Math.max(realStartX, toEnd.x);
-        const lowerY = Math.min(realStartY, toEnd.y);
-        const higherY = Math.max(realStartY, toEnd.y);
-        const deltaX = higherX - lowerX;
-        const deltaY = higherY - lowerY;
-
-        const actions = new Array();
-        for (let x = 0; x <= deltaX; x++) {
-            for (let y = 0; y <= deltaY; y++) {
-                console.log('prep:', (lowerX + x + startShiftX) % modX, (lowerY + y + startShiftY) % modY, preparedData[(lowerX + x + startShiftX) % modX][(lowerY + Y + startShiftY) % modY])
-                actions.push({
-                    x: lowerX + x,
-                    y: lowerY + y,
-                    newText: preparedData[(lowerX + x + startShiftX) % modX][(lowerY + y + startShiftY) % modY](lowerX + x, lowerY + y),
-                    oldText: this.field[x][y].realText
-                });
-                console.log('test:', actions[actions.length - 1].newText);
                 this.setCeil(actions[actions.length - 1].x, actions[actions.length - 1].y, actions[actions.length - 1].newText, true);
             }
         }
@@ -685,8 +588,6 @@ class StringSetWitnSearch {
         let mid = Math.floor((end + beg) / 2);
 
         while (this.elems[mid] != str && beg < end) {
-            console.log(str, this.elems[mid], '>', str > this.elems[mid], '=', str == this.elems[mid])
-            console.log(str, beg, this.elems[beg], mid, this.elems[mid], end, this.elems[end]);
             if (str < this.elems[mid]) {
                 end = mid - 1;
             } else if (str > this.elems[mid]) {
@@ -695,7 +596,6 @@ class StringSetWitnSearch {
 
             mid = Math.floor((end + beg) / 2);
         }
-        console.log(mid, this.elems[mid], (str > this.elems[mid]) ? mid + 1 : mid, this.elems[(str > this.elems[mid]) ? mid + 1 : mid]);
         return (str > this.elems[mid]) ? mid + 1 : mid;
     }
 
@@ -756,7 +656,7 @@ class StringSetWitnSearch {
 
 const POSSIBLE_FUNCTIONS = new StringSetWitnSearch(["SUM", "MUL"]);
 
-const OPERATOR = (first, oper, second) => { //TODO: bigNums
+const OPERATOR = (first, oper, second) => {
     if (oper === undefined && second === undefined) {
         return first;
     }
@@ -902,7 +802,6 @@ const isCircDepend = (startCeil) => {
     startCeil.colour = GREY;
 
     while (!depth_stack.isEmpty()) {
-        //console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TRACKING CIRCULAR")
         if (depth_stack.top().colour === BLACK) {
             depth_stack.pop();
         } else {
@@ -930,7 +829,6 @@ const isCircDepend = (startCeil) => {
 }
 
 const ceilInsert = (table, ceil, text) => {
-    //console.log('ceilInsert')
     ceil.dependencies.forEach(x => x.receivers.delete(ceil));
     ceil.dependencies.clear();
     ceil.error = null;
@@ -1024,10 +922,8 @@ const tokenize = (formula) => {
                 ptL++;
             }
             temp += "'";
-            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!', temp);
             tokens.push(temp);
         } else {
-            //console.log("kek lol kek lol")
             throw new FormulaError(
                 WRONG_SYMBOL,
                 "wrong symb: " + formula[ptL],
@@ -1036,7 +932,6 @@ const tokenize = (formula) => {
         }
     }
 
-    //console.log("ALL OK");
     return new Tokens(tokens, positions);
 
 }
@@ -1093,7 +988,6 @@ class Tokens {
 //TODO: update scheme
 
 const mustBe = (tokens, token) => {
-    //console.log("MUSTBE " + "empty: " + tokens.isEmpty())
     if (tokens.isEmpty()) {
         throw new FormulaError(
             EXPECTED_EXACT,
@@ -1112,21 +1006,17 @@ const mustBe = (tokens, token) => {
 }
 
 const parseAndCreate = (table, ceil, tokens) => {
-    //console.log('parseAndCreate')
     let func = parseAddBeg(table, ceil, tokens);
     func = '(table) => { return (() => (' + func + '))}'; //"(d) => {return (() => pow2(d.x))}"
-    //console.log(func)
 
     return eval(func)(table);
 }
 
 const parseAddBeg = (table, ceil, tokens) => {
-    //console.log('parseAddBeg');
     return parseAddEnd(table, ceil, tokens, parseMulBeg(table, ceil, tokens));
 }
 
 const parseAddEnd = (table, ceil, tokens, funcStr) => {
-    //console.log('parseAddEnd' + ' ' + funcStr)
     if (!tokens.isEmpty()) {
         if (tokens.peek().token === '+' || tokens.peek().token === '-') {
             funcStr = 'OPERATOR(' + funcStr + ', \'' + tokens.next().token + '\', ';
@@ -1150,12 +1040,10 @@ const parseAddEnd = (table, ceil, tokens, funcStr) => {
 }
 
 const parseMulBeg = (table, ceil, tokens) => {
-    //console.log('parseMulBeg')
     return parseMulEnd(table, ceil, tokens, parseElem(table, ceil, tokens));
 }
 
 const parseMulEnd = (table, ceil, tokens, funcStr) => {
-    //console.log('parseMulEnd' + ' ' + funcStr)
     if (!tokens.isEmpty()) {
         if (tokens.peek().token === '*' || tokens.peek().token === '/') {
             funcStr = 'OPERATOR(' + funcStr + ', \'' + tokens.next().token + '\', ';
@@ -1174,15 +1062,12 @@ const parseMulEnd = (table, ceil, tokens, funcStr) => {
 }
 
 const parseElem = (table, ceil, tokens) => {
-    //console.log('parseElem' + ' ')
     let funcStr = '';
     if (!tokens.isEmpty()) {
         if (isNumeric(tokens.peek().token[0])) {
-            //console.log("OK : " + tokens.peek().token)
             return tokens.next().token;
         } else if (tokens.peek().token[0] == "'") {
             const str = tokens.next().token;
-            console.log('STR', str.substring(1, str.length - 1));
             return `'${str.substring(1, str.length - 1)}'`
         } else if (isAlphabetic(tokens.peek().token[0]) || tokens.peek().token[0] == '$') {
             if (POSSIBLE_FUNCTIONS.has(tokens.peek().token)) {
@@ -1198,7 +1083,6 @@ const parseElem = (table, ceil, tokens) => {
                 x = coord.x;
                 y = coord.y;
             } catch (e) {
-                //console.log(e)
                 throw new FormulaError(
                     EXPECTED_IDENTIFIER,
                     "expected identifier, found: " + tokens.peek().token,
@@ -1230,7 +1114,6 @@ const parseElem = (table, ceil, tokens) => {
 }
 
 const parseArgs = (table, ceil, tokens) => {
-    //console.log('parseArgs')
     let cur = '';
     let funcStr = '';
     let temp = '';
@@ -1258,7 +1141,6 @@ const parseArgs = (table, ceil, tokens) => {
                 let s2 = Math.min(firstCoord.y, secondCoord.y);
                 let f1 = Math.max(firstCoord.x, secondCoord.x);
                 let f2 = Math.max(firstCoord.y, secondCoord.y);
-                //console.log('KKKEEEKKK', s1, s2, f1, f2);
                 for (; s1 <= f1; s1++) {
                     for (let i = s2; i <= f2; i++) {
                         funcStr += 'table.getInnerCeil(' + s1 + ',' + i + ').get()';
@@ -1271,8 +1153,6 @@ const parseArgs = (table, ceil, tokens) => {
                     }
                 }
             } catch (e) {
-                //console.log(e);
-                //console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!');
                 throw new FormulaError(
                     EXPECTED_CELL,
                     'expected: *cell*:*cell*, found: ' + next1 + ':' + next2,

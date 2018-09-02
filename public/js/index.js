@@ -7,15 +7,8 @@
  */
 const updateTables = () => {
     let upd = innerTable.update();
-
-    console.log(upd);
-    console.log('POKA OKEY')
     for (let i = 0; i < upd.length; i++) {
         let ceil = upd[i];
-        console.log(ceil.x, ceil.y);
-        console.log(innerTable.getCeil(ceil.x, ceil.y).toDisplay);
-        console.log(innerTable.getCeil(ceil.x, ceil.y).realText);
-        console.log(innerTable.getCeil(ceil.x, ceil.y).error);
         document.getElementById(convNumtoId(ceil.x, ceil.y)).value = innerTable.getCeil(ceil.x, ceil.y).toDisplay;
         if (Number(innerTable.getCeil(ceil.x, ceil.y).toDisplay))
             document.getElementById(convNumtoId(ceil.x, ceil.y)).style.textAlign = 'right';
@@ -181,7 +174,6 @@ const menuItemListener = link => {
     const cell = itemInContext;
     switch (link.getAttribute("data-action")) {
         case 'paste':
-            console.log('paste');
             if (cell.editMode)
                 tryToPasteFromClipboard(cell);
             else {
@@ -193,7 +185,6 @@ const menuItemListener = link => {
             }
             break;
         case 'copy':
-            console.log('cpy');
             if (cell.editMode)
                 tryToSmthToClipboard(cell, 'copy');
             else {
@@ -345,9 +336,6 @@ const autoCompleteListener = link => {
 }
 
 document.addEventListener('mousedown', e => {
-    /* e.preventDefault();
-    e.stopPropagation(); */
-    //console.log('loool');
     let clickeElIsLink = clickInsideElement(e, 'auto-complete-menu_link');
 
     if (clickeElIsLink) {
