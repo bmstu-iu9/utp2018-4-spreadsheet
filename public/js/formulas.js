@@ -28,6 +28,7 @@ const NOT_A_FORMULA = 303;
 //dependency errors 4**
 const DEPEND_ERR = 400;
 const CIRC_DEPEND_ERR = 401;
+const NO_SUCH_CEIL = 402;
 
 //colour consts)))
 const WHITE = 0;
@@ -228,10 +229,13 @@ function transform(str) {
         str = str.toUpperCase();
         let res = '${';
         let coord = convCoord(str);
+        let y = Infinity;
+        let x = Infinity;
         if (str[0] == '$') {
             res += "'$" + colName(coord.x) + "'";
         } else {
             res += 'colName(' + coord.x + ' + delta_x)'
+            x = coord.x;
         }
         res += ' + '
         if (str.includes('$') && str.lastIndexOf('$') !== 0) {
@@ -239,10 +243,11 @@ function transform(str) {
             res += "'$' + " + (coord.y + 1);
         } else {
             res += '(' + (coord.y + 1) + ' + delta_y) '
+            y = coord.y;
         }
-        return res + '}';
+        return { text: res + '}', x: x, y: y };
     } catch (e) {
-        return str;
+        return { text: str, x: Infinity, y: Infinity };
     }
 }
 
@@ -254,25 +259,51 @@ function build(str, x, y) {
         let formula = `(x, y) =>{
                         const delta_x = x - ${x};
                         const delta_y = y - ${y};
-                        return \``
+                       console.log('delta_x', delta_x, 'delta_y',delta_y);
+            `
+        let return_value = `return \``
         let pt = 0;
         let old_pt = 0;
+        let minX = Infinity;
+        let minY = Infinity;
         while (pt < str.length) {
             old_pt = pt;
             while (pt < str.length && (isAlphabetic(str[pt]) || isNumeric(str[pt]) || str[pt] == '$')) {
                 pt++;
             }
 
-            formula += transform(str.substring(pt, old_pt));
+            const val = transform(str.substring(pt, old_pt));
+            return_value += transform(str.substring(pt, old_pt)).text;
+            minX = Math.min(minX, val.x);
+            minY = Math.min(minY, val.y);
 
             old_pt = pt;
             while (pt < str.length && !(isAlphabetic(str[pt]) || isNumeric(str[pt]) || str[pt] == '$')) {
                 pt++;
             }
 
-            formula += str.substring(pt, old_pt);
+            return_value += str.substring(pt, old_pt);
         }
-        formula += '`;}'
+        //console.log('minX', minX, 'minY', minY);
+        if (minX != Infinity) {
+            formula += `
+            if(delta_x < -${minX}){
+                throw new FormulaError(
+                    NO_SUCH_CEIL,
+                    "can't paste formula due to bad shift",
+                );
+            }`
+        }
+        if (minY != Infinity) {
+            formula += `
+            if(delta_y < -${minY}){
+                throw new FormulaError(
+                    NO_SUCH_CEIL,
+                    "can't paste formula due to bad shift",
+                );
+            }`
+        }
+        formula += return_value + '`;}'
         //console.log(formula);
         return eval(formula);
     }
@@ -293,6 +324,7 @@ class Table {
         this.toUpdate = new Stack();
         this.actions = new ActionStack(action_memo);
         this.copied = null;
+        this.big_copied = null;
     }
 
     createCeilIfNeed(x, y) {
@@ -423,6 +455,7 @@ class Table {
         if (changes) {
             changes.forEach(change => this.setCeil(change.x, change.y, change.oldText, true));
         }
+        console.log(changes)
         return changes;
     }
 
@@ -439,8 +472,13 @@ class Table {
     }
 
     paste(x, y) {
-        if (this.copied != null)
-            this.setCeil(x, y, this.copied(x, y));
+        if (this.copied != null) {
+            try {
+                this.setCeil(x, y, this.copied(x, y));
+            } catch (err) {
+                this.setCeil(x, y, err.msg);
+            }
+        }
     }
 
     cut(x, y) {
@@ -472,6 +510,145 @@ class Table {
         }
 
         return csv.join('\n');
+    }
+
+    bigCopy(fromStart, fromEnd) {
+        const lowerX = Math.min(fromStart.x, fromEnd.x);
+        const higherX = Math.max(fromStart.x, fromEnd.x);
+        const lowerY = Math.min(fromStart.y, fromEnd.y);
+        const higherY = Math.max(fromStart.y, fromEnd.y);
+        const deltaX = higherX - lowerX;
+        const deltaY = higherY - lowerY;
+        this.big_copied = new Array(deltaX);
+        for (let x = 0; x <= deltaX; x++) {
+            this.big_copied[x] = new Array(deltaY);
+            for (let y = 0; y <= deltaY; y++) {
+                this.big_copied[x][y] = build(this.field[lowerX + x][lowerY + y].realText, lowerX + x, lowerY + y);
+            }
+        }
+    }
+
+    bigPaste(fromStart, fromEnd) {
+        if (this.big_copied !== null) {
+            const lowerX = Math.min(fromStart.x, fromEnd.x);
+            const higherX = Math.max(fromStart.x, fromEnd.x);
+            const lowerY = Math.min(fromStart.y, fromEnd.y);
+            const higherY = Math.max(fromStart.y, fromEnd.y);
+            const deltaX = higherX - lowerX + 1;
+            const deltaY = higherY - lowerY + 1;
+            const modX = this.big_copied.length;
+            const modY = this.big_copied[0].length;
+
+            const actions = new Array();
+            for (let x = 0; x < deltaX; x++) {
+                for (let y = 0; y < deltaY; y++) {
+                    this.getCeil(lowerX + x,lowerY + y);
+                    try {
+                        actions.push({
+                            x: lowerX + x,
+                            y: lowerY + y,
+                            newText: this.big_copied[x % modX][y % modY](lowerX + x, lowerY + y),
+                            oldText: this.field[lowerX + x][lowerY + y].realText
+                        });
+                        console.log('test:', actions[actions.length - 1].newText);
+                        this.setCeil(actions[actions.length - 1].x, actions[actions.length - 1].y, actions[actions.length - 1].newText, true);
+                    } catch (err) {
+                        console.log(err);
+                        actions.push({
+                            x: lowerX + x,
+                            y: lowerY + y,
+                            newText: err.msg,
+                            oldText: this.field[lowerX + x][lowerY + y].realText
+                        });
+                        console.log(actions[actions.length - 1].x, actions[actions.length - 1].y, actions[actions.length - 1].newText, true, err.msg);
+                        this.setCeil(actions[actions.length - 1].x, actions[actions.length - 1].y, actions[actions.length - 1].newText, true, err.msg);
+                    }
+                }
+            }
+            this.actions.do(actions);
+        }
+    }
+
+    bigCut(fromStart, fromEnd) {
+        const lowerX = Math.min(fromStart.x, fromEnd.x);
+        const higherX = Math.max(fromStart.x, fromEnd.x);
+        const lowerY = Math.min(fromStart.y, fromEnd.y);
+        const higherY = Math.max(fromStart.y, fromEnd.y);
+        const deltaX = higherX - lowerX;
+        const deltaY = higherY - lowerY;
+        this.big_copied = new Array(deltaX);
+
+        const actions = new Array();
+        for (let x = 0; x <= deltaX; x++) {
+            this.big_copied[x] = new Array(deltaY);
+            for (let y = 0; y <= deltaY; y++) {
+                actions.push({
+                    x: lowerX + x,
+                    y: lowerY + y,
+                    newText: '',
+                    oldText: this.field[lowerX + x][lowerY + y].realText
+                });
+                this.big_copied[x][y] = build(actions[actions.length - 1].oldText, actions[actions.length - 1].x, actions[actions.length - 1].y);
+                this.setCeil(actions[actions.length - 1].x, actions[actions.length - 1].y, actions[actions.length - 1].newText, true);
+            }
+        }
+        this.actions.do(actions);
+        console.log('keeekekekeekk', this.big_copied);
+    }
+
+    auto_copy_prepare(fromStart, fromEnd) {
+        const lowerX = Math.min(fromStart.x, fromEnd.x);
+        const higherX = Math.max(fromStart.x, fromEnd.x);
+        const lowerY = Math.min(fromStart.y, fromEnd.y);
+        const higherY = Math.max(fromStart.y, fromEnd.y);
+        const deltaX = higherX - lowerX;
+        const deltaY = higherY - lowerY;
+        const res = new Array(deltaX);
+        for (let x = 0; x <= deltaX; x++) {
+            res[x] = new Array(deltaY);
+            for (let y = 0; y <= deltaY; y++) {
+                res[x][y] = build(this.field[lowerX + x][lowerY + y].realText, lowerX + x, lowerY + y);
+                console.log(x, y, (res[x][y])(lowerX + x, lowerY + y))
+            }
+        }
+        return res;
+    }
+
+    auto_copy(start, fromEnd, toEnd) {
+        console.log(start, fromEnd, toEnd);
+        const preparedData = this.auto_copy_prepare(start, fromEnd);
+        console.log(preparedData)
+        const realStartX = Math.min(start.x, fromEnd.x);
+        const realStartY = Math.min(start.y, fromEnd.y);
+        const modX = Math.abs(start.x - fromEnd.x) + 1;
+        const modY = Math.abs(start.y - fromEnd.y) + 1;
+        console.log('modY', modY, 2 % 1, 1 % 1, 0 % 1)
+
+        const startShiftX = (start.x < toEnd.x) ? 0 : modX - (Math.abs(start.x - toEnd.x) + 1) % modX;
+        const startShiftY = (start.y < toEnd.y) ? 0 : modY - (Math.abs(start.y - toEnd.y) + 1) % modY;
+
+        const lowerX = Math.min(realStartX, toEnd.x);
+        const higherX = Math.max(realStartX, toEnd.x);
+        const lowerY = Math.min(realStartY, toEnd.y);
+        const higherY = Math.max(realStartY, toEnd.y);
+        const deltaX = higherX - lowerX;
+        const deltaY = higherY - lowerY;
+
+        const actions = new Array();
+        for (let x = 0; x <= deltaX; x++) {
+            for (let y = 0; y <= deltaY; y++) {
+                console.log('prep:', (lowerX + x + startShiftX) % modX, (lowerY + y + startShiftY) % modY, preparedData[(lowerX + x + startShiftX) % modX][(lowerY + Y + startShiftY) % modY])
+                actions.push({
+                    x: lowerX + x,
+                    y: lowerY + y,
+                    newText: preparedData[(lowerX + x + startShiftX) % modX][(lowerY + y + startShiftY) % modY](lowerX + x, lowerY + y),
+                    oldText: this.field[x][y].realText
+                });
+                console.log('test:', actions[actions.length - 1].newText);
+                this.setCeil(actions[actions.length - 1].x, actions[actions.length - 1].y, actions[actions.length - 1].newText, true);
+            }
+        }
+        this.actions.do(actions);
     }
 }
 

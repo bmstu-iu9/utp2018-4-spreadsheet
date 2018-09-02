@@ -545,7 +545,11 @@ const paintCells2 = () => {
 
 let paintCells = paintCells1;
 
+let painting_end = null;
+let painting_beg = null;
+
 const paintBorders1 = (cell, top, left, right, bottom) => {
+
 
     if ((top) && (cell.rowNum)) {
         mainTable.rows[cell.rowNum - 1].cells[cell.colNum].style['box-shadow'] = '0px 3px 0px 0px ' + colorManualCofig[userColorCode]['cell']['box-shadow'];
@@ -570,6 +574,7 @@ const paintBorders1 = (cell, top, left, right, bottom) => {
 }
 
 const paintBorders2 = (cell, top, left, right, bottom) => {
+    console.log('pb2', cell, top, left, right, bottom);
 
     if (top) {
 
@@ -690,6 +695,8 @@ const initCell = (columnNumber, rowNumber) => {
     newInput.onfocus = function (elem) {
         return () => {
             console.log('onfocus')
+            painting_beg = newInput;
+            painting_end = null;
             let coord = convCoord(elem.id)
             elem.value = innerTable.getCeil(coord.x, coord.y).realText;
 
@@ -747,7 +754,14 @@ const initCell = (columnNumber, rowNumber) => {
     }(newInput);
     newInput.onblur = function (elem) {
         return () => {
-            console.log('onblur')
+            console.log('onblur');
+            /* if(newInput.value.substring(0, 9) === 'auto-copy'){
+                let ss = newInput.value.split(',');
+                innerTable.auto_copy(convCoord(ss[1]), convCoord(ss[2]), convCoord(ss[3]));
+                console.log(ss);
+            } */
+            painting_beg = null;
+            painting_end = null;
             POSSIBLE_FUNCTIONS.clean();
             autoCompleteMenu.autoCompleteOff();
             let coord = convCoord(elem.id);
@@ -878,6 +892,7 @@ const initCell = (columnNumber, rowNumber) => {
         }
 
         document.onmouseup = () => {
+            painting_end = (curCell !== null) ? curCell.childNodes[0] : null;
             isMultiHL = false;
             isScrolling = false;
             curCell = null;
@@ -1015,25 +1030,52 @@ const initCell = (columnNumber, rowNumber) => {
         let dy = 0;
 
         if (e.key === 'c' && e.ctrlKey) {
+            const end = painting_end;
             e.preventDefault();
             e.stopPropagation();
-
-            const coord = convCoord(newInput.id);
-            innerTable.copy(coord.x, coord.y);
+            console.log(painting_beg, painting_end);
+            const coord_beg = convCoord(painting_beg.id);
+            const coord_end = painting_end === null ? coord_beg : convCoord(painting_end.id);
+            innerTable.bigCopy(coord_beg, coord_end);
             updateTables();
             newInput.focus();
+            painting_end = end;
             return;
         }
 
         if (e.key === 'v' && e.ctrlKey) {
+            console.log(painting_beg, painting_end);
+            const end = painting_end;
             e.preventDefault();
             e.stopPropagation();
 
+            console.log(painting_beg, painting_end);
+            const coord_beg = convCoord(painting_beg.id);
+            const coord_end = painting_end === null ? coord_beg : convCoord(painting_end.id);
             newInput.blur();
-            const coord = convCoord(newInput.id);
-            innerTable.paste(coord.x, coord.y);
+            
+            innerTable.bigPaste(coord_beg, coord_end);
             updateTables();
             newInput.focus();
+            painting_end = end;
+            return;
+        }
+
+        if (e.key === 'x' && e.ctrlKey) {
+            const end = painting_end;
+            console.log(painting_beg, painting_end);
+            e.preventDefault();
+            e.stopPropagation();
+
+            console.log(painting_beg, painting_end);
+            const coord_beg = convCoord(painting_beg.id);
+            const coord_end = painting_end === null ? coord_beg : convCoord(painting_end.id);
+            newInput.blur();
+            
+            innerTable.bigCut(coord_beg, coord_end);
+            updateTables();
+            newInput.focus();
+            painting_end = end;
             return;
         }
 
@@ -1437,6 +1479,7 @@ const addUpAndLeftEvents = (type, num) => {
             if (focusID && document.getElementById(focusID).formulaMode) {
                 handlerUp2(e);
             } else {
+                console.log('doe', cell);
                 handlerUp1(e);
             }
         }

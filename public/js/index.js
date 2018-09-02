@@ -187,7 +187,7 @@ const menuItemListener = link => {
             else {
                 cell.blur();
                 const coord = convCoord(cell.id);
-                innerTable.paste(coord.x, coord.y);
+                innerTable.bigPaste(coord, coord);
                 updateTables();
                 cell.focus();
             }
@@ -198,7 +198,7 @@ const menuItemListener = link => {
                 tryToSmthToClipboard(cell, 'copy');
             else {
                 const coord = convCoord(cell.id);
-                innerTable.copy(coord.x, coord.y);
+                innerTable.bigCopy(coord, coord);
                 updateTables();
                 cell.focus();
             }
@@ -208,7 +208,7 @@ const menuItemListener = link => {
                 tryToSmthToClipboard(cell, 'cut');
             else {
                 const coord = convCoord(cell.id);
-                innerTable.cut(coord.x, coord.y);
+                innerTable.bigCut(coord, coord);
                 updateTables();
                 cell.focus();
             }
