@@ -11,6 +11,8 @@
 * Экспорт в csv
 * Авторизация и сохранение таблиц
 
+Подробнее в нашей в [Wiki](https://github.com/bmstu-iu9/utp2018-4-spreadsheet/wiki) 
+
 Запуск
 ------
 
