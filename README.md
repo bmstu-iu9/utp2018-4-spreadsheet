@@ -33,7 +33,7 @@
 ### Запуск на **Windows**
 * Запуск с 3мя cmd(Останавливать каждый терминал на SIGINT):
   ```cmd
-  ./run_terminal.bat
+  run_terminal.bat
   ```
 
 ### Зависимости
