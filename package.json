@@ -4,7 +4,7 @@
   "description": "![Data!](public/img/logo.png)\r ======",
   "main": "app.js",
   "dependencies": {
-    "sqlite3": "^4.2.0"
+    "sqlite3": "^5.1.6"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
